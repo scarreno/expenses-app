@@ -29,6 +29,7 @@ model Receipt {
   status       String  @default("PENDING")
   errorMessage String?
   createdAt     DateTime      @default(now())
+  filePath String?
   items         ReceiptItem[]
 }
 

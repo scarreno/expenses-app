@@ -1,8 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/app/lib/prisma";
 import { extractReceiptData, cleanJsonResponse } from "@/app/lib/receipt-extractor";
+import fs from "fs/promises";
+import path from "path";
+import { v4 as uuid } from "uuid";
 
 export async function POST(request: NextRequest){
+    let receiptId: string | null = null;
+
+    try {
+        
+    
+
     const formData = await request.formData();
     const file = formData.get("file");
 
@@ -17,6 +26,15 @@ export async function POST(request: NextRequest){
     const buffer = Buffer.from(bytes);
     const base64 = buffer.toString("base64");
 
+
+    const extension = file.name.split(".").pop();
+    const fileName = `${uuid()}.${extension}`;
+    const uploadDir = path.join(process.cwd(), "uploads");
+    const filePath = path.join(uploadDir, fileName);
+
+    await fs.mkdir(uploadDir, { recursive: true });
+    await fs.writeFile(filePath, buffer);
+
     const extracted = await extractReceiptData(base64, 
                                             file.type,
                                             file.name);
@@ -25,13 +43,26 @@ export async function POST(request: NextRequest){
     const parsed = JSON.parse(cleanJson);
 
 
-
-    const receipt = await prisma.receipt.create({
+    const pendingReceipt = await prisma.receipt.create({
         data: {
+            fileName: file.name,
+            status: "PENDING"
+        }
+    });
+
+    receiptId = pendingReceipt.id;
+
+    const receipt = await prisma.receipt.update({
+        where: {
+            id: receiptId
+        },
+        data: {
+            status: "PROCESSED",
             fileName: file.name,
             store: parsed.store,
             total: parsed.total,
             rawJson: parsed,
+            filePath,
             items: {
                     create: parsed.items?.map((item: any) => ({
                         description: item.description,
@@ -51,5 +82,28 @@ export async function POST(request: NextRequest){
         message: "Receipt uploaded succesfully!",
         receipt
     });
+    } catch (error) {
+        console.error(error);
 
+        if(receiptId){
+            await prisma.receipt.update({
+                where: {
+                    id: receiptId
+                },
+                data: {
+                    status: "ERROR",
+                    errorMessage: 
+                        error instanceof Error 
+                        ? error.message 
+                        : "Unknown error" 
+                }
+            });
+        }
+        return NextResponse.json(
+            {
+                error: "Failed to process receipt"
+            },
+            { status: 500 }
+        );
+    }
 }
