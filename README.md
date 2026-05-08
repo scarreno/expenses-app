@@ -20,6 +20,90 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+
+# Database setup - Neon + Prisma
+
+## 1. Initialize database using the existing schema
+
+Create a `.env` file in the project root:
+
+```env
+DATABASE_URL="your_neon_connection_string"
+OPENAI_API_KEY="your_openai_api_key"
+```
+
+Install dependencies:
+
+```bash
+pnpm install
+```
+
+Generate Prisma Client:
+
+```bash
+pnpm prisma generate
+```
+
+Apply existing migrations to Neon:
+
+```bash
+pnpm prisma migrate deploy
+```
+
+Optional: open Prisma Studio:
+
+```bash
+pnpm prisma studio
+```
+
+---
+
+## 2. Update database after modifying `schema.prisma`
+
+After changing:
+
+```text
+prisma/schema.prisma
+```
+
+create and apply a new migration:
+
+```bash
+pnpm prisma migrate dev --name describe_your_change
+```
+
+Then regenerate Prisma Client:
+
+```bash
+pnpm prisma generate
+```
+
+Example:
+
+```bash
+pnpm prisma migrate dev --name add_receipt_status
+pnpm prisma generate
+```
+
+---
+
+## 3. Development reset only
+
+Use this only in local/dev environments if the database gets out of sync:
+
+```bash
+pnpm prisma migrate reset
+```
+
+If migrations are broken and this is still a disposable dev database:
+
+```bash
+pnpm prisma db push
+```
+
+Do not use these commands in production.
+
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

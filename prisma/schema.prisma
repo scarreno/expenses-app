@@ -25,9 +25,10 @@ model Receipt {
   tax           Int?
   total         Int?
   rawJson       Json?
-  fileName      String?
+  fileName      String?  
+  status       String  @default("PENDING")
+  errorMessage String?
   createdAt     DateTime      @default(now())
-
   items         ReceiptItem[]
 }
 
