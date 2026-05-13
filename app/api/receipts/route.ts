@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/app/lib/prisma";
 
 export async function GET(){
@@ -12,4 +12,62 @@ export async function GET(){
     });
 
     return NextResponse.json(receipts);
+}
+
+export async function POST(request: NextRequest){
+    try {
+    
+        const body = await request.json();
+       const receipt = await prisma.receipt.create({
+            data: {
+                receiptType: body.receiptType,
+                store: body.receipt.store,
+                branch: body.receipt.branch,
+                purchaseDate:
+                body.receipt.purchaseDate
+                    ? new Date(
+                        body.receipt.purchaseDate
+                    )
+                    : null,
+                purchaseTime: body.receipt.purchaseTime,
+                paymentMethod: body.receipt.paymentMethod,
+                subtotal: body.receipt.subtotal,
+                tax: body.receipt.tax,
+                total: body.receipt.total,
+                fileName: body.file.originalName,
+                filePath: body.file.filePath,
+                status: "PROCESSED",
+                rawJson: body.receipt,
+                items: {
+                create:
+                    body.receipt.items.map(
+                    (item: any) => ({
+                        sku: item.sku,
+                        description: item.description,
+                        quantity: item.quantity,
+                        unit: item.unit,
+                        unitPrice: item.unitPrice,
+                        totalPrice: item.totalPrice,
+                    })
+                    ),
+                },
+            },
+            include: {
+                items: true,
+            },
+            });
+        
+        return NextResponse.json(receipt);
+    
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json(
+        {
+            error: "Failed to save receipt",
+        },
+        {
+            status: 500,
+        }
+        );
+    }
 }

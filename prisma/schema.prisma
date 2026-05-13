@@ -30,6 +30,7 @@ model Receipt {
   errorMessage String?
   createdAt     DateTime      @default(now())
   filePath String?
+  receiptType String?
   items         ReceiptItem[]
 }
 

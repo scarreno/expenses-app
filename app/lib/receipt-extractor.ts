@@ -1,4 +1,5 @@
 import { openai } from "@/app/lib/openai";
+import { buildReceiptPrompt } from "@/app/prompts/receipt-prompt-builder";
 
 export function cleanJsonResponse(value: string) {
   return value
@@ -11,72 +12,46 @@ export function cleanJsonResponse(value: string) {
 export async function extractReceiptData(
   fileBase64: string,
   mimeType: string,
-  fileName: string
+  fileName: string,
+  receiptType: string
 ) {
 
     try {
-        const prompt = `
-    Extract the receipt information.
-    Return raw JSON only.
-    Do not wrap the response in markdown.
-    Do not use \`\`\`json.
-    Do not include explanations.
+        console.log('Creating prompt');
+        const prompt = buildReceiptPrompt(receiptType);
+        console.log('Creating prompt - Ok');
+        console.log(`prompt: ${prompt}`);
 
-    Return ONLY valid JSON.
+        const isPdf = mimeType === "application/pdf";
 
-    Expected structure:
-    {
-    "store": string | null,
-    "branch": string | null,
-    "purchaseDate": string | null,
-    "purchaseTime": string | null,
-    "paymentMethod": string | null,
-    "subtotal": number | null,
-    "tax": number | null,
-    "total": number | null,
-    "items": [
-        {
-        "sku": string | null,
-        "description": string,
-        "quantity": number | null,
-        "unit": string | null,
-        "unitPrice": number | null,
-        "totalPrice": number | null
-        }
-    ]
-    }
-    `;
-
-    const isPdf = mimeType === "application/pdf";
-
-    const response = await openai.responses.create({
-        model: "gpt-4.1-mini",
-        input: [
-        {
-            role: "user",
-            content: [
+        const response = await openai.responses.create({
+            model: "gpt-4.1-mini",
+            input: [
             {
-                type: "input_text",
-                text: prompt,
-            },
-            isPdf ? {
-                    type: "input_file",
-                    filename: fileName,
-                    file_data: `data:${mimeType};base64,${fileBase64}`,
-                }:
-            {
-                type: "input_image",
-                image_url: `data:${mimeType};base64,${fileBase64}`,
-                detail: "high",
+                role: "user",
+                content: [
+                {
+                    type: "input_text",
+                    text: prompt,
+                },
+                isPdf ? {
+                        type: "input_file",
+                        filename: fileName,
+                        file_data: `data:${mimeType};base64,${fileBase64}`,
+                    }:
+                {
+                    type: "input_image",
+                    image_url: `data:${mimeType};base64,${fileBase64}`,
+                    detail: "high",
+                },
+                ],
             },
             ],
-        },
-        ],
-    });
+        });
 
-    console.log('Open AI request executed OK!');
-    console.log(response.output_text);
-    return response.output_text;
+        console.log('Open AI request executed OK!');
+        console.log(response.output_text);
+        return response.output_text;
   } catch (error) {
         throw error;
     }

@@ -1,48 +1,303 @@
 "use client";
 
 import { useState } from "react";
+import { ExtractReceiptResponse } from "@/app/types/receipt"
 
-
-export default function Home() {
+export default function HomePage() {
   const [result, setResult] = useState("");
-
+  const [loading, setLoading] = useState(false);
+  const [preview, setPreview] = useState<ExtractReceiptResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
   async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>){
     event.preventDefault();
 
-    const formData = new FormData(event.currentTarget);
-    const response = await fetch("/api/receipts/upload", {
-      method: "POST",
-      body: formData
+    setLoading(true);
+    setError(null);
+
+    try {
+      const formData = new FormData(event.currentTarget);
+      const response = await fetch("/api/receipts/extract", {
+        method: "POST",
+        body: formData
+      });
+
+      if(!response.ok){
+        throw new Error(
+          "Failed to extract receipt"
+        );
+      }
+      const data: ExtractReceiptResponse = await response.json();
+      setPreview(data);
+
+      setResult(JSON.stringify(data, null,2));  
+    } catch (error) {
+      console.error(error);
+      setError(error instanceof Error ? error.message : "Unknown error");
+      
+    }
+    finally{
+      setLoading(false);
+    }
+  }
+
+  async function handleSave(){
+    if(!preview)return;
+
+    setSaving(true);
+    setError(null);
+
+    try {
+    
+        const response = await fetch("/api/receipts", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            receiptType: preview.receiptType,
+            file: preview.file,
+            receipt: preview.receipt,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to save receipt");
+        }
+
+        const savedReceipt = await response.json();
+        alert("Receipt saved successfully");
+        console.log(savedReceipt);
+
+    } catch (error) {
+      console.error(error);
+
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Unknown error"
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  function updateReceiptField(field: keyof ExtractReceiptResponse["receipt"],
+    value: string
+  ){
+    if(!preview)return;
+
+    setPreview({
+      ...preview,
+      receipt: {
+        ...preview.receipt,
+        [field]: value
+      }
     });
-    const data = await response.json();
-    setResult(JSON.stringify(data, null,2));
+  }
+
+  function updateItemField(index: number,
+                          field: keyof ExtractReceiptResponse["receipt"]["items"][number],
+                          value: string
+  ){
+    if(!preview)return;
+
+    const updatedItems = [...preview.receipt.items];
+    updatedItems[index] = {
+      ...updatedItems[index],
+      [field]: field === "description" ||
+               field === "sku" ||
+               field === "unit" 
+               ? value 
+               : value === ""
+                  ? null
+                  : Number(value)
+    };
+
+    setPreview({
+      ...preview,
+      receipt: {
+        ...preview.receipt,
+        items: updatedItems
+      }
+    })
   }
 
   return (
     <main style={{ padding: 32}}>
       <h1>Expenses MVP</h1>
+      
+      <br/>
 
-      <form onSubmit={handleSubmit}>
-        <input type="file"
-        name="file"
-        accept="image/*,application/pdf"
-        required
+      <form onSubmit={handleSubmit} 
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 12,
+          maxWidth: 400,
+        }}>
+         <select
+          name="receiptType"
+          required
+        >
+          <option value="">
+            Select receipt type
+          </option>
+
+          <option value="SUPERMARKET">
+            Supermarket
+          </option>
+        </select>
+
+        <input
+          type="file"
+          name="file"
+          accept="image/*,application/pdf"
+          required
         />
 
-        <br/>
-
-        <button type="submit">
-          Upload Receipt
-        </button>      
+        <button
+          type="submit"
+          disabled={loading}
+        >
+          {loading
+            ? "Processing..."
+            : "Upload receipt"}
+        </button>
       </form>
 
-      { result && (
-        <pre style={{ marginTop: 24}}>
-          {result}
-        </pre>
+     {error && (
+        <p
+          style={{
+            color: "red",
+            marginTop: 24,
+          }}
+        >
+          {error}
+        </p>
+      )}
+      {preview && (
+        <section style={{ marginTop: 32 }}>
+
+          <h2>Receipt Preview</h2>
+
+          <p>
+            <label>
+              Store
+              <input
+                value={preview.receipt.store ?? ""}
+                onChange={(event) =>
+                  updateReceiptField("store", event.target.value)
+                }
+              />
+            </label>
+          </p>
+
+          <p>
+            <label>
+              Total
+              <input
+                type="number"
+                value={preview.receipt.total ?? ""}
+                onChange={(event) =>
+                  updateReceiptField("total", event.target.value)
+                }
+              />
+            </label>
+          </p>
+
+          <p>
+            <strong>Items:</strong>{" "}
+            {preview.receipt.items.length}
+          </p>
+
+          <table
+            border={1}
+            cellPadding={8}
+            style={{
+              marginTop: 16,
+              borderCollapse: "collapse",
+              width: "100%",
+            }}
+          >
+            <thead>
+              <tr>
+                <th>Description</th>
+                <th>Qty</th>
+                <th>Unit</th>
+                <th>Unit Price</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {preview.receipt.items.map(
+                (item, index) => (
+                  <tr key={index}>
+                    <td>
+                      <input
+                        value={item.description}
+                        onChange={(event) =>
+                          updateItemField(index, "description", event.target.value)
+                        }
+                      />
+                    </td>
+
+                    <td>
+                      <input
+                        type="number"
+                        value={item.quantity ?? ""}
+                        onChange={(event) =>
+                          updateItemField(index, "quantity", event.target.value)
+                        }
+                      />
+                    </td>
+
+                    <td>
+                      <input
+                        value={item.unit ?? ""}
+                        onChange={(event) =>
+                          updateItemField(index, "unit", event.target.value)
+                        }
+                      />
+                    </td>
+
+                    <td>
+                      <input
+                        type="number"
+                        value={item.unitPrice ?? ""}
+                        onChange={(event) =>
+                          updateItemField(index, "unitPrice", event.target.value)
+                        }
+                      />
+                    </td>
+
+                    <td>
+                      <input
+                        type="number"
+                        value={item.totalPrice ?? ""}
+                        onChange={(event) =>
+                          updateItemField(index, "totalPrice", event.target.value)
+                        }
+                      />
+                    </td>
+                  </tr>
+                )
+              )}
+            </tbody>
+          </table>
+        </section>
       )}
 
+      <button
+        type="button"
+        onClick={handleSave}
+        disabled={saving}
+        style={{ marginTop: 24 }}
+      >
+        {saving ? "Saving..." : "Save receipt"}
+      </button>
     </main>
   );
 }
