@@ -15,44 +15,44 @@ export async function extractReceiptData(
   fileName: string,
   receiptType: string
 ) {
+  try {
+    console.log("Creating prompt");
+    const prompt = buildReceiptPrompt(receiptType);
+    console.log("Creating prompt - Ok");
+    console.log(`prompt: ${prompt}`);
 
-    try {
-        console.log('Creating prompt');
-        const prompt = buildReceiptPrompt(receiptType);
-        console.log('Creating prompt - Ok');
-        console.log(`prompt: ${prompt}`);
+    const isPdf = mimeType === "application/pdf";
 
-        const isPdf = mimeType === "application/pdf";
-
-        const response = await openai.responses.create({
-            model: "gpt-4.1-mini",
-            input: [
+    const response = await openai.responses.create({
+      model: "gpt-4.1-mini",
+      input: [
+        {
+          role: "user",
+          content: [
             {
-                role: "user",
-                content: [
-                {
-                    type: "input_text",
-                    text: prompt,
-                },
-                isPdf ? {
-                        type: "input_file",
-                        filename: fileName,
-                        file_data: `data:${mimeType};base64,${fileBase64}`,
-                    }:
-                {
-                    type: "input_image",
-                    image_url: `data:${mimeType};base64,${fileBase64}`,
-                    detail: "high",
-                },
-                ],
+              type: "input_text",
+              text: prompt,
             },
-            ],
-        });
+            isPdf
+              ? {
+                  type: "input_file",
+                  filename: fileName,
+                  file_data: `data:${mimeType};base64,${fileBase64}`,
+                }
+              : {
+                  type: "input_image",
+                  image_url: `data:${mimeType};base64,${fileBase64}`,
+                  detail: "high",
+                },
+          ],
+        },
+      ],
+    });
 
-        console.log('Open AI request executed OK!');
-        console.log(response.output_text);
-        return response.output_text;
+    console.log("Open AI request executed OK!");
+    console.log(response.output_text);
+    return response.output_text;
   } catch (error) {
-        throw error;
-    }
+    throw error;
+  }
 }

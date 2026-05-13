@@ -3,7 +3,6 @@ import Link from "next/link";
 import { prisma } from "@/app/lib/prisma";
 
 export default async function ReceiptsPage() {
-
   const receipts = await prisma.receipt.findMany({
     include: {
       items: true,
@@ -16,7 +15,6 @@ export default async function ReceiptsPage() {
 
   return (
     <main style={{ padding: 32 }}>
-
       <h1>Receipts</h1>
 
       <table
@@ -50,14 +48,10 @@ export default async function ReceiptsPage() {
 
               <td>{receipt.items.length}</td>
 
-              <td>
-                {receipt.createdAt.toLocaleString()}
-              </td>
+              <td>{receipt.createdAt.toLocaleString()}</td>
 
               <td>
-                <Link href={`/receipts/${receipt.id}`}>
-                  View
-                </Link>
+                <Link href={`/receipts/${receipt.id}`}>View</Link>
               </td>
             </tr>
           ))}

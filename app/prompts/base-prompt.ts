@@ -1,7 +1,4 @@
-
-export function buildBasePrompt(
-  receiptType: string
-) {
+export function buildBasePrompt(receiptType: string) {
   return `
     You are extracting data from a receipt.
 

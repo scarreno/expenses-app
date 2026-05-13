@@ -20,7 +20,6 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-
 # Database setup - Neon + Prisma
 
 ## 1. Initialize database using the existing schema
@@ -102,7 +101,6 @@ pnpm prisma db push
 ```
 
 Do not use these commands in production.
-
 
 ## Learn More
 

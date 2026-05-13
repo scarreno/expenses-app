@@ -1,13 +1,12 @@
-import { buildBasePrompt } from './base-prompt';
-import { supermarketRules } from './supermarket-rules';
+import { buildBasePrompt } from "./base-prompt";
+import { supermarketRules } from "./supermarket-rules";
 
-export function buildReceiptPrompt(receiptType: string){
-    
-    const rulesByType : Record<string, string> = {
-        SUPERMARKET: supermarketRules
-    }
+export function buildReceiptPrompt(receiptType: string) {
+  const rulesByType: Record<string, string> = {
+    SUPERMARKET: supermarketRules,
+  };
 
-    return `
+  return `
     ${buildBasePrompt(receiptType)}
 
     ${rulesByType[receiptType] ?? ""}

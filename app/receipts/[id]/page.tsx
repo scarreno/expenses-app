@@ -2,48 +2,71 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/app/lib/prisma";
 
-
 type ReceiptDetailPageProps = {
-    params: Promise<{
-        id: string;
-    }>
+  params: Promise<{
+    id: string;
+  }>;
 };
 
-export default async function ReceiptDetailPage({ params }: ReceiptDetailPageProps) {
+export default async function ReceiptDetailPage({
+  params,
+}: ReceiptDetailPageProps) {
+  const { id } = await params;
 
-    const { id } = await params;
+  const receipt = await prisma.receipt.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      items: true,
+    },
+  });
 
-    const receipt = await prisma.receipt.findUnique({
-        where: {
-            id
-        },
-        include: {
-            items: true
-        }
-    });
+  if (!receipt) {
+    notFound();
+  }
 
-    if(!receipt){
-        notFound();
-    }
-
-    return (
+  return (
     <main style={{ padding: 32 }}>
       <Link href="/receipts">← Back to receipts</Link>
 
       <h1>Receipt detail</h1>
 
       <section style={{ marginTop: 24 }}>
-        <p><strong>Status:</strong> {receipt.status}</p>
-        <p><strong>Store:</strong> {receipt.store ?? "-"}</p>
-        <p><strong>Branch:</strong> {receipt.branch ?? "-"}</p>
-        <p><strong>Purchase date:</strong> {receipt.purchaseDate?.toLocaleDateString() ?? "-"}</p>
-        <p><strong>Purchase time:</strong> {receipt.purchaseTime ?? "-"}</p>
-        <p><strong>Payment method:</strong> {receipt.paymentMethod ?? "-"}</p>
-        <p><strong>Subtotal:</strong> {receipt.subtotal ?? "-"}</p>
-        <p><strong>Tax:</strong> {receipt.tax ?? "-"}</p>
-        <p><strong>Total:</strong> {receipt.total ?? "-"}</p>
-        <p><strong>File:</strong> {receipt.fileName ?? "-"}</p>
-        <p><strong>File path:</strong> {receipt.filePath ?? "-"}</p>
+        <p>
+          <strong>Status:</strong> {receipt.status}
+        </p>
+        <p>
+          <strong>Store:</strong> {receipt.store ?? "-"}
+        </p>
+        <p>
+          <strong>Branch:</strong> {receipt.branch ?? "-"}
+        </p>
+        <p>
+          <strong>Purchase date:</strong>{" "}
+          {receipt.purchaseDate?.toLocaleDateString() ?? "-"}
+        </p>
+        <p>
+          <strong>Purchase time:</strong> {receipt.purchaseTime ?? "-"}
+        </p>
+        <p>
+          <strong>Payment method:</strong> {receipt.paymentMethod ?? "-"}
+        </p>
+        <p>
+          <strong>Subtotal:</strong> {receipt.subtotal ?? "-"}
+        </p>
+        <p>
+          <strong>Tax:</strong> {receipt.tax ?? "-"}
+        </p>
+        <p>
+          <strong>Total:</strong> {receipt.total ?? "-"}
+        </p>
+        <p>
+          <strong>File:</strong> {receipt.fileName ?? "-"}
+        </p>
+        <p>
+          <strong>File path:</strong> {receipt.filePath ?? "-"}
+        </p>
       </section>
 
       <h2 style={{ marginTop: 32 }}>Items</h2>
