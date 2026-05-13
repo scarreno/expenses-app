@@ -12,9 +12,11 @@ export async function processReceiptFile(file: File, receiptType: string ){
 
 
     const extension = file.name.split(".").pop();
-    const fileName = `${uuid()}.${extension}`;
-    const uploadDir = path.join(process.cwd(), "uploads");
-    const filePath = path.join(uploadDir, fileName);
+    const generatedFileName = `${uuid()}.${extension}`;
+    const uploadDir = path.join(process.cwd(),
+                        "public",
+                         "uploads");
+    const filePath = path.join(uploadDir, generatedFileName);
 
     await fs.mkdir(uploadDir, { recursive: true });
     await fs.writeFile(filePath, buffer);
@@ -24,11 +26,13 @@ export async function processReceiptFile(file: File, receiptType: string ){
                                             file.name,
                                             receiptType);
 
+    const publicFileUrl = `/uploads/${generatedFileName}`;                                            
     const cleanJson = cleanJsonResponse(extracted);
     const parsed = JSON.parse(cleanJson);
     return {
         extractedData: parsed,
         filePath,
-        fileName,
+        generatedFileName,
+        publicFileUrl
     };
 }

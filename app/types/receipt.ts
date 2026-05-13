@@ -27,6 +27,7 @@ export type ExtractReceiptResponse = {
     originalName: string;
     filePath: string;
     generatedFileName: string;
+    publicFileUrl: string;
   };
 
   receipt: ExtractedReceipt;

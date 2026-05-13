@@ -32,7 +32,8 @@ export async function POST(request: NextRequest){
              file: {
                 originalName: file.name,
                 filePath: result.filePath,
-                generatedFileName: result.fileName,
+                generatedFileName: result.generatedFileName,
+                publicFileUrl : result.publicFileUrl
             },
             receipt: result.extractedData,
         });

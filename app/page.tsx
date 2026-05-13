@@ -124,6 +124,42 @@ export default function HomePage() {
     })
   }
 
+  async function removeItem(index: number){
+    if(!preview) return;
+
+    const updatedItems = preview.receipt.items.filter((_, itemIndex)=> itemIndex !== index);
+    setPreview({
+      ...preview,
+      receipt: {
+        ...preview.receipt,
+        items: updatedItems
+      }
+    });
+    
+  }
+
+  async function addItem(){
+    if(!preview) return;
+
+    setPreview({
+    ...preview,
+    receipt: {
+      ...preview.receipt,
+      items: [
+        ...preview.receipt.items,
+        {
+          sku: null,
+          description: "",
+          quantity: 1,
+          unit: "UNIT",
+          unitPrice: null,
+          totalPrice: null,
+        },
+      ]
+    }
+    });
+  }
+
   return (
     <main style={{ padding: 32}}>
       <h1>Expenses MVP</h1>
@@ -178,7 +214,29 @@ export default function HomePage() {
         </p>
       )}
       {preview && (
+        
         <section style={{ marginTop: 32 }}>
+
+          <div style={{ marginTop: 24 }}>
+            <h3>Receipt file</h3>
+            {preview.file.publicFileUrl.endsWith(".pdf") ? (
+
+              <iframe
+                src={`${preview.file.publicFileUrl}#view=FitH&zoom=page-width`}
+                width="100%"
+                height="600"
+              />
+            ) : (
+              <img
+                src={preview.file.publicFileUrl}
+                alt="Receipt"
+                style={{
+                  maxWidth: "100%",
+                  border: "1px solid #ccc",
+                }}
+              />
+            )}
+          </div>
 
           <h2>Receipt Preview</h2>
 
@@ -228,6 +286,7 @@ export default function HomePage() {
                 <th>Unit</th>
                 <th>Unit Price</th>
                 <th>Total</th>
+                <th>Actions</th>
               </tr>
             </thead>
 
@@ -282,22 +341,38 @@ export default function HomePage() {
                         }
                       />
                     </td>
-                  </tr>
+                    <td>
+                      <button
+                        type="button"
+                        onClick={() => removeItem(index)}
+                      >
+                        Remove
+                      </button>
+                    </td>
+                  </tr>                  
                 )
               )}
             </tbody>
           </table>
+
+          <button
+            type="button"
+            onClick={addItem}
+            style={{ marginTop: 16 }}
+          >
+            Add item
+          </button>
+
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={saving}
+            style={{ marginTop: 24 }}
+          >
+            {saving ? "Saving..." : "Save receipt"}
+          </button>
         </section>
       )}
-
-      <button
-        type="button"
-        onClick={handleSave}
-        disabled={saving}
-        style={{ marginTop: 24 }}
-      >
-        {saving ? "Saving..." : "Save receipt"}
-      </button>
     </main>
   );
 }
