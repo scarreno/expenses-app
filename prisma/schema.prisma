@@ -31,6 +31,7 @@ model Receipt {
   createdAt     DateTime      @default(now())
   filePath String?
   receiptType String?
+  publicFileUrl String?
   items         ReceiptItem[]
 }
 

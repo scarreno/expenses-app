@@ -11,7 +11,7 @@ export function ReceiptFilePreview({  fileUrl }: Props){
 
             {fileUrl.endsWith(".pdf") ? (
               <iframe
-                src={`${fileUrl}#view=Fit`}
+                src={`${fileUrl}#view=FitH`}
                 width="100%"
                 height="900"
                 style={{

@@ -37,6 +37,7 @@ export async function POST(request: NextRequest) {
         filePath: body.file.filePath,
         status: "PROCESSED",
         rawJson: body.receipt,
+        publicFileUrl: body.file.publicFileUrl,
         items: {
           create: body.receipt.items.map((item: any) => ({
             sku: item.sku,

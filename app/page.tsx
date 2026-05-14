@@ -9,6 +9,7 @@ import { ReceiptActions } from  "@/app/components/receipt-actions";
 import { ReceiptItemsSummary } from  "@/app/components/receipt-items-summary";
 import { ErrorMessage } from  "@/app/components/error-message";
 import { calculateReceiptTotal } from "@/app/lib/calculate-receipt-total";
+import { prismaVersion } from './generated/prisma/internal/prismaNamespace';
 
 export default function HomePage() {
   const [result, setResult] = useState("");
@@ -78,21 +79,6 @@ export default function HomePage() {
     } finally {
       setSaving(false);
     }
-  }
-
-  function updateReceiptField(
-    field: keyof ExtractReceiptResponse["receipt"],
-    value: string
-  ) {
-    if (!preview) return;
-
-    setPreview({
-      ...preview,
-      receipt: {
-        ...preview.receipt,
-        [field]: value,
-      },
-    });
   }
 
   function updateItemField(
@@ -217,14 +203,16 @@ export default function HomePage() {
           {/* RIGHT SIDE */}
           <div>
              <ReceiptItemsSummary 
-                receipt={preview.receipt}
-                updateReceiptField={updateReceiptField}/>
+                store={preview.receipt.store}
+                total={preview.receipt.total}
+                />
 
             <div style={{ overflowX: "auto", marginTop: 24 }}>
              <ReceiptItemsTable  
                 items={preview.receipt.items} 
                 updateItemField={updateItemField} 
                 removeItem={removeItem}
+                readonly={false}
               />
             </div>
 

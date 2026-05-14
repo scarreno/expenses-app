@@ -4,18 +4,20 @@ from "@/app/lib/format-money";
 
 type Props = {
     items: ReceiptItem[];
+    readonly: boolean;
     
-    updateItemField: (index: number,
+    updateItemField?: (index: number,
         field: keyof ReceiptItem,
         value: string) => void;
 
-    removeItem: (index: number) => void;
+    removeItem?: (index: number) => void;
 }
 
 export function ReceiptItemsTable({
                                 items,
                                 updateItemField,
                                 removeItem,
+                                readonly,
                                 }: Props){
     return (
         <table
@@ -26,94 +28,134 @@ export function ReceiptItemsTable({
             }}
             >
             <thead>
-                <tr>
-                <th>Description</th>
-                <th>Quantity</th>
-                <th>Unit</th>
-                <th>Unit Price</th>
-                <th>Total</th>
-                <th>Actions</th>
+                <tr >
+                    <th>Description</th>
+                    <th>Quantity</th>
+                    <th>Unit</th>
+                    <th>Unit Price</th>
+                    <th>Total</th>
+                    {!readonly && (
+                        <th>Actions</th>
+                    )}
                 </tr>
             </thead>
 
             <tbody>
                 {items.map((item, index) => (
-                <tr key={index}>
+                <tr key={index}
+                 style={{
+                        background:
+                        index % 2 === 0
+                            ? "transparent"
+                            : "#111",
+                    }}>
                     <td>
-                    <input
-                        value={item.description}
-                        style={{ width: 220 }}
-                        onChange={(event) =>
-                            updateItemField(
-                                index,
-                                "description",
-                                event.target.value
-                            )
-                        }
-                    />
+                        {readonly ? (
+                            <div>
+                                {item.description}
+                            </div>
+
+                            ) : (
+                            <input
+                                value={item.description}
+                                style={{ width: 220 }}
+                                onChange={(event) =>
+                                    updateItemField?.(
+                                        index,
+                                        "description",
+                                        event.target.value
+                                    )
+                                }
+                            />            
+                        )}
+                    
                     </td>
 
                     <td>
-                    <input
-                        type="number"
-                        style={{ width: 40 }}
-                        value={item.quantity ?? ""}
-                        onChange={(event) =>
-                        updateItemField(index, "quantity", event.target.value)
-                        }
-                    />
+                        {readonly ? (
+                            <div>
+                                {item.quantity}
+                            </div>
+
+                            ) : (
+                                <input
+                                    type="number"
+                                    style={{ width: 40 }}
+                                    value={item.quantity ?? ""}
+                                    onChange={(event) =>
+                                    updateItemField?.(index, "quantity", event.target.value)
+                                    }
+                                />
+                        )}
                     </td>
 
                     <td>
-                    <input
-                        value={item.unit ?? ""}
-                        onChange={(event) =>
-                        updateItemField(index, "unit", event.target.value)
-                        }
-                    />
+                        {readonly ? (
+                            <div>
+                                {item.unit}
+                            </div>
+
+                            ) : (
+                            <input
+                                value={item.unit ?? ""}
+                                onChange={(event) =>
+                                updateItemField?.(index, "unit", event.target.value)
+                                }
+                            />
+                        )}                                            
                     </td>
 
                     <td>
-                    <input
-                        type="number"
-                        style={{ width: 90 }}
-                        value={item.unitPrice ?? ""}
-                        onChange={(event) =>
-                        updateItemField(
-                            index,
-                            "unitPrice",
-                            event.target.value
-                        )
-                        }
-                    />
+                        {readonly ? (
+                            <div>
+                                {formatMoney(item.unitPrice)}
+                            </div>
 
-                    <div
-                        style={{
-                        fontSize: 12,
-                        color: "#666",
-                        marginTop: 4,
-                        }}
-                    >
-                        {formatMoney(item.unitPrice)}
-                    </div>
+                            ) : (
+                                <div>
+                                    <input
+                                        type="number"
+                                        style={{ width: 90 }}
+                                        value={item.unitPrice ?? ""}
+                                        onChange={(event) =>
+                                        updateItemField?.(
+                                            index,
+                                            "unitPrice",
+                                            event.target.value
+                                        )
+                                        }
+                                    />
 
+                                    <div
+                                        style={{
+                                        fontSize: 12,
+                                        color: "#666",
+                                        marginTop: 4,
+                                        }}
+                                    >
+                                    {formatMoney(item.unitPrice)}
+                                </div>
+                            </div>
+                        )}                        
                     </td>
 
                     <td>
                         <div>{formatMoney(item.totalPrice)}</div>
                     </td>
 
-                    <td>
-                    <button type="button" onClick={() => removeItem(index)}
-                        style={{
-                        padding: "6px 10px",
-                        borderRadius: 6,
-                        border: "1px solid #ccc",
-                        cursor: "pointer",
-                        }}>
-                        Remove
-                    </button>
-                    </td>
+                    {!readonly && (
+                        <td>
+                            <button type="button" onClick={() => removeItem?.(index)}
+                                style={{
+                                padding: "6px 10px",
+                                borderRadius: 6,
+                                border: "1px solid #ccc",
+                                cursor: "pointer",
+                                }}>
+                                Remove
+                            </button>
+                        </td>
+                    )}
                 </tr>
                 ))}
             </tbody>

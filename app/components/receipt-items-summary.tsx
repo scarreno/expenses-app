@@ -3,62 +3,45 @@ import { formatMoney }
 from "@/app/lib/format-money";
 
 type Props = {
-  receipt: ExtractedReceipt;
-
-  updateReceiptField: (
-    field: keyof ExtractedReceipt,
-    value: string
-  ) => void;
+    store: string | null;
+    total: number | null;
 };
 
 export function ReceiptItemsSummary({ 
-    receipt,
-    updateReceiptField 
+    store,
+    total
 }: Props){
     return(
         <div>
-            <h2>Receipt Preview</h2>
+           <h2>Receipt Preview</h2>
+
+            <div style={{ marginTop: 8, marginBottom: 16 }}>
+            <div style={{ color: "#999", fontSize: 14 }}>
+                Store
+            </div>
+            <div style={{ fontSize: 20 }}>
+                {store ?? "-"}
+            </div>
+            </div>
 
             <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 12,
-              }}
-            >
-              <label>
-                Store: 
-                <input
-                  value={receipt.store ?? ""}
-                  onChange={(event) =>
-                    updateReceiptField("store", event.target.value)
-                  }
-                />
-              </label>
+                style={{
+                    marginTop: 16,
+                    marginBottom: 24,
+                    padding: 16,
+                    border: "1px solid #333",
+                    borderRadius: 8,
+                    maxWidth: 260,
+                }}
+                >
+                <div style={{ fontSize: 14, color: "#999" }}>
+                    Total
+                </div>
 
-              <label>
-                Total: 
-                      <input
-                        type="number"
-                        style={{ width: 90 }}
-                        value={receipt.total ?? ""}
-                        onChange={(event) =>
-                          updateReceiptField("total", event.target.value)
-                        }
-                      />
-
-                      <div
-                        style={{
-                          fontSize: 12,
-                          color: "#666",
-                          marginTop: 4,
-                        }}
-                      >
-                        {formatMoney(receipt.total)}
-                      </div>
-             
-              </label>
-            </div>
+                <div style={{ fontSize: 28, fontWeight: "bold" }}>
+                    {formatMoney(total)}
+                </div>
+                </div>
         </div>
     );
 }

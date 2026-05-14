@@ -1,13 +1,9 @@
 import Link from "next/link";
-
+import { formatMoney } from "@/app/lib/format-money";
 import { prisma } from "@/app/lib/prisma";
 
 export default async function ReceiptsPage() {
   const receipts = await prisma.receipt.findMany({
-    include: {
-      items: true,
-    },
-
     orderBy: {
       createdAt: "desc",
     },
@@ -15,48 +11,65 @@ export default async function ReceiptsPage() {
 
   return (
     <main style={{ padding: 32 }}>
-      <h1>Receipts</h1>
+      <h1>Receipts History</h1>
 
-      <table
-        border={1}
-        cellPadding={8}
+      <div
         style={{
           marginTop: 24,
-          borderCollapse: "collapse",
-          width: "100%",
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+          gap: 16,
         }}
       >
-        <thead>
-          <tr>
-            <th>Status</th>
-            <th>Store</th>
-            <th>Total</th>
-            <th>Items</th>
-            <th>Date</th>
-            <th>Detail</th>
-          </tr>
-        </thead>
+        {receipts.map((receipt) => (
+          <article
+            key={receipt.id}
+            style={{
+              border: "1px solid #ddd",
+              borderRadius: 12,
+              padding: 16,
+            }}
+          >
+            <div style={{ fontSize: 12, color: "#777" }}>
+              {receipt.receiptType ?? "UNKNOWN"}
+            </div>
 
-        <tbody>
-          {receipts.map((receipt) => (
-            <tr key={receipt.id}>
-              <td>{receipt.status}</td>
+            <h2 style={{ marginTop: 8 }}>
+              {receipt.store ?? "Unknown store"}
+            </h2>
 
-              <td>{receipt.store ?? "-"}</td>
+            <div
+              style={{
+                fontSize: 24,
+                fontWeight: "bold",
+                marginTop: 8,
+              }}
+            >
+              {formatMoney(receipt.total)}
+            </div>
 
-              <td>{receipt.total ?? "-"}</td>
+            <div
+              style={{
+                marginTop: 8,
+                fontSize: 14,
+                color: "#777",
+              }}
+            >
+              {receipt.createdAt.toLocaleString("es-CL")}
+            </div>
 
-              <td>{receipt.items.length}</td>
-
-              <td>{receipt.createdAt.toLocaleString()}</td>
-
-              <td>
-                <Link href={`/receipts/${receipt.id}`}>View</Link>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            <Link
+              href={`/receipts/${receipt.id}`}
+              style={{
+                display: "inline-block",
+                marginTop: 16,
+              }}
+            >
+              View detail
+            </Link>
+          </article>
+        ))}
+      </div>
     </main>
   );
 }
