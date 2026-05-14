@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/app/lib/prisma";
+import { saveReceiptSchema } from "@/app/schemas/receipt-schema";
 
 export async function GET() {
   const receipts = await prisma.receipt.findMany({
@@ -16,7 +17,9 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body = saveReceiptSchema.parse(
+      await request.json()
+    );
     const receipt = await prisma.receipt.create({
       data: {
         receiptType: body.receiptType,

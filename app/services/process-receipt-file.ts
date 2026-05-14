@@ -5,6 +5,7 @@ import {
 import fs from "fs/promises";
 import path from "path";
 import { v4 as uuid } from "uuid";
+import { extractedReceiptSchema } from "@/app/schemas/receipt-schema";
 
 export async function processReceiptFile(file: File, receiptType: string) {
   const bytes = await file.arrayBuffer();
@@ -28,7 +29,13 @@ export async function processReceiptFile(file: File, receiptType: string) {
 
   const publicFileUrl = `/uploads/${generatedFileName}`;
   const cleanJson = cleanJsonResponse(extracted);
-  const parsed = JSON.parse(cleanJson);
+
+  const parsed = extractedReceiptSchema.parse(
+    JSON.parse(cleanJson)
+  );
+
+
+
   return {
     extractedData: parsed,
     filePath,

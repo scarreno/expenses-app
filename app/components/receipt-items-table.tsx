@@ -100,29 +100,7 @@ export function ReceiptItemsTable({
                     </td>
 
                     <td>
-                    <input
-                        type="number"
-                        style={{ width: 90 }}
-                        value={item.totalPrice ?? ""}
-                        onChange={(event) =>
-                        updateItemField(
-                            index,
-                            "totalPrice",
-                            event.target.value
-                        )
-                        }
-                    />
-
-                    <div
-                        style={{
-                        fontSize: 12,
-                        color: "#666",
-                        marginTop: 4,
-                        }}
-                    >
-                        {formatMoney(item.totalPrice)}
-                    </div>
-
+                        <div>{formatMoney(item.totalPrice)}</div>
                     </td>
 
                     <td>

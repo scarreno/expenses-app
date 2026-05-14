@@ -8,6 +8,7 @@ import { ReceiptFormUpload } from "@/app/components/receipt-form-upload";
 import { ReceiptActions } from  "@/app/components/receipt-actions";
 import { ReceiptItemsSummary } from  "@/app/components/receipt-items-summary";
 import { ErrorMessage } from  "@/app/components/error-message";
+import { calculateReceiptTotal } from "@/app/lib/calculate-receipt-total";
 
 export default function HomePage() {
   const [result, setResult] = useState("");
@@ -99,26 +100,49 @@ export default function HomePage() {
     field: keyof ExtractReceiptResponse["receipt"]["items"][number],
     value: string
   ) {
-    if (!preview) return;
+      if (!preview) return;
 
-    const updatedItems = [...preview.receipt.items];
-    updatedItems[index] = {
-      ...updatedItems[index],
-      [field]:
-        field === "description" || field === "sku" || field === "unit"
-          ? value
-          : value === ""
-            ? null
-            : Number(value),
-    };
+      const updatedItems = [...preview.receipt.items];
+      const currentItem = updatedItems[index];
 
-    setPreview({
-      ...preview,
-      receipt: {
-        ...preview.receipt,
-        items: updatedItems,
-      },
-    });
+      const updatedItem = {
+        ...currentItem,
+        [field]:
+          field === "description" || field === "sku" || field === "unit"
+            ? value
+            : value === ""
+              ? null
+              : Number(value),
+      }
+
+      if (field === "quantity" || field === "unitPrice") {
+        const quantity =
+          field === "quantity"
+            ? Number(value)
+            : updatedItem.quantity;
+
+        const unitPrice =
+          field === "unitPrice"
+            ? Number(value)
+            : updatedItem.unitPrice;
+
+        updatedItem.totalPrice =
+          quantity && unitPrice
+            ? Math.round(quantity * unitPrice)
+            : null;
+      }
+
+      updatedItems[index] = updatedItem;
+      const receiptTotal = calculateReceiptTotal(updatedItems);
+
+      setPreview({
+        ...preview,
+        receipt: {
+          ...preview.receipt,
+          total: receiptTotal,
+          items: updatedItems,
+        },
+      });
   }
 
   async function removeItem(index: number) {
@@ -127,10 +151,13 @@ export default function HomePage() {
     const updatedItems = preview.receipt.items.filter(
       (_, itemIndex) => itemIndex !== index
     );
+
+    const receiptTotal = calculateReceiptTotal(updatedItems);
     setPreview({
       ...preview,
       receipt: {
         ...preview.receipt,
+        total: receiptTotal,
         items: updatedItems,
       },
     });
@@ -139,21 +166,26 @@ export default function HomePage() {
   async function addItem() {
     if (!preview) return;
 
+    const updatedItems = [
+    ...preview.receipt.items,
+    {
+      sku: null,
+      description: "",
+      quantity: 1,
+      unit: "UNIT",
+      unitPrice: null,
+      totalPrice: null,
+    },
+  ];
+
+  const receiptTotal = calculateReceiptTotal(updatedItems);
+
     setPreview({
       ...preview,
       receipt: {
         ...preview.receipt,
-        items: [
-          ...preview.receipt.items,
-          {
-            sku: null,
-            description: "",
-            quantity: 1,
-            unit: "UNIT",
-            unitPrice: null,
-            totalPrice: null,
-          },
-        ],
+        items: updatedItems,
+        total: receiptTotal
       },
     });
   }
