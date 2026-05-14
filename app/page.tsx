@@ -2,6 +2,12 @@
 
 import { useState } from "react";
 import { ExtractReceiptResponse } from "@/app/types/receipt";
+import { ReceiptItemsTable } from "@/app/components/receipt-items-table"
+import { ReceiptFilePreview } from "@/app/components/receipt-file-preview";
+import { ReceiptFormUpload } from "@/app/components/receipt-form-upload";
+import { ReceiptActions } from  "@/app/components/receipt-actions";
+import { ReceiptItemsSummary } from  "@/app/components/receipt-items-summary";
+import { ErrorMessage } from  "@/app/components/error-message";
 
 export default function HomePage() {
   const [result, setResult] = useState("");
@@ -154,196 +160,49 @@ export default function HomePage() {
 
   return (
     <main style={{ padding: 32 }}>
-      <h1>Expenses MVP</h1>
-
-      <br />
-
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 12,
-          maxWidth: 400,
-        }}
-      >
-        <select name="receiptType" required>
-          <option value="">Select receipt type</option>
-
-          <option value="SUPERMARKET">Supermarket</option>
-        </select>
-
-        <input
-          type="file"
-          name="file"
-          accept="image/*,application/pdf"
-          required
-        />
-
-        <button type="submit" disabled={loading}>
-          {loading ? "Processing..." : "Upload receipt"}
-        </button>
-      </form>
+      <ReceiptFormUpload 
+          handleSubmit={handleSubmit}
+          loading={loading} 
+          />
 
       {error && (
-        <p
+        <ErrorMessage message={error} />
+      )}
+
+      {preview && (
+        <section
           style={{
-            color: "red",
-            marginTop: 24,
+            marginTop: 32,
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: 24,
+            alignItems: "start",
           }}
         >
-          {error}
-        </p>
-      )}
-      {preview && (
-        <section style={{ marginTop: 32 }}>
-          <div style={{ marginTop: 24 }}>
-            <h3>Receipt file</h3>
-            {preview.file.publicFileUrl.endsWith(".pdf") ? (
-              <iframe
-                src={`${preview.file.publicFileUrl}#view=FitH&zoom=page-width`}
-                width="100%"
-                height="600"
+          {/* LEFT SIDE */}
+
+          <ReceiptFilePreview fileUrl={preview.file.publicFileUrl}/>
+          {/* RIGHT SIDE */}
+          <div>
+             <ReceiptItemsSummary 
+                receipt={preview.receipt}
+                updateReceiptField={updateReceiptField}/>
+
+            <div style={{ overflowX: "auto", marginTop: 24 }}>
+             <ReceiptItemsTable  
+                items={preview.receipt.items} 
+                updateItemField={updateItemField} 
+                removeItem={removeItem}
               />
-            ) : (
-              <img
-                src={preview.file.publicFileUrl}
-                alt="Receipt"
-                style={{
-                  maxWidth: "100%",
-                  border: "1px solid #ccc",
-                }}
+            </div>
+
+            <ReceiptActions 
+              addItem={addItem}
+              handleSave={handleSave}
+              saving={saving}
               />
-            )}
+              
           </div>
-
-          <h2>Receipt Preview</h2>
-
-          <p>
-            <label>
-              Store
-              <input
-                value={preview.receipt.store ?? ""}
-                onChange={(event) =>
-                  updateReceiptField("store", event.target.value)
-                }
-              />
-            </label>
-          </p>
-
-          <p>
-            <label>
-              Total
-              <input
-                type="number"
-                value={preview.receipt.total ?? ""}
-                onChange={(event) =>
-                  updateReceiptField("total", event.target.value)
-                }
-              />
-            </label>
-          </p>
-
-          <p>
-            <strong>Items:</strong> {preview.receipt.items.length}
-          </p>
-
-          <table
-            border={1}
-            cellPadding={8}
-            style={{
-              marginTop: 16,
-              borderCollapse: "collapse",
-              width: "100%",
-            }}
-          >
-            <thead>
-              <tr>
-                <th>Description</th>
-                <th>Qty</th>
-                <th>Unit</th>
-                <th>Unit Price</th>
-                <th>Total</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {preview.receipt.items.map((item, index) => (
-                <tr key={index}>
-                  <td>
-                    <input
-                      value={item.description}
-                      onChange={(event) =>
-                        updateItemField(
-                          index,
-                          "description",
-                          event.target.value
-                        )
-                      }
-                    />
-                  </td>
-
-                  <td>
-                    <input
-                      type="number"
-                      value={item.quantity ?? ""}
-                      onChange={(event) =>
-                        updateItemField(index, "quantity", event.target.value)
-                      }
-                    />
-                  </td>
-
-                  <td>
-                    <input
-                      value={item.unit ?? ""}
-                      onChange={(event) =>
-                        updateItemField(index, "unit", event.target.value)
-                      }
-                    />
-                  </td>
-
-                  <td>
-                    <input
-                      type="number"
-                      value={item.unitPrice ?? ""}
-                      onChange={(event) =>
-                        updateItemField(index, "unitPrice", event.target.value)
-                      }
-                    />
-                  </td>
-
-                  <td>
-                    <input
-                      type="number"
-                      value={item.totalPrice ?? ""}
-                      onChange={(event) =>
-                        updateItemField(index, "totalPrice", event.target.value)
-                      }
-                    />
-                  </td>
-                  <td>
-                    <button type="button" onClick={() => removeItem(index)}>
-                      Remove
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          <button type="button" onClick={addItem} style={{ marginTop: 16 }}>
-            Add item
-          </button>
-
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={saving}
-            style={{ marginTop: 24 }}
-          >
-            {saving ? "Saving..." : "Save receipt"}
-          </button>
         </section>
       )}
     </main>
