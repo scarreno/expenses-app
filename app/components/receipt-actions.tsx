@@ -1,3 +1,7 @@
+import { IconDeviceFloppy } from "@tabler/icons-react";
+import { IconPlus } from "@tabler/icons-react";
+
+import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 
 type Props = {
@@ -21,24 +25,31 @@ export function ReceiptActions({
                 marginTop: 24,
               }}
             >
-              <Button type="button" onClick={addItem}
-               style={{
-                padding: "6px 10px",
-                borderRadius: 6,
-                border: "1px solid #ccc",
-                cursor: "pointer",
-              }}>
+              <Button type="button" 
+                      variant="outline"
+                      onClick={addItem}
+              >
+              <IconPlus className="mr-2 size-4" />
+
                 Add item
               </Button>
 
-              <Button type="button" onClick={handleSave} disabled={saving} 
-               style={{
-                  padding: "6px 10px",
-                  borderRadius: 6,
-                  border: "1px solid #ccc",
-                  cursor: "pointer",
-                }}>
-                {saving ? "Saving..." : "Save receipt"}
+              <Button type="button" 
+                  onClick={handleSave} 
+                  variant="outline"
+                  disabled={saving}>
+                {saving ? (
+                      <>
+                        <Spinner className="mr-2 size-4" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <IconDeviceFloppy className="mr-2 size-4" />
+                        Save receipt
+                      </>
+                    )
+                }
               </Button>
             </div>
         );

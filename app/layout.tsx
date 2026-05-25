@@ -1,5 +1,5 @@
 import Link from "next/link";
-
+import { Toaster } from "sonner";
 import "./globals.css";
 
 export const metadata = {
@@ -38,6 +38,7 @@ export default function RootLayout({
         </header>
 
         {children}
+
         <footer
           style={{
             marginTop: 32,
@@ -50,6 +51,7 @@ export default function RootLayout({
         >
           Developed by Sergio © {new Date().getFullYear()}
         </footer>
+        <Toaster richColors position="top-right" />        
       </body>
     </html>
   );

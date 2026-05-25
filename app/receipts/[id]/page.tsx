@@ -10,6 +10,8 @@ from "@/app/components/receipt-items-summary";
 
 import { ReceiptItemsTable }
 from "@/app/components/receipt-items-table";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default async function ReceiptDetailPage({
   params,
@@ -35,42 +37,40 @@ export default async function ReceiptDetailPage({
   }
 
   return (
-    <main style={{ padding: 32 }}>
+  <main className="mx-auto max-w-7xl p-8">
+    <div className="mb-8 flex items-center justify-between">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Receipt Detail
+        </h1>
 
-      <h1>Receipt Detail</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Review the original receipt and extracted items.
+        </p>
+      </div>
 
-      <section
-        style={{
-          marginTop: 32,
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: 24,
-          alignItems: "start",
-        }}
-      >
+      <Button variant="outline" asChild>
+        <Link href="/receipts">Back to receipts</Link>
+      </Button>
+    </div>
 
-        <ReceiptFilePreview
-          fileUrl={
-            receipt.publicFileUrl ?? ""
-          }
+    <section className="grid gap-6 lg:grid-cols-[35%_65%]">
+      <ReceiptFilePreview fileUrl={receipt.publicFileUrl ?? ""} />
+
+      <div className="space-y-6">
+        <ReceiptItemsSummary
+          store={receipt.store}
+          total={receipt.total}
         />
 
-        <div>
-
-          <ReceiptItemsSummary
-            store={receipt.store}
-            total={receipt.total}
-          />
-
+        <div className="overflow-x-auto">
           <ReceiptItemsTable
             items={receipt.items}
             readonly
           />
-
         </div>
-
-      </section>
-
-    </main>
-  );
+      </div>
+    </section>
+  </main>
+);
 }

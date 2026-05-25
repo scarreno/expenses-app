@@ -1,35 +1,28 @@
-
 type Props = {
   fileUrl: string;
-}
+};
 
+export function ReceiptFilePreview({ fileUrl }: Props) {
+  const isPdf = fileUrl.endsWith(".pdf");
 
-export function ReceiptFilePreview({  fileUrl }: Props){
-    return (
-        <div>
-            <h2>Receipt File</h2>
+  return (
+    <div className="w-full">
+      <h2 className="mb-2 text-sm font-medium">
+        Receipt File
+      </h2>
 
-            {fileUrl.endsWith(".pdf") ? (
-              <iframe
-                src={`${fileUrl}#view=FitH`}
-                width="100%"
-                height="900"
-                style={{
-                  border: "1px solid #ccc",
-                  borderRadius: 8,
-                }}
-              />
-            ) : (
-              <img
-                src={fileUrl}
-                alt="Receipt"
-                style={{
-                  width: "100%",
-                  border: "1px solid #ccc",
-                  borderRadius: 8,
-                }}
-              />
-            )}
-        </div>
-    );
+      {isPdf ? (
+        <iframe
+          src={`${fileUrl}#view=Fit`}
+          className="h-[850px] w-full rounded-lg border border-zinc-800 bg-zinc-900"
+        />
+      ) : (
+        <img
+          src={fileUrl}
+          alt="Receipt"
+          className="max-h-[850px] w-full rounded-lg border border-zinc-800 object-contain"
+        />
+      )}
+    </div>
+  );
 }

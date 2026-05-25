@@ -9,7 +9,8 @@ import { ReceiptActions } from  "@/app/components/receipt-actions";
 import { ReceiptItemsSummary } from  "@/app/components/receipt-items-summary";
 import { ErrorMessage } from  "@/app/components/error-message";
 import { calculateReceiptTotal } from "@/app/lib/calculate-receipt-total";
-import { prismaVersion } from './generated/prisma/internal/prismaNamespace';
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export default function HomePage() {
   const [result, setResult] = useState("");
@@ -41,6 +42,7 @@ export default function HomePage() {
     } catch (error) {
       console.error(error);
       setError(error instanceof Error ? error.message : "Unknown error");
+      toast.error("Failed to extract receipt");
     } finally {
       setLoading(false);
     }
@@ -70,12 +72,12 @@ export default function HomePage() {
       }
 
       const savedReceipt = await response.json();
-      alert("Receipt saved successfully");
+      toast.success("Receipt saved successfully");
       console.log(savedReceipt);
     } catch (error) {
       console.error(error);
-
       setError(error instanceof Error ? error.message : "Unknown error");
+      toast.error("Failed to save receipt");
     } finally {
       setSaving(false);
     }
@@ -175,56 +177,65 @@ export default function HomePage() {
       },
     });
   }
+return (
+  <main className="p-8">
+    {!preview && (
+      <ReceiptFormUpload
+        handleSubmit={handleSubmit}
+        loading={loading}
+      />
+    )}
 
-  return (
-    <main style={{ padding: 32 }}>
-      <ReceiptFormUpload 
-          handleSubmit={handleSubmit}
-          loading={loading} 
-          />
+    {error && <ErrorMessage message={error} />}
 
-      {error && (
-        <ErrorMessage message={error} />
-      )}
-
-      {preview && (
-        <section
-          style={{
-            marginTop: 32,
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 24,
-            alignItems: "start",
-          }}
-        >
-          {/* LEFT SIDE */}
-
-          <ReceiptFilePreview fileUrl={preview.file.publicFileUrl}/>
-          {/* RIGHT SIDE */}
+    {preview && (
+      <>
+        <div className="mb-6 flex items-center justify-between">
           <div>
-             <ReceiptItemsSummary 
-                store={preview.receipt.store}
-                total={preview.receipt.total}
-                />
+            <h1 className="text-2xl font-semibold tracking-tight">
+              Receipt Preview
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Review and adjust the extracted items before saving.
+            </p>
+          </div>
 
-            <div style={{ overflowX: "auto", marginTop: 24 }}>
-             <ReceiptItemsTable  
-                items={preview.receipt.items} 
-                updateItemField={updateItemField} 
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setPreview(null)}
+          >
+            Upload another receipt
+          </Button>
+        </div>
+
+        <section className="grid gap-6 lg:grid-cols-[25%_75%]">
+          <ReceiptFilePreview fileUrl={preview.file.publicFileUrl} />
+
+          <div>
+            <ReceiptItemsSummary
+              store={preview.receipt.store}
+              total={preview.receipt.total}
+            />
+
+            <div className="mt-6 overflow-x-auto">
+              <ReceiptItemsTable
+                items={preview.receipt.items}
+                updateItemField={updateItemField}
                 removeItem={removeItem}
                 readonly={false}
               />
             </div>
 
-            <ReceiptActions 
+            <ReceiptActions
               addItem={addItem}
               handleSave={handleSave}
               saving={saving}
-              />
-              
+            />
           </div>
         </section>
-      )}
-    </main>
-  );
+      </>
+    )}
+  </main>
+);
 }

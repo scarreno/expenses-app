@@ -1,47 +1,43 @@
-import { ExtractedReceipt } from "@/app/types/receipt";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { formatMoney }
 from "@/app/lib/format-money";
 
 type Props = {
-    store: string | null;
-    total: number | null;
+  store: string | null;
+  total: number | null;
 };
 
-export function ReceiptItemsSummary({ 
-    store,
-    total
-}: Props){
-    return(
-        <div>
-           <h2>Receipt Preview</h2>
+export function ReceiptItemsSummary({
+  store,
+  total,
+}: Props) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardDescription>
+          Receipt Summary
+        </CardDescription>
 
-            <div style={{ marginTop: 8, marginBottom: 16 }}>
-            <div style={{ color: "#999", fontSize: 14 }}>
-                Store
-            </div>
-            <div style={{ fontSize: 20 }}>
-                {store ?? "-"}
-            </div>
-            </div>
+        <CardTitle className="text-2xl">
+          {store ?? "Unknown store"}
+        </CardTitle>
+      </CardHeader>
 
-            <div
-                style={{
-                    marginTop: 16,
-                    marginBottom: 24,
-                    padding: 16,
-                    border: "1px solid #333",
-                    borderRadius: 8,
-                    maxWidth: 260,
-                }}
-                >
-                <div style={{ fontSize: 14, color: "#999" }}>
-                    Total
-                </div>
-
-                <div style={{ fontSize: 28, fontWeight: "bold" }}>
-                    {formatMoney(total)}
-                </div>
-                </div>
+      <CardContent>
+        <div className="text-4xl font-bold tracking-tight">
+          {formatMoney(total)}
         </div>
-    );
+
+        <p className="mt-2 text-sm text-muted-foreground">
+          Total extracted from receipt items
+        </p>
+      </CardContent>
+    </Card>
+  );
 }
