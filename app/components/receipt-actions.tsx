@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/button";
+
 type Props = {
     addItem: () => void,
     handleSave: () => void,
@@ -19,7 +21,7 @@ export function ReceiptActions({
                 marginTop: 24,
               }}
             >
-              <button type="button" onClick={addItem}
+              <Button type="button" onClick={addItem}
                style={{
                 padding: "6px 10px",
                 borderRadius: 6,
@@ -27,9 +29,9 @@ export function ReceiptActions({
                 cursor: "pointer",
               }}>
                 Add item
-              </button>
+              </Button>
 
-              <button type="button" onClick={handleSave} disabled={saving} 
+              <Button type="button" onClick={handleSave} disabled={saving} 
                style={{
                   padding: "6px 10px",
                   borderRadius: 6,
@@ -37,7 +39,7 @@ export function ReceiptActions({
                   cursor: "pointer",
                 }}>
                 {saving ? "Saving..." : "Save receipt"}
-              </button>
+              </Button>
             </div>
         );
     }

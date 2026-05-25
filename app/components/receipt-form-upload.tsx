@@ -1,44 +1,81 @@
+"use client";
+
+import { useState } from "react";
+
+import { Button } from "@/components/ui/button";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 type Props = {
-    handleSubmit: (event: React.SubmitEvent<HTMLFormElement>) => void;
-    loading: boolean
-}
+  handleSubmit: (event: React.SubmitEvent<HTMLFormElement>) => void;
+  loading: boolean;
+};
 
+export function ReceiptFormUpload({
+  handleSubmit,
+  loading,
+}: Props) {
+  const [receiptType, setReceiptType] = useState("");
 
-export function ReceiptFormUpload({ 
-        handleSubmit,
-        loading 
-    }: Props){
-    return(
-        <div>
-            <h1>Expenses MVP</h1>
+  return (
+    <section className="max-w-md space-y-6">
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Expenses MVP
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Upload a receipt and extract its items with AI.
+        </p>
+      </div>
 
-            <br />
-            <form
-            onSubmit={handleSubmit}
-            style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 12,
-                maxWidth: 400,
-            }}
-            >
-            <select name="receiptType" required>
-                <option value="">Select receipt type</option>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          type="hidden"
+          name="receiptType"
+          value={receiptType}
+        />
 
-                <option value="SUPERMARKET">Supermarket</option>
-            </select>
+        <Select
+          value={receiptType}
+          onValueChange={setReceiptType}
+          required
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select receipt type" />
+          </SelectTrigger>
 
-            <input
-                type="file"
-                name="file"
-                accept="image/*,application/pdf"
-                required
-            />
+          <SelectContent>
+            <SelectItem value="SUPERMARKET">
+              Supermercado
+            </SelectItem>
+            <SelectItem value="MARKET">
+              Almacen
+            </SelectItem>            
+          </SelectContent>
+        </Select>
 
-            <button type="submit" disabled={loading}>
-                {loading ? "Processing..." : "Upload receipt"}
-            </button>
-            </form>
-        </div>
-    );
+        <input
+          className="block w-full text-sm text-muted-foreground"
+          type="file"
+          name="file"
+          accept="image/*,application/pdf"
+          required
+        />
+
+        <Button
+          className="w-full"
+          type="submit"
+          disabled={loading || !receiptType}
+        >
+          {loading ? "Processing..." : "Upload receipt"}
+        </Button>
+      </form>
+    </section>
+  );
 }
