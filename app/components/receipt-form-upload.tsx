@@ -32,6 +32,7 @@ export function ReceiptFormUpload({
     { label: "Select type", value: "" },
     { label: "Supermarket", value: "SUPERMARKET" },
     { label: "Almacén", value: "GROCERY_STORE" },
+    { label: "Bencina", value: "GAS" }
   ];
 
   return (
@@ -65,6 +66,7 @@ export function ReceiptFormUpload({
               <SelectLabel>Select a type</SelectLabel>
               <SelectItem value="SUPERMARKET">Supermarket</SelectItem>
               <SelectItem value="MARKET">Market</SelectItem>
+              <SelectItem value="GAS">Bencina</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>

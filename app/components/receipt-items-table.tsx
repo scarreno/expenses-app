@@ -68,6 +68,9 @@ export function ReceiptItemsTable({
                 }
               />
             )}
+            <p className="text-xs text-muted-foreground">
+                {item.category}
+            </p>
           </td>
 
           <td className="px-3 py-2 text-center">

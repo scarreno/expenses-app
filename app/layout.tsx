@@ -34,6 +34,7 @@ export default function RootLayout({
           >
             <Link href="/">Upload</Link>
             <Link href="/receipts">Receipts</Link>
+            <Link href="/dashboard">Dashboard</Link>
           </nav>
         </header>
 

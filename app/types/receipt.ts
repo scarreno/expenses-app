@@ -5,6 +5,7 @@ export type ReceiptItem = {
   unit: string | null;
   unitPrice: number | null;
   totalPrice: number | null;
+  category: string | null;
 };
 
 export type ExtractedReceipt = {

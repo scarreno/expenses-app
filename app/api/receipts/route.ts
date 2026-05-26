@@ -45,6 +45,7 @@ export async function POST(request: NextRequest) {
             unit: item.unit,
             unitPrice: item.unitPrice,
             totalPrice: item.totalPrice,
+            category: item.category
           })),
         },
       },

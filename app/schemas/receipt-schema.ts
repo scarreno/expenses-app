@@ -7,6 +7,7 @@ export const receiptItemSchema = z.object({
   unit: z.string().nullable(),
   unitPrice: z.number().int().nullable(),
   totalPrice: z.number().int().nullable(),
+  category: z.string()
 });
 
 

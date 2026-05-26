@@ -3,7 +3,7 @@ import { formatMoney } from "@/app/lib/format-money";
 import { prisma } from "@/app/lib/prisma";
 import { Button } from "@/components/ui/button";
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 8;
 
 export default async function ReceiptsPage({ searchParams } : 
       { searchParams: Promise<{page?: string}>; }) {

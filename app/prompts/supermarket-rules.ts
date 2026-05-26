@@ -66,4 +66,32 @@ Do not create items for lines such as:
 - RF PRECIO ANTES AHORRO
 
 However, totals, taxes and payment information should still be extracted into the main receipt fields.
+
+For each item, assign a category using ONLY one of these exact values:
+
+GROCERIES
+MEAT
+VEGETABLES
+FRUITS
+DAIRY
+CLEANING
+PERSONAL_CARE
+FUEL
+RESTAURANT
+SNACKS
+BEVERAGES
+BAKERY
+FROZEN
+OTHER
+
+Examples:
+
+"V LOMO LISO" -> MEAT
+"LECHUGA COST" -> VEGETABLES
+"COCA COLA" -> BEVERAGES
+"PAN MOLDE" -> BAKERY
+"RAMITAS" -> SNACKS
+"GALLETA" -> SNACKS
+"PAPA LISA" -> SNACKS
+"PAPA" -> VEGETABLES
 `;

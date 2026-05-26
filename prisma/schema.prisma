@@ -44,6 +44,7 @@ model ReceiptItem {
   unit        String?
   unitPrice   Int?
   totalPrice  Int?
+  category    String?
   createdAt   DateTime @default(now())
 
   receipt     Receipt  @relation(fields: [receiptId], references: [id], onDelete: Cascade)

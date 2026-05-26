@@ -11,6 +11,7 @@ import { ErrorMessage } from  "@/app/components/error-message";
 import { calculateReceiptTotal } from "@/app/lib/calculate-receipt-total";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function HomePage() {
   const [result, setResult] = useState("");
@@ -18,6 +19,8 @@ export default function HomePage() {
   const [preview, setPreview] = useState<ExtractReceiptResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  const router = useRouter();
 
   async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -54,6 +57,8 @@ export default function HomePage() {
     setSaving(true);
     setError(null);
 
+    console.log(preview.receipt);
+
     try {
       const response = await fetch("/api/receipts", {
         method: "POST",
@@ -74,6 +79,8 @@ export default function HomePage() {
       const savedReceipt = await response.json();
       toast.success("Receipt saved successfully");
       console.log(savedReceipt);
+      router.push("/receipts");
+
     } catch (error) {
       console.error(error);
       setError(error instanceof Error ? error.message : "Unknown error");
@@ -177,6 +184,24 @@ export default function HomePage() {
       },
     });
   }
+  
+  function updateReceiptField(
+    field: keyof ExtractReceiptResponse["receipt"],
+    value: string) {
+
+    if (!preview) {
+      return;
+    }
+
+    setPreview({
+      ...preview,
+      receipt: {
+        ...preview.receipt,
+        [field]: value,
+      }
+    });
+  }
+
 return (
   <main className="p-8">
     {!preview && (
@@ -216,6 +241,8 @@ return (
             <ReceiptItemsSummary
               store={preview.receipt.store}
               total={preview.receipt.total}
+              editable
+              updateReceiptField={updateReceiptField}
             />
 
             <div className="mt-6 overflow-x-auto">
