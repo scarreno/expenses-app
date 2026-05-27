@@ -12,6 +12,10 @@ import { ReceiptItemsTable }
 from "@/app/components/receipt-items-table";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { format, parseISO } from "date-fns";
+import { appSettings } from "@/lib/config/app-settings";
+import { DeleteReceiptButton } from "@/app/components/delete-receipt-button";
+import { IconChevronsLeft } from "@tabler/icons-react";
 
 export default async function ReceiptDetailPage({
   params,
@@ -49,9 +53,17 @@ export default async function ReceiptDetailPage({
         </p>
       </div>
 
-      <Button variant="outline" asChild>
-        <Link href="/receipts">Back to receipts</Link>
-      </Button>
+      <div className="flex items-center justify-end gap-3">
+        <Button variant="outline">
+          <IconChevronsLeft className="mr-2 size-4" />
+          <Link href="/receipts">
+            Back to receipts
+          </Link>
+        </Button>
+
+        <DeleteReceiptButton receiptId={receipt.id} />
+      </div>
+      
     </div>
 
     <section className="grid gap-6 lg:grid-cols-[35%_65%]">
@@ -61,6 +73,11 @@ export default async function ReceiptDetailPage({
         <ReceiptItemsSummary
           store={receipt.store}
           total={receipt.total}
+            purchaseDate={
+            receipt.purchaseDate
+              ? format(parseISO(receipt.purchaseDate), appSettings.date.displayFormat)
+              : null
+          }
         />
 
         <div className="overflow-x-auto">

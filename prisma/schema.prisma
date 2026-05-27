@@ -18,7 +18,7 @@ model Receipt {
   id            String        @id @default(uuid())
   store         String?
   branch        String?
-  purchaseDate  DateTime?
+  purchaseDate  String?
   purchaseTime  String?
   paymentMethod String?
   subtotal      Int?

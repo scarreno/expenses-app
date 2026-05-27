@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/app/lib/prisma";
 import { saveReceiptSchema } from "@/app/schemas/receipt-schema";
-import { parseReceiptDate } from "@/app/lib/parse-string-date";
 
 export async function GET() {
   const receipts = await prisma.receipt.findMany({
@@ -26,7 +25,7 @@ export async function POST(request: NextRequest) {
         receiptType: body.receiptType,
         store: body.receipt.store,
         branch: body.receipt.branch,
-        purchaseDate: parseReceiptDate(body.receipt.purchaseDate),
+        purchaseDate: body.receipt.purchaseDate,
         purchaseTime: body.receipt.purchaseTime,
         paymentMethod: body.receipt.paymentMethod,
         subtotal: body.receipt.subtotal,

@@ -2,6 +2,8 @@ import Link from "next/link";
 import { formatMoney } from "@/app/lib/format-money";
 import { prisma } from "@/app/lib/prisma";
 import { Button } from "@/components/ui/button";
+import { format, parseISO } from "date-fns";
+import { appSettings } from "@/lib/config/app-settings";
 
 const PAGE_SIZE = 8;
 
@@ -70,14 +72,24 @@ export default async function ReceiptsPage({ searchParams } :
               {formatMoney(receipt.total)}
             </div>
 
-            <div
-              style={{
-                marginTop: 8,
-                fontSize: 14,
-                color: "#777",
-              }}
-            >
-              {receipt.createdAt.toLocaleString("es-CL")}
+            <div className="mt-4 space-y-2 text-sm text-muted-foreground">
+
+              <div>
+                <span className="font-medium text-zinc-400">
+                  Created:
+                </span>{" "}
+                {receipt.createdAt.toLocaleString()}
+              </div>
+
+              <div>
+                <span className="font-medium text-zinc-400">
+                  Purchase Date:
+                </span>{" "}
+                {receipt.purchaseDate
+                  ?  format(parseISO(receipt.purchaseDate), appSettings.date.displayFormat)
+                  : "Unknown"}
+              </div>
+
             </div>
 
             <Link

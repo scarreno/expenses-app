@@ -54,6 +54,7 @@ $22.655 -> 22655
 
 5. Ignore non-product lines as items:
 Do not create items for lines such as:
+- AHORRO
 - CODIGO
 - SUBTOTAL
 - TOTAL

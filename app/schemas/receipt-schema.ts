@@ -14,7 +14,10 @@ export const receiptItemSchema = z.object({
 export const extractedReceiptSchema = z.object({
   store: z.string().nullable(),
   branch: z.string().nullable(),
-  purchaseDate: z.string().nullable(),
+  purchaseDate: z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/)
+  .nullable(),
   purchaseTime: z.string().nullable(),
   paymentMethod: z.string().nullable(),
   subtotal: z.number().int().nullable(),

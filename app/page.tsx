@@ -170,6 +170,7 @@ export default function HomePage() {
       unit: "UNIT",
       unitPrice: null,
       totalPrice: null,
+      category: null
     },
   ];
 
@@ -241,6 +242,7 @@ return (
             <ReceiptItemsSummary
               store={preview.receipt.store}
               total={preview.receipt.total}
+              purchaseDate={preview.receipt.purchaseDate}
               editable
               updateReceiptField={updateReceiptField}
             />

@@ -7,9 +7,9 @@ export function ReceiptFilePreview({ fileUrl }: Props) {
 
   return (
     <div className="w-full">
-      <h2 className="mb-2 text-sm font-medium">
-        Receipt File
-      </h2>
+      <h2 className="text-xl font-semibold">
+            Receipt File
+        </h2>
 
       {isPdf ? (
         <iframe
