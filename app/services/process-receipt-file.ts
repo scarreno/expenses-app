@@ -2,23 +2,16 @@ import {
   extractReceiptData,
   cleanJsonResponse,
 } from "@/app/lib/receipt-extractor";
-import fs from "fs/promises";
-import path from "path";
-import { v4 as uuid } from "uuid";
+
 import { extractedReceiptSchema } from "@/app/schemas/receipt-schema";
+import { uploadReceiptFile } from "@/app/lib/storage";
 
 export async function processReceiptFile(file: File, receiptType: string) {
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
   const base64 = buffer.toString("base64");
 
-  const extension = file.name.split(".").pop();
-  const generatedFileName = `${uuid()}.${extension}`;
-  const uploadDir = path.join(process.cwd(), "public", "uploads");
-  const filePath = path.join(uploadDir, generatedFileName);
-
-  await fs.mkdir(uploadDir, { recursive: true });
-  await fs.writeFile(filePath, buffer);
+  const uploadedFile = await uploadReceiptFile(file);
 
   const extracted = await extractReceiptData(
     base64,
@@ -27,19 +20,16 @@ export async function processReceiptFile(file: File, receiptType: string) {
     receiptType
   );
 
-  const publicFileUrl = `/uploads/${generatedFileName}`;
   const cleanJson = cleanJsonResponse(extracted);
 
   const parsed = extractedReceiptSchema.parse(
     JSON.parse(cleanJson)
   );
 
-
-
   return {
     extractedData: parsed,
-    filePath,
-    generatedFileName,
-    publicFileUrl,
+    filePath: uploadedFile.filePath,
+    generatedFileName: uploadedFile.generatedFileName,
+    publicFileUrl: uploadedFile.publicFileUrl,
   };
 }

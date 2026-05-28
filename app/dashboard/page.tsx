@@ -2,9 +2,13 @@ import Link from "next/link";
 import { MonthlyExpensesChart } from "@/app/components/dashboard/monthly-expenses-chart/index"
 import { Button } from "@/components/ui/button";
 import { DashboardReceiptSummary } from "@/app/components/dashboard/dashboard-receipts-summary";
-import { CategoryTotalsChart } from "@/app/components/dashboard/category-total-chart/index";
+import { CategoryTotalsChart } from "@/app/components/dashboard/category-totals-chart/index";
 
-export default async function DashboardPage() {
+export default async function DashboardPage({ searchParams }: {
+    searchParams: Promise<{ month?: string }>;
+  }) {
+
+  const { month = "all" } = await searchParams;
 
   return (
     <main className="mx-auto max-w-7xl p-8">
@@ -24,9 +28,9 @@ export default async function DashboardPage() {
         </Button>
       </div>
 
-      <DashboardReceiptSummary/>
+      <DashboardReceiptSummary/>      
+      <CategoryTotalsChart selectedMonth={month}/>
       <MonthlyExpensesChart/>
-      <CategoryTotalsChart/>
 
         
     </main>
