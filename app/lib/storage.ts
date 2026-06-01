@@ -1,9 +1,9 @@
-import { mkdir, writeFile } from "fs/promises";
+import { mkdir, writeFile, unlink } from "fs/promises";
 import path from "path";
 import { v4 as uuid } from "uuid";
-import { put } from "@vercel/blob";
+import { put, del } from "@vercel/blob";
 
-type UploadedFile = {
+export type UploadedReceiptFile = {
   filePath: string;
   generatedFileName: string;
   publicFileUrl: string;
@@ -11,7 +11,9 @@ type UploadedFile = {
 
 const storageDriver = process.env.STORAGE_DRIVER ?? "local";
 
-export async function uploadReceiptFile(file: File): Promise<UploadedFile> {
+export async function uploadReceiptFile(
+  file: File
+): Promise<UploadedReceiptFile> {
   if (storageDriver === "vercel-blob") {
     return uploadToVercelBlob(file);
   }
@@ -19,7 +21,16 @@ export async function uploadReceiptFile(file: File): Promise<UploadedFile> {
   return uploadToLocalStorage(file);
 }
 
-async function uploadToLocalStorage(file: File): Promise<UploadedFile> {
+export async function deleteReceiptFile(filePath: string): Promise<void> {
+  if (storageDriver === "vercel-blob") {
+    await deleteFromVercelBlob(filePath);
+    return;
+  }
+
+  await deleteFromLocalStorage(filePath);
+}
+
+async function uploadToLocalStorage(file: File): Promise<UploadedReceiptFile> {
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
@@ -39,7 +50,9 @@ async function uploadToLocalStorage(file: File): Promise<UploadedFile> {
   };
 }
 
-async function uploadToVercelBlob(file: File): Promise<UploadedFile> {
+async function uploadToVercelBlob(
+  file: File
+): Promise<UploadedReceiptFile> {
   const extension = file.name.split(".").pop();
   const generatedFileName = `${uuid()}.${extension}`;
 
@@ -52,4 +65,34 @@ async function uploadToVercelBlob(file: File): Promise<UploadedFile> {
     generatedFileName,
     publicFileUrl: blob.url,
   };
+}
+
+async function deleteFromLocalStorage(filePath: string): Promise<void> {
+  const uploadsDir = path.join(process.cwd(), "public", "uploads");
+
+  const resolvedFilePath = path.resolve(filePath);
+  const resolvedUploadsDir = path.resolve(uploadsDir);
+
+  if (!resolvedFilePath.startsWith(resolvedUploadsDir)) {
+    throw new Error("Invalid file path");
+  }
+
+  try {
+    await unlink(resolvedFilePath);
+  } catch (error: unknown) {
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      error.code === "ENOENT"
+    ) {
+      return;
+    }
+
+    throw error;
+  }
+}
+
+async function deleteFromVercelBlob(filePath: string): Promise<void> {
+  await del(filePath);
 }
