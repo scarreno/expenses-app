@@ -6,6 +6,8 @@ export const metadata = {
   title: "Expenses MVP",
   description: "Personal expenses app",
 };
+import { APP_VERSION } from "@/app/lib/app-version";
+
 
 export default function RootLayout({
   children,
@@ -50,7 +52,7 @@ export default function RootLayout({
             fontSize: 14,
           }}
         >
-          Developed by Sergio © {new Date().getFullYear()}
+          Developed by Sergio © {new Date().getFullYear()} · v{APP_VERSION}
         </footer>
         <Toaster richColors position="top-right" />        
       </body>
