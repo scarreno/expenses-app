@@ -12,6 +12,10 @@ import { calculateReceiptTotal } from "@/app/lib/calculate-receipt-total";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import {
+  uploadReceiptFileFromClient,
+  deleteReceiptFileFromClient,
+} from "@/app/lib/client-storage";
 
 export default function HomePage() {
   const [result, setResult] = useState("");
@@ -21,30 +25,102 @@ export default function HomePage() {
   const [saving, setSaving] = useState(false);
 
   const router = useRouter();
+  type UploadedReceiptFile = {
+    filePath: string;
+    generatedFileName: string;
+    publicFileUrl: string;
+  };
 
-  async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
+  async function deleteUploadedReceiptFile(filePath: string) {
+    await fetch("/api/receipts/upload-file", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ filePath }),
+    });
+  }
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     setLoading(true);
     setError(null);
 
+    let uploadedFile: UploadedReceiptFile | null = null;
+
     try {
       const formData = new FormData(event.currentTarget);
-      const response = await fetch("/api/receipts/extract", {
-        method: "POST",
-        body: formData,
-      });
 
-      if (!response.ok) {
+      const file = formData.get("file");
+      const receiptType = formData.get("receiptType");
+
+      if (!(file instanceof File) || file.size === 0) {
+        throw new Error("File is required");
+      }
+
+      if (typeof receiptType !== "string" || !receiptType) {
+        throw new Error("Receipt type is required");
+      }
+
+      // Upload file (local or Vercel Blob depending on env)
+      uploadedFile = await uploadReceiptFileFromClient(file);
+
+      // Extract receipt using uploaded file URL
+      const extractResponse = await fetch(
+        "/api/receipts/extract",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            receiptType,
+            filePath: uploadedFile.filePath,
+            originalName: file.name,
+            generatedFileName: uploadedFile.generatedFileName,
+            publicFileUrl: uploadedFile.publicFileUrl,
+          }),
+        }
+      );
+
+      if (!extractResponse.ok) {
         throw new Error("Failed to extract receipt");
       }
-      const data: ExtractReceiptResponse = await response.json();
-      setPreview(data);
 
+      const data: ExtractReceiptResponse = await extractResponse.json();
+
+      setPreview(data);
       setResult(JSON.stringify(data, null, 2));
+
+      // Si después necesitas guardar el uploadedFile
+      // para el Save Receipt:
+      //
+      // setUploadedFile(uploadedFile);
+
     } catch (error) {
       console.error(error);
-      setError(error instanceof Error ? error.message : "Unknown error");
+
+      // Cleanup orphan file
+      if (uploadedFile?.filePath) {
+        try {
+          await deleteReceiptFileFromClient(
+            uploadedFile.filePath
+          );
+        } catch (deleteError) {
+          console.error(
+            "Failed to cleanup uploaded file",
+            deleteError
+          );
+        }
+      }
+
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Unknown error"
+      );
+
       toast.error("Failed to extract receipt");
     } finally {
       setLoading(false);

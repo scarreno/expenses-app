@@ -1,40 +1,96 @@
 import { NextRequest, NextResponse } from "next/server";
 import { processReceiptFile } from "@/app/services/process-receipt-file";
 
+type ExtractReceiptRequest = {
+  receiptType: string;
+  filePath: string;
+  generatedFileName: string;
+  publicFileUrl: string;
+  originalName: string;
+};
+
 export async function POST(request: NextRequest) {
   try {
-    const formData = await request.formData();
-    const file = formData.get("file");
-    const receiptType = formData.get("receiptType");
+    const body = (await request.json()) as Partial<ExtractReceiptRequest>;
 
-    if (typeof receiptType != "string" || !receiptType) {
+    const {
+      receiptType,
+      filePath,
+      generatedFileName,
+      publicFileUrl,
+      originalName
+    } = body;
+
+    if (typeof receiptType !== "string" || !receiptType) {
       return NextResponse.json(
         { error: "Receipt type is required" },
         { status: 400 }
       );
     }
-    if (!(file instanceof File)) {
-      return NextResponse.json({ error: "File is required" }, { status: 400 });
+
+    if (typeof filePath !== "string" || !filePath) {
+      return NextResponse.json(
+        { error: "filePath is required" },
+        { status: 400 }
+      );
     }
 
-    const result = await processReceiptFile(file, receiptType);
+    if (typeof originalName !== "string" || !originalName) {
+      return NextResponse.json(
+        { error: "originalName is required" },
+        { status: 400 }
+      );
+    }
+    if (
+      typeof generatedFileName !== "string" ||
+      !generatedFileName
+    ) {
+      return NextResponse.json(
+        { error: "generatedFileName is required" },
+        { status: 400 }
+      );
+    }
+
+    if (typeof publicFileUrl !== "string" || !publicFileUrl) {
+      return NextResponse.json(
+        { error: "publicFileUrl is required" },
+        { status: 400 }
+      );
+    }
+
+    const result = await processReceiptFile({
+      receiptType,
+      filePath,
+      generatedFileName,
+      publicFileUrl
+    });
 
     return NextResponse.json({
-      message: "Receipt uploaded succesfully!",
+      message: "Receipt processed successfully!",
       receiptType,
       file: {
-        originalName: file.name,
-        filePath: result.filePath,
-        generatedFileName: result.generatedFileName,
-        publicFileUrl: result.publicFileUrl,
+        filePath,
+        generatedFileName,
+        publicFileUrl,
+        originalName
       },
       receipt: result.extractedData,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Extract receipt error:", {
+      message: error instanceof Error ? error.message : "Unknown error",
+      stack: error instanceof Error ? error.stack : undefined,
+      cause: error instanceof Error ? error.cause : undefined,
+    });
+
     return NextResponse.json(
       {
         error: "Failed to process receipt",
+        detail:
+          process.env.NODE_ENV === "development" &&
+          error instanceof Error
+            ? error.message
+            : undefined,
       },
       { status: 500 }
     );
