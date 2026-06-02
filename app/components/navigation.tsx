@@ -21,6 +21,7 @@ export function Navigation() {
         <Link href="/">Upload</Link>
         <Link href="/receipts">Receipts</Link>
         <Link href="/dashboard">Dashboard</Link>
+        <Link href="/profile">Profile</Link>
         </nav>
     </div>
     
