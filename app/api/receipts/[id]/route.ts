@@ -3,6 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/app/lib/prisma'
 import { getCurrentUser } from "@/app/lib/auth-user";
+import { deleteReceiptFile } from "@/app/lib/storage";
 
 type RouteParams = {
   params: Promise<{
@@ -57,6 +58,15 @@ export async function DELETE(
         },
       }),
     ])
+
+
+    if (receipt.filePath) {
+      try {
+        await deleteReceiptFile(receipt.filePath);
+      } catch (error) {
+        console.error("Failed to delete receipt file:", error);
+      }
+    }
 
     return NextResponse.json({
       success: true,

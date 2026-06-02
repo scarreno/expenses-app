@@ -56,7 +56,7 @@ async function uploadToVercelBlob(
   const extension = file.name.split(".").pop();
   const generatedFileName = `${uuid()}.${extension}`;
 
-  const blob = await put(`uploads/${generatedFileName}`, file, {
+  const blob = await put(`receipts/${generatedFileName}`, file, {
     access: "public",
   });
 

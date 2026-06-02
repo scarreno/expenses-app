@@ -57,13 +57,13 @@ async function uploadToVercelBlob(
   const generatedFileName = `${crypto.randomUUID()}.${extension}`;
 
   const blob = await upload(
-    `receipts/tmp/${generatedFileName}`,
-    file,
-    {
-      access: "public",
-      handleUploadUrl: "/api/receipts/upload-file",
-    }
-  );
+  `receipts/${generatedFileName}`,
+  file,
+  {
+    access: "public",
+    handleUploadUrl: "/api/receipts/upload-file",
+  }
+);
 
   return {
     filePath: blob.pathname,
