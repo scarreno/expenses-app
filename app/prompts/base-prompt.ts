@@ -48,6 +48,9 @@ Field rules:
 - If a value is missing, unreadable, or cannot be safely inferred, return null.
 - Do not invent values.
 
+Never return receipt items with null or empty description.
+If a line cannot be identified as a product, do not include it in items.
+
 Expected structure:
 
 {

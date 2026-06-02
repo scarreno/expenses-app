@@ -33,16 +33,29 @@ export async function processReceiptFile({
   );
 
   const cleanJson = cleanJsonResponse(extracted);
-
-  const parsed = extractedReceiptSchema.parse(
-    JSON.parse(cleanJson)
-  );
+  const rawParsed = JSON.parse(cleanJson);
+  const normalized = normalizeExtractedReceipt(rawParsed);
+  const parsed = extractedReceiptSchema.parse(normalized);
 
   return {
     extractedData: parsed,
     filePath,
     generatedFileName,
     publicFileUrl,
+  };
+}
+
+function normalizeExtractedReceipt(raw: any) {
+  return {
+    ...raw,
+    items: Array.isArray(raw.items)
+      ? raw.items.filter((item: any) => {
+          return (
+            typeof item.description === "string" &&
+            item.description.trim().length > 0
+          );
+        })
+      : [],
   };
 }
 
