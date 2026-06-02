@@ -10,9 +10,17 @@ import {
 } from "@/components/ui/card";
 import { MonthlyExpensesChartClient } from "./client";
 import { MonthlyExpensesChartData } from "./types";
+import { getCurrentUserOrRedirect } from "@/app/lib/auth-user";
 
 export async function MonthlyExpensesChart() {
+
+  const user = await getCurrentUserOrRedirect();
+
+
   const receipts = await prisma.receipt.findMany({
+    where:{
+      userId: user.id
+    },
     orderBy: {
       createdAt: "desc",
     },

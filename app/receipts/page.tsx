@@ -4,18 +4,25 @@ import { prisma } from "@/app/lib/prisma";
 import { Button } from "@/components/ui/button";
 import { format, parseISO } from "date-fns";
 import { appSettings } from "@/lib/config/app-settings";
+import { getCurrentUserOrRedirect } from "@/app/lib/auth-user";
 
 const PAGE_SIZE = 8;
 
 export default async function ReceiptsPage({ searchParams } : 
       { searchParams: Promise<{page?: string}>; }) {
+
     const { page } = await searchParams;
 
     const currentPage = Number(page ?? "1");
     const skip = (currentPage - 1) * PAGE_SIZE;
 
+    const user = await getCurrentUserOrRedirect();
+
     const [receipts, totalReceipts] = await Promise.all([
       prisma.receipt.findMany({
+        where: {
+          userId: user.id
+        },
         orderBy: { createdAt: "desc" },
         skip,
         take: PAGE_SIZE,

@@ -7,7 +7,9 @@ export const metadata = {
   description: "Personal expenses app",
 };
 import { APP_VERSION } from "@/app/lib/app-version";
-
+import { SessionProvider } from "@/app/components/auth/session-provider";
+import { Navigation } from "@/app/components/navigation";
+import { SignOutButton } from "@/app/components/auth/sign-out-button";
 
 export default function RootLayout({
   children,
@@ -17,44 +19,41 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body>
-        <header
-          style={{
-            padding: "16px 32px",
-            borderBottom: "1px solid #333",
-            display: "flex",
-            gap: 24,
-            alignItems: "center",
-          }}
-        >
-          <strong>Expenses MVP</strong>
+          <SessionProvider>
+            <header
+              style={{
+                padding: "16px 32px",
+                borderBottom: "1px solid #333",
+                display: "flex",
+                gap: 24,
+                alignItems: "center",
+              }}
+            >
+              <strong>Expenses MVP</strong>
 
-          <nav
-            style={{
-              display: "flex",
-              gap: 16,
-            }}
-          >
-            <Link href="/">Upload</Link>
-            <Link href="/receipts">Receipts</Link>
-            <Link href="/dashboard">Dashboard</Link>
-          </nav>
-        </header>
+              <Navigation />
 
-        {children}
+              <div style={{ marginLeft: "auto" }}>
+                <SignOutButton />
+              </div>
+            </header>
 
-        <footer
-          style={{
-            marginTop: 32,
-            padding: 24,
-            borderTop: "1px solid #333",
-            textAlign: "center",
-            color: "#777",
-            fontSize: 14,
-          }}
-        >
-          Developed by Sergio © {new Date().getFullYear()} · v{APP_VERSION}
-        </footer>
-        <Toaster richColors position="top-right" />        
+            {children}
+
+            <footer
+              style={{
+                marginTop: 32,
+                padding: 24,
+                borderTop: "1px solid #333",
+                textAlign: "center",
+                color: "#777",
+                fontSize: 14,
+              }}
+            >
+              Developed by Sergio © {new Date().getFullYear()} · v{APP_VERSION}
+            </footer>
+            <Toaster richColors position="top-right" />        
+        </SessionProvider>
       </body>
     </html>
   );

@@ -1,9 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/app/lib/prisma";
 import { saveReceiptSchema } from "@/app/schemas/receipt-schema";
+import { getCurrentUser } from "@/app/lib/auth-user";
 
 export async function GET() {
+    
+  const currentUser = await getCurrentUser();
+
+  if (!currentUser) {
+    return Response.json(
+      { error: "Unauthorized" },
+      { status: 401 }
+    );
+  }
+
   const receipts = await prisma.receipt.findMany({
+    where: {
+      userId: currentUser.id
+    },
     include: {
       items: true,
     },
@@ -20,6 +34,16 @@ export async function POST(request: NextRequest) {
     const body = saveReceiptSchema.parse(
       await request.json()
     );
+
+    const currentUser = await getCurrentUser();
+
+      if (!currentUser) {
+        return Response.json(
+          { error: "Unauthorized" },
+          { status: 401 }
+        );
+      }
+
     const receipt = await prisma.receipt.create({
       data: {
         receiptType: body.receiptType,
@@ -36,6 +60,7 @@ export async function POST(request: NextRequest) {
         status: "PROCESSED",
         rawJson: body.receipt,
         publicFileUrl: body.file.publicFileUrl,
+        userId: currentUser.id,
         items: {
           create: body.receipt.items.map((item: any) => ({
             sku: item.sku,
