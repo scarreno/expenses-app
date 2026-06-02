@@ -1,30 +1,36 @@
 import { formatMoney } from "@/app/lib/format-money";
 import { DashboardCard } from "@/app/components/dashboard-card";
 import { prisma } from "@/app/lib/prisma";
+import { getCurrentUserOrRedirect } from "@/app/lib/auth-user";
 
 export async function DashboardReceiptSummary(){
-      const receipts = await prisma.receipt.findMany({
-        include: {
-          items: true,
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-      });
-    
-      const totalSpent = receipts.reduce(
-        (sum, receipt) => sum + (receipt.total ?? 0),
-        0
-      );
-    
-      const totalReceipts = receipts.length;
-    
-      const totalItems = receipts.reduce(
-        (sum, receipt) => sum + receipt.items.length,
-        0
-      );
-    
-      const averageReceipt = totalReceipts > 0 ? Math.round(totalSpent / totalReceipts) : 0;
+  const user = await getCurrentUserOrRedirect();
+
+  const receipts = await prisma.receipt.findMany({
+    where: {
+      userId: user.id
+    },
+    include: {
+      items: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  const totalSpent = receipts.reduce(
+    (sum, receipt) => sum + (receipt.total ?? 0),
+    0
+  );
+
+  const totalReceipts = receipts.length;
+
+  const totalItems = receipts.reduce(
+    (sum, receipt) => sum + receipt.items.length,
+    0
+  );
+
+  const averageReceipt = totalReceipts > 0 ? Math.round(totalSpent / totalReceipts) : 0;
 
     return (
         <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">

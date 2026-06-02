@@ -1,27 +1,25 @@
 import { prisma } from '@/app/lib/prisma'
-import { Prisma } from "@/app/generated/prisma/client";
 
 import { CategoryTotalsChartClient } from './client'
-import type { CategoryTotalsChartData } from './types'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-
+import { getCurrentUserOrRedirect } from "@/app/lib/auth-user";
 
 type Props = {
     selectedMonth: string;
 }
 export async function CategoryTotalsChart({ selectedMonth }: Props) {
 
+  const user = await getCurrentUserOrRedirect();
+
     const items = await prisma.receiptItem.findMany({
-        select: {
-            category: true,
-            totalPrice: true,
+      where: {
+        receipt: {
+          userId: user.id,
         },
+      },
+      select: {
+          category: true,
+          totalPrice: true,
+      },
     });
 
 

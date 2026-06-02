@@ -16,6 +16,7 @@ import { format, parseISO } from "date-fns";
 import { appSettings } from "@/lib/config/app-settings";
 import { DeleteReceiptButton } from "@/app/components/delete-receipt-button";
 import { IconChevronsLeft } from "@tabler/icons-react";
+import { getCurrentUserOrRedirect } from "@/app/lib/auth-user";
 
 export default async function ReceiptDetailPage({
   params,
@@ -24,13 +25,14 @@ export default async function ReceiptDetailPage({
 }) {
 
   const { id } = await params;
+  const user = await getCurrentUserOrRedirect();
 
   const receipt =
     await prisma.receipt.findUnique({
       where: {
         id,
+        userId: user.id
       },
-
       include: {
         items: true,
       },

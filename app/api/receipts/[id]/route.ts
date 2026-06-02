@@ -2,6 +2,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/app/lib/prisma'
+import { getCurrentUser } from "@/app/lib/auth-user";
 
 type RouteParams = {
   params: Promise<{
@@ -16,8 +17,30 @@ export async function DELETE(
   try {
     const { id: receiptId } = await params
 
+  const currentUser = await getCurrentUser();
+
+  if (!currentUser) {
+    return Response.json(
+      { error: "Unauthorized" },
+      { status: 401 }
+    );
+  }
     if (!receiptId) {
       throw Error("Receipt id is required");
+    }
+
+    const receipt = await prisma.receipt.findFirst({
+      where: {
+        id: receiptId,
+        userId: currentUser.id,
+      },
+    });
+
+    if (!receipt) {
+      return Response.json(
+        { error: "Receipt not found" },
+        { status: 404 }
+      );
     }
 
     await prisma.$transaction([
@@ -30,6 +53,7 @@ export async function DELETE(
       prisma.receipt.delete({
         where: {
           id: receiptId,
+          userId: currentUser.id
         },
       }),
     ])
