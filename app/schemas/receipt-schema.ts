@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const receiptItemSchema = z.object({
   sku: z.string().nullable(),
-  description: z.string(),
+  description: z.string().nullable().optional(),
   quantity: z.number().nullable(),
   unit: z.string().nullable(),
   unitPrice: z.number().int().nullable(),
