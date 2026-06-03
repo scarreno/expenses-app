@@ -10,6 +10,11 @@ import { APP_VERSION } from "@/app/lib/app-version";
 import { SessionProvider } from "@/app/components/auth/session-provider";
 import { Navigation } from "@/app/components/navigation";
 import { SignOutButton } from "@/app/components/auth/sign-out-button";
+import { Geist } from "next/font/google";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+
 
 export default function RootLayout({
   children,
@@ -17,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es">
+    <html lang="es" className={cn("dark font-sans", geist.variable)}>
       <body>
           <SessionProvider>
             <header

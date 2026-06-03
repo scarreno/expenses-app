@@ -4,7 +4,9 @@ import { marketRules } from "./market-rules";
 import { gasRules } from "./gas-rules";
 import { buildCategoryPromptSection } from "@/app/lib/receipt-categories";
 
-export function buildReceiptPrompt(receiptType: string) {
+export function buildReceiptPrompt(receiptType: string,
+    categories: string[]
+) {
   const rulesByType: Record<string, string> = {
     SUPERMARKET: supermarketRules,
     MARKET: marketRules,
@@ -14,6 +16,6 @@ export function buildReceiptPrompt(receiptType: string) {
   return `
     ${buildBasePrompt(receiptType)}
     ${rulesByType[receiptType] ?? ""}
-    ${buildCategoryPromptSection()}
+    ${buildCategoryPromptSection(categories)}
   `;
 }
