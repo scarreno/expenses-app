@@ -19,11 +19,13 @@ export const RECEIPT_CATEGORIES = [
 
 export type ReceiptCategory = (typeof RECEIPT_CATEGORIES)[number];
 
-export function buildCategoryPromptSection() {
+export function buildCategoryPromptSection(
+  categories: string[]
+) {
   return `
 Use only one of the following categories for each receipt item:
 
-${RECEIPT_CATEGORIES.map((category) => `- ${category}`).join("\n")}
+${categories.map((category) => `- ${category}`).join("\n")}
 
 Return the category value exactly as written.
 Do not translate category values.

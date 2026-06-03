@@ -4,6 +4,9 @@ import {
 } from "@/app/lib/receipt-extractor";
 
 import { extractedReceiptSchema } from "@/app/schemas/receipt-schema";
+import { getActiveCategoryCodes } from "@/app/lib/categories";
+import { getCurrentUser } from "@/app/lib/auth-user";
+
 
 type ProcessReceiptFileInput = {
   receiptType: string;
@@ -16,12 +19,15 @@ export async function processReceiptFile({
   receiptType,
   filePath,
   generatedFileName,
-  publicFileUrl
-}: ProcessReceiptFileInput) {
+  publicFileUrl,
+  userId,
+}: ProcessReceiptFileInput & { userId: string }) {
+
   const { buffer, contentType } = await getUploadedFileBuffer({
     filePath,
     publicFileUrl,
   });
+  const categories = await getActiveCategoryCodes(userId);
 
   const base64 = buffer.toString("base64");
 
@@ -29,7 +35,8 @@ export async function processReceiptFile({
     base64,
     contentType,
     generatedFileName,
-    receiptType
+    receiptType,
+    categories
   );
 
   const cleanJson = cleanJsonResponse(extracted);

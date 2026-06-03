@@ -39,3 +39,20 @@ export async function ensureUserDefaultCategories(userId: string) {
     })),
   });
 }
+
+
+export async function getActiveCategoryCodes(
+  userId: string
+): Promise<string[]> {
+  const categories = await prisma.category.findMany({
+    where: {
+      userId,
+      isActive: true,
+    },
+    orderBy: {
+      code: "asc",
+    },
+  });
+
+  return categories.map((category) => category.code);
+}

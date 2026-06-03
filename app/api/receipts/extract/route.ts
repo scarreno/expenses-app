@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { processReceiptFile } from "@/app/services/process-receipt-file";
+import { getCurrentUserOrRedirect } from "@/app/lib/auth-user";
 
 type ExtractReceiptRequest = {
   receiptType: string;
@@ -12,6 +13,7 @@ type ExtractReceiptRequest = {
 export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as Partial<ExtractReceiptRequest>;
+    const user = await getCurrentUserOrRedirect();
 
     const {
       receiptType,
@@ -62,7 +64,8 @@ export async function POST(request: NextRequest) {
       receiptType,
       filePath,
       generatedFileName,
-      publicFileUrl
+      publicFileUrl,
+      userId: user.id
     });
 
     return NextResponse.json({

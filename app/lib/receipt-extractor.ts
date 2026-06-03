@@ -13,11 +13,13 @@ export async function extractReceiptData(
   fileBase64: string,
   mimeType: string,
   fileName: string,
-  receiptType: string
+  receiptType: string,
+  categories: string[]
 ) {
   try {
-    console.log("Creating prompt");
-    const prompt = buildReceiptPrompt(receiptType);
+
+    console.log(`Creating prompt para , categorias`,);
+    const prompt = buildReceiptPrompt(receiptType, categories);
     console.log("Creating prompt - Ok");
     console.log(`prompt: ${prompt}`);
 
