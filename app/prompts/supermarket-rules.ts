@@ -87,6 +87,19 @@ Do not create items for lines such as:
 - PRECIO BAJOS
 - MI CLUB
 - RF PRECIO ANTES AHORRO
+- RIF LEVE N
+- DESCUENTO
+
+Discount lines are not products.
+
+Examples:
+- RIF LEVE N
+- DESCUENTO
+- AHORRO
+- PROMOCION
+- PROMOCIÓN
+
+Do not return them as items.
 
 However, totals, taxes and payment information should still be extracted into the main receipt fields.
 `;
