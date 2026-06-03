@@ -22,6 +22,7 @@ export function Navigation() {
         <Link href="/receipts">Receipts</Link>
         <Link href="/dashboard">Dashboard</Link>
         <Link href="/profile">Profile</Link>
+        <Link href="/categories">Categories</Link>
         </nav>
     </div>
     
