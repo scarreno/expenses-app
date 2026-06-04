@@ -17,6 +17,7 @@ export const DEFAULT_CATEGORIES = [
   { code: "TRANSPORT" },
   { code: "OTHER" },
   { code: "UNCATEGORIZED" },
+  { code: "FUEL" }
 ] as const;
 
 
@@ -55,4 +56,43 @@ export async function getActiveCategoryCodes(
   });
 
   return categories.map((category) => category.code);
+}
+
+export async function getActiveCategoriesForUser(userId: string) {
+  await ensureUserDefaultCategories(userId);
+
+  return prisma.category.findMany({
+    where: {
+      userId,
+      isActive: true,
+    },
+    orderBy: [{ isDefault: "desc" }, { code: "asc" }],
+  });
+}
+
+export async function getDefaultCategoriesForClassification(userId: string) {
+  await ensureUserDefaultCategories(userId);
+
+  return prisma.category.findMany({
+    where: {
+      userId,
+      isDefault: true,
+      isActive: true,
+    },
+    orderBy: {
+      code: "asc",
+    },
+  });
+}
+
+export async function getAvailableCategoriesForPreview(userId: string) {
+  await ensureUserDefaultCategories(userId);
+
+  return prisma.category.findMany({
+    where: {
+      userId,
+      isActive: true,
+    },
+    orderBy: [{ isDefault: "desc" }, { code: "asc" }],
+  });
 }

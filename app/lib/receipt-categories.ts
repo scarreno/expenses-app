@@ -1,3 +1,5 @@
+import { CategoryForPrompt } from "@/app/types/category-for-prompt";
+
 export const RECEIPT_CATEGORIES = [
   "MEAT",
   "FRUITS_AND_VEGETABLES",
@@ -15,17 +17,26 @@ export const RECEIPT_CATEGORIES = [
   "TRANSPORT",
   "OTHER",
   "UNCATEGORIZED",
+  "FUEL"
 ] as const;
 
 export type ReceiptCategory = (typeof RECEIPT_CATEGORIES)[number];
 
 export function buildCategoryPromptSection(
-  categories: string[]
+  categories: CategoryForPrompt[]
 ) {
   return `
 Use only one of the following categories for each receipt item:
 
-${categories.map((category) => `- ${category}`).join("\n")}
+${categories
+  .map((category) => {
+    const label = category.displayName
+      ? ` (${category.displayName})`
+      : "";
+
+    return `- ${category.code}${label}`;
+  })
+  .join("\n")}
 
 Return the category value exactly as written.
 Do not translate category values.

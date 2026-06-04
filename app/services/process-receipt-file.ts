@@ -4,9 +4,42 @@ import {
 } from "@/app/lib/receipt-extractor";
 
 import { extractedReceiptSchema } from "@/app/schemas/receipt-schema";
-import { getActiveCategoryCodes } from "@/app/lib/categories";
-import { getCurrentUser } from "@/app/lib/auth-user";
+import { getDefaultCategoriesForClassification } from "@/app/lib/categories";
 
+const NON_PRODUCT_DESCRIPTIONS = [
+  "AHORRO",
+  "CODIGO",
+  "SUBTOTAL",
+  "TOTAL",
+  "TOTAL AFECTO",
+  "TOTAL EXENTO",
+  "IVA",
+  "MEDIO DE PAGO",
+  "PRECIO BAJOS",
+  "MI CLUB",
+  "RF PRECIO ANTES AHORRO",
+  "RIF LEVE N",
+  "DESCUENTO",
+  "PROMOCION",
+  "PROMOCIÓN",
+];
+
+function isNonProductDescription(description: string) {
+  const normalized = description
+    .trim()
+    .toUpperCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+  return NON_PRODUCT_DESCRIPTIONS.some((term) =>
+    normalized.includes(
+      term
+        .toUpperCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+    )
+  );
+}
 
 type ProcessReceiptFileInput = {
   receiptType: string;
@@ -27,7 +60,7 @@ export async function processReceiptFile({
     filePath,
     publicFileUrl,
   });
-  const categories = await getActiveCategoryCodes(userId);
+  const categories = await getDefaultCategoriesForClassification(userId);
 
   const base64 = buffer.toString("base64");
 
@@ -52,16 +85,39 @@ export async function processReceiptFile({
   };
 }
 
+function isQuantityPricePattern(description: string) {
+  const normalized = description.trim().toUpperCase();
+
+  return /^\d+\s*X\s*[\d.,]+$/.test(normalized);
+}
+
 function normalizeExtractedReceipt(raw: any) {
   return {
     ...raw,
     items: Array.isArray(raw.items)
-      ? raw.items.filter((item: any) => {
-          return (
-            typeof item.description === "string" &&
-            item.description.trim().length > 0
-          );
+      ? raw.items
+          .filter((item: any) => {
+          if (
+            typeof item.description !== "string" ||
+            item.description.trim().length === 0
+          ) {
+            return false;
+          }
+
+          if (isNonProductDescription(item.description)) {
+            return false;
+          }
+
+          if (isQuantityPricePattern(item.description)) {
+            return false;
+          }
+
+          return true;
         })
+          .map((item: any) => ({
+            ...item,
+            description: item.description.trim(),
+          }))
       : [],
   };
 }
