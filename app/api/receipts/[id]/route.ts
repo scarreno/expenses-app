@@ -84,3 +84,100 @@ export async function DELETE(
     )
   }
 }
+
+
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+      return Response.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+    const body = await request.json();
+
+    const existingReceipt =
+      await prisma.receipt.findFirst({
+        where: {
+          id,
+          userId: currentUser.id,
+        },
+      });
+
+    if (!existingReceipt) {
+      return NextResponse.json(
+        { error: "Receipt not found" },
+        { status: 404 }
+      );
+    }
+
+    await prisma.$transaction(async (tx) => {
+      await tx.receipt.update({
+        where: {
+          id,
+        },
+        data: {
+          store: body.receipt.store,
+          branch: body.receipt.branch,
+          purchaseDate: body.receipt.purchaseDate,
+          purchaseTime: body.receipt.purchaseTime,
+          paymentMethod: body.receipt.paymentMethod,
+          subtotal: body.receipt.subtotal,
+          tax: body.receipt.tax,
+          total: body.receipt.total,
+          receiptType: body.receiptType,
+        },
+      });
+
+      await tx.receiptItem.deleteMany({
+        where: {
+          receiptId: id,
+        },
+      });
+
+      await tx.receiptItem.createMany({
+        data: body.receipt.items.map(
+          (item: {
+            sku?: string | null;
+            description: string;
+            quantity?: number | null;
+            unit?: string | null;
+            unitPrice?: number | null;
+            totalPrice?: number | null;
+            category?: string | null;
+          }) => ({
+            receiptId: id,
+            sku: item.sku,
+            description: item.description,
+            quantity: item.quantity,
+            unit: item.unit,
+            unitPrice: item.unitPrice,
+            totalPrice: item.totalPrice,
+            category: item.category,
+          })
+        ),
+      });
+    });
+
+    return NextResponse.json({
+      success: true,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return NextResponse.json(
+      {
+        error: "Failed to update receipt",
+      },
+      {
+        status: 500,
+      }
+    );
+  }
+}

@@ -99,15 +99,19 @@ export default async function ReceiptsPage({ searchParams } :
 
             </div>
 
-            <Link
-              href={`/receipts/${receipt.id}`}
-              style={{
-                display: "inline-block",
-                marginTop: 16,
-              }}
-            >
-              View detail
-            </Link>
+            <div className="mt-4 flex gap-2">
+            <Button asChild variant="outline">
+              <Link href={`/receipts/${receipt.id}`}>
+                View Detail
+              </Link>
+            </Button>
+
+            <Button asChild>
+              <Link href={`/receipts/${receipt.id}/edit`}>
+                Edit Receipt
+              </Link>
+            </Button>
+          </div>
           </article>
         ))}
       </div>
