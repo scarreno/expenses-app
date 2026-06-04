@@ -1,0 +1,45 @@
+import { notFound } from "next/navigation";
+import { getCategoryLabel } from "@/app/lib/category-labels";
+import { prisma } from "@/app/lib/prisma";
+import { getCurrentUserOrRedirect } from "@/app/lib/auth-user";
+import { getAvailableCategoriesForPreview } from "@/app/lib/categories";
+import { EditReceiptClient } from "@/app/components/edit-receipt-client";
+
+export default async function ReceiptEditPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const user = await getCurrentUserOrRedirect();
+
+  const receipt = await prisma.receipt.findFirst({
+    where: {
+      id,
+      userId: user.id,
+    },
+    include: {
+      items: {
+        orderBy: {
+          createdAt: "asc",
+        },
+      },
+    },
+  });
+
+  if (!receipt) {
+    notFound();
+  }
+
+  const categories = await getAvailableCategoriesForPreview(user.id);
+  const categoryOptions = categories.map((category) => ({
+      code: category.code,
+      label: getCategoryLabel(category, "en"),
+    }));
+  return (
+    <EditReceiptClient
+      receipt={receipt}
+      categories={categoryOptions}
+    />
+  );
+}
