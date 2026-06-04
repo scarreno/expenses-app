@@ -17,9 +17,26 @@ import {
   deleteReceiptFileFromClient,
 } from "@/app/lib/client-storage";
 import { CategoryOption } from "@/app/types/category-option";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 type Props = {
     categories: CategoryOption[];   
+};
+
+type UploadedReceiptFile = {
+    filePath: string;
+    generatedFileName: string;
+    publicFileUrl: string;
 };
 
 export  function HomePageClient({ categories }: Props) {
@@ -28,34 +45,18 @@ export  function HomePageClient({ categories }: Props) {
   const [preview, setPreview] = useState<ExtractReceiptResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-
+  const [uploadedFile, setUploadedFile] = useState<UploadedReceiptFile | null>(null);
   
 
   const router = useRouter();
-  type UploadedReceiptFile = {
-    filePath: string;
-    generatedFileName: string;
-    publicFileUrl: string;
-  };
-
-
-  async function deleteUploadedReceiptFile(filePath: string) {
-    await fetch("/api/receipts/upload-file", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ filePath }),
-    });
-  }
-
+  
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     setLoading(true);
     setError(null);
 
-    let uploadedFile: UploadedReceiptFile | null = null;
+    let uploadedReceiptFile: UploadedReceiptFile | null = null;
 
     try {
       const formData = new FormData(event.currentTarget);
@@ -72,7 +73,9 @@ export  function HomePageClient({ categories }: Props) {
       }
 
       // Upload file (local or Vercel Blob depending on env)
-      uploadedFile = await uploadReceiptFileFromClient(file);
+      uploadedReceiptFile = await uploadReceiptFileFromClient(file);
+
+      setUploadedFile(uploadedReceiptFile);
 
       // Extract receipt using uploaded file URL
       const extractResponse = await fetch(
@@ -84,10 +87,10 @@ export  function HomePageClient({ categories }: Props) {
           },
           body: JSON.stringify({
             receiptType,
-            filePath: uploadedFile.filePath,
+            filePath: uploadedReceiptFile.filePath,
             originalName: file.name,
-            generatedFileName: uploadedFile.generatedFileName,
-            publicFileUrl: uploadedFile.publicFileUrl,
+            generatedFileName: uploadedReceiptFile.generatedFileName,
+            publicFileUrl: uploadedReceiptFile.publicFileUrl,
           }),
         }
       );
@@ -110,10 +113,10 @@ export  function HomePageClient({ categories }: Props) {
       console.error(error);
 
       // Cleanup orphan file
-      if (uploadedFile?.filePath) {
+      if (uploadedReceiptFile?.filePath) {
         try {
           await deleteReceiptFileFromClient(
-            uploadedFile.filePath
+            uploadedReceiptFile.filePath
           );
         } catch (deleteError) {
           console.error(
@@ -133,6 +136,11 @@ export  function HomePageClient({ categories }: Props) {
     } finally {
       setLoading(false);
     }
+  }
+
+  function resetPreviewState() {
+    setPreview(null);
+    setUploadedFile(null);
   }
 
   async function handleSave() {
@@ -162,6 +170,7 @@ export  function HomePageClient({ categories }: Props) {
 
       const savedReceipt = await response.json();
       toast.success("Receipt saved successfully");
+      resetPreviewState();
       console.log(savedReceipt);
       router.push("/receipts");
 
@@ -284,6 +293,23 @@ function updateItemField(
     });
   }
 
+  async function handleCancelPreview() {
+  try {
+    if (uploadedFile?.filePath) {
+      await deleteReceiptFileFromClient(
+        uploadedFile.filePath
+      );
+    }
+  } catch (error) {
+    console.error(
+      "Failed to delete uploaded file",
+      error
+    );
+  }
+
+  resetPreviewState();
+}
+
 return (
   <main className="p-8">
     {!preview && (
@@ -307,13 +333,38 @@ return (
             </p>
           </div>
 
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setPreview(null)}
-          >
-            Upload another receipt
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+              >
+                Upload another receipt
+              </Button>
+            </AlertDialogTrigger>
+
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  Discard receipt preview?
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will delete the uploaded file and discard all extracted data.
+                  This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+
+              <AlertDialogFooter>
+                <AlertDialogCancel>
+                  Keep reviewing
+                </AlertDialogCancel>
+
+                <AlertDialogAction onClick={handleCancelPreview}>
+                  Discard
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
 
         <section className="grid gap-6 lg:grid-cols-[25%_75%]">
@@ -342,6 +393,7 @@ return (
               addItem={addItem}
               handleSave={handleSave}
               saving={saving}
+              handleCancelPreview={handleCancelPreview}
             />
           </div>
         </section>
