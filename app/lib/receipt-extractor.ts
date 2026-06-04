@@ -1,5 +1,6 @@
 import { openai } from "@/app/lib/openai";
 import { buildReceiptPrompt } from "@/app/prompts/receipt-prompt-builder";
+import { CategoryForPrompt } from "@/app/types/category-for-prompt";
 
 export function cleanJsonResponse(value: string) {
   return value
@@ -14,7 +15,7 @@ export async function extractReceiptData(
   mimeType: string,
   fileName: string,
   receiptType: string,
-  categories: string[]
+  categories: CategoryForPrompt[]
 ) {
   try {
 

@@ -20,6 +20,7 @@ export const CATEGORY_LABELS = {
     TRANSPORT: "Transport",
     OTHER: "Other",
     UNCATEGORIZED: "Uncategorized",
+    FUEL: "Fuel",
   },
 
   es: {
@@ -39,6 +40,7 @@ export const CATEGORY_LABELS = {
     TRANSPORT: "Transporte",
     OTHER: "Otros",
     UNCATEGORIZED: "Sin Categoría",
+    FUEL: "Gasolina",
   },
 } as const;
 
