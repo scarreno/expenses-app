@@ -33,3 +33,13 @@ export type ExtractReceiptResponse = {
 
   receipt: ExtractedReceipt;
 };
+
+export type ExtractedReceiptItem = {
+  sku?: string;
+  description: string;
+  quantity?: number;
+  unit?: string;
+  unitPrice?: number;
+  totalPrice?: number;
+  category?: string;
+};

@@ -3,12 +3,15 @@ import { MonthlyExpensesChart } from "@/app/components/dashboard/monthly-expense
 import { Button } from "@/components/ui/button";
 import { DashboardReceiptSummary } from "@/app/components/dashboard/dashboard-receipts-summary";
 import { CategoryTotalsChart } from "@/app/components/dashboard/category-totals-chart/index";
+import { getCurrentUserOrRedirect } from "@/app/lib/auth-user";
+import { getUserSettings } from "@/app/lib/settings/get-user-settings";
 
 export default async function DashboardPage({ searchParams }: {
     searchParams: Promise<{ month?: string }>;
   }) {
 
-  const { month = "all" } = await searchParams;
+  const user = await getCurrentUserOrRedirect();
+  const settings = await getUserSettings(user.id);
 
   return (
     <main className="mx-auto max-w-7xl p-8">
@@ -28,9 +31,12 @@ export default async function DashboardPage({ searchParams }: {
         </Button>
       </div>
 
-      <DashboardReceiptSummary/>      
-      <CategoryTotalsChart selectedMonth={month}/>
-      <MonthlyExpensesChart/>
+      <DashboardReceiptSummary settings={settings} userId={user.id}/>      
+      <CategoryTotalsChart 
+        settings={settings}
+        userId={user.id}
+        />
+      <MonthlyExpensesChart userId={user.id}/>
 
         
     </main>

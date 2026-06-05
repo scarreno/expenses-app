@@ -1,9 +1,7 @@
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
+  CardHeader
 } from "@/components/ui/card";
 import { formatMoney }
 from "@/app/lib/format-money";
@@ -20,13 +18,14 @@ import {
 } from "@/components/ui/popover";
 import { parseISO } from "date-fns";
 import { formatDisplayDate } from "@/lib/utils/date";
-import { appSettings } from "@/lib/config/app-settings";
+import { UserSettings } from "@/app/types/user-settings-types";
 
 type Props = {
     store: string | null;
     total: number | null;
     editable?: boolean;
     purchaseDate: string | null;
+    settings: UserSettings,
     updateReceiptField?: (
         field: "store" | "purchaseDate",
         value: string
@@ -39,6 +38,7 @@ export function ReceiptItemsSummary({
   total,
   editable,
   purchaseDate,
+  settings,
   updateReceiptField
 }: Props) {
 
@@ -88,7 +88,7 @@ export function ReceiptItemsSummary({
                     >
                     <CalendarIcon className="mr-2 size-4" />
                     {selectedDate
-                        ? formatDisplayDate(selectedDate)
+                        ? formatDisplayDate(selectedDate, settings)
                         : "Select date"}
                     </Button>
                 </PopoverTrigger>
@@ -107,7 +107,7 @@ export function ReceiptItemsSummary({
 
                         updateReceiptField?.(
                         "purchaseDate",
-                        format(date, appSettings.date.storageFormat)
+                        format(date, settings.storageFormat)
                         );
                     }}
                     />
@@ -126,7 +126,7 @@ export function ReceiptItemsSummary({
 
       <CardContent>
         <div className="text-4xl font-bold tracking-tight">
-          {formatMoney(total)}
+          {formatMoney(total, settings)}
         </div>
 
         <p className="mt-2 text-sm text-muted-foreground">

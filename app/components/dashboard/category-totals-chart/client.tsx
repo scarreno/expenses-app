@@ -1,6 +1,5 @@
 'use client'
 import { useState } from "react";
-import { useRouter } from 'next/navigation'
 import {
   Bar,
   BarChart,
@@ -18,6 +17,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { formatMoney }
+from "@/app/lib/format-money";
+import { UserSettings } from "@/app/types/user-settings-types";
 
 type ChartData = {
   category: string;
@@ -27,31 +29,23 @@ type ChartData = {
 type Props = {
   initialData: ChartData[];
   months: string[];
+  settings: UserSettings;
 };
 
-const formatCLP = (value: number) =>
-  new Intl.NumberFormat("es-CL", {
-    style: "currency",
-    currency: "CLP",
-    maximumFractionDigits: 0,
-  }).format(value);
 
 export function CategoryTotalsChartClient({
     initialData,
     months,
+    settings
     }: Props) {
 
     const [data, setData] = useState(initialData);
     const [selectedMonth, setSelectedMonth] = useState("all");
-    const [loading, setLoading] = useState(false);
     
-    const router = useRouter();
-
     async function handleMonthChange(value: string) {
       setSelectedMonth(value);
 
-      setLoading(true);
-
+      
       try {
         const response = await fetch(
           `/api/dashboard/category-totals?month=${value}`
@@ -61,7 +55,7 @@ export function CategoryTotalsChartClient({
 
         setData(result);
       } finally {
-        setLoading(false);
+
       }
     }
     
@@ -105,8 +99,16 @@ export function CategoryTotalsChartClient({
             <BarChart data={data}>
               <CartesianGrid vertical={false} />
               <XAxis dataKey="category" />
-              <YAxis tickFormatter={formatCLP} />
-              <Tooltip formatter={(value) => formatCLP(Number(value))} />
+              <YAxis
+                tickFormatter={(value) =>
+                  formatMoney(Number(value), settings)
+                }
+              />
+              <Tooltip
+                formatter={(value) =>
+                  formatMoney(Number(value), settings)
+                }
+              />
               <Bar dataKey="total" fill="#22c55e" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>

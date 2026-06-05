@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { SignOutButton } from "@/app/components/auth/sign-out-button";
@@ -23,15 +22,20 @@ export function Navigation() {
         <Link href="/dashboard">Dashboard</Link>
         <Link href="/categories">Categories</Link>
         <Link href="/profile">Profile</Link>
+        <Link href="/settings">Settings</Link>
       </nav>
 
       <div className="ml-auto flex items-center gap-3">
         {userImage ? (
-          <img
-            src={userImage}
-            alt={userName}
-            className="h-8 w-8 rounded-full border"
-          />
+            <>
+            {/* User avatar */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={userImage}
+              alt={userName}
+              className="h-8 w-8 rounded-full border"
+            />
+          </>
         ) : (
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-medium text-primary-foreground">
             {userName.charAt(0).toUpperCase()}

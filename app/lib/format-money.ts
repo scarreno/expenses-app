@@ -1,7 +1,9 @@
-export function formatMoney(
-  value: number | null | undefined
-) {
+import { UserSettings } from "@/app/types/user-settings-types";
 
+export function formatMoney(
+  value: number | null | undefined,
+  settings: UserSettings
+) {
   if (
     value === null ||
     value === undefined
@@ -10,10 +12,10 @@ export function formatMoney(
   }
 
   return new Intl.NumberFormat(
-    "es-CL",
+    settings.currencyLocale,
     {
       style: "currency",
-      currency: "CLP",
+      currency: settings.currencyCode,
       minimumFractionDigits: 0,
     }
   ).format(value);

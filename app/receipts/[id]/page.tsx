@@ -12,8 +12,8 @@ import { ReceiptItemsTable }
 from "@/app/components/receipt-items-table";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { format, parseISO } from "date-fns";
-import { appSettings } from "@/lib/config/app-settings";
+import { formatDisplayDate } from "@/lib/utils/date";
+import { getUserSettings } from "@/app/lib/settings/get-user-settings";
 import { DeleteReceiptButton } from "@/app/components/delete-receipt-button";
 import { IconChevronsLeft } from "@tabler/icons-react";
 import { getCurrentUserOrRedirect } from "@/app/lib/auth-user";
@@ -26,6 +26,7 @@ export default async function ReceiptDetailPage({
 
   const { id } = await params;
   const user = await getCurrentUserOrRedirect();
+  const settings = await getUserSettings(user.id);
 
   const receipt =
     await prisma.receipt.findUnique({
@@ -77,15 +78,17 @@ export default async function ReceiptDetailPage({
           total={receipt.total}
             purchaseDate={
             receipt.purchaseDate
-              ? format(parseISO(receipt.purchaseDate), appSettings.date.displayFormat)
+              ? formatDisplayDate(receipt.purchaseDate, settings)
               : null
           }
+        settings={settings}
         />
 
         <div className="overflow-x-auto">
           <ReceiptItemsTable
             items={receipt.items}
             readonly
+            settings={settings}
           />
         </div>
       </div>

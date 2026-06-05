@@ -91,6 +91,7 @@ function isQuantityPricePattern(description: string) {
   return /^\d+\s*X\s*[\d.,]+$/.test(normalized);
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 function normalizeExtractedReceipt(raw: any) {
   return {
     ...raw,
@@ -121,6 +122,7 @@ function normalizeExtractedReceipt(raw: any) {
       : [],
   };
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 async function getUploadedFileBuffer({
   filePath,

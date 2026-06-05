@@ -1,5 +1,4 @@
 // app/profile/page.tsx
-import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCurrentUserOrRedirect } from "@/app/lib/auth-user";
 

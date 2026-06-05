@@ -4,6 +4,7 @@ import { prisma } from "@/app/lib/prisma";
 import { getCurrentUserOrRedirect } from "@/app/lib/auth-user";
 import { getAvailableCategoriesForPreview } from "@/app/lib/categories";
 import { EditReceiptClient } from "@/app/components/edit-receipt-client";
+import { getUserSettings } from "@/app/lib/settings/get-user-settings";
 
 export default async function ReceiptEditPage({
   params,
@@ -12,7 +13,7 @@ export default async function ReceiptEditPage({
 }) {
   const { id } = await params;
   const user = await getCurrentUserOrRedirect();
-
+  const settings = await getUserSettings(user.id);
   const receipt = await prisma.receipt.findFirst({
     where: {
       id,
@@ -40,6 +41,8 @@ export default async function ReceiptEditPage({
     <EditReceiptClient
       receipt={receipt}
       categories={categoryOptions}
+      settings={settings}
+
     />
   );
 }

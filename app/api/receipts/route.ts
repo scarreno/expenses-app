@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/app/lib/prisma";
 import { saveReceiptSchema } from "@/app/schemas/receipt-schema";
 import { getCurrentUser } from "@/app/lib/auth-user";
-
 export async function GET() {
     
   const currentUser = await getCurrentUser();
@@ -62,14 +61,14 @@ export async function POST(request: NextRequest) {
         publicFileUrl: body.file.publicFileUrl,
         userId: currentUser.id,
         items: {
-          create: body.receipt.items.map((item: any) => ({
+          create: body.receipt.items.map((item) => ({
             sku: item.sku,
             description: item.description,
             quantity: item.quantity,
             unit: item.unit,
             unitPrice: item.unitPrice,
             totalPrice: item.totalPrice,
-            category: item.category
+            category: item.category,
           })),
         },
       },
