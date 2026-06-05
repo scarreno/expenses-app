@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Toaster } from "sonner";
 import "./globals.css";
 
@@ -9,7 +8,6 @@ export const metadata = {
 import { APP_VERSION } from "@/app/lib/app-version";
 import { SessionProvider } from "@/app/components/auth/session-provider";
 import { Navigation } from "@/app/components/navigation";
-import { SignOutButton } from "@/app/components/auth/sign-out-button";
 import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
 
@@ -25,23 +23,11 @@ export default function RootLayout({
     <html lang="es" className={cn("dark font-sans", geist.variable)}>
       <body>
           <SessionProvider>
-            <header
-              style={{
-                padding: "16px 32px",
-                borderBottom: "1px solid #333",
-                display: "flex",
-                gap: 24,
-                alignItems: "center",
-              }}
-            >
-              <strong>Expenses MVP</strong>
+          <header className="flex items-center gap-6 border-b border-border px-8 py-4">
+            <strong className="text-lg font-semibold">Expenses MVP</strong>
 
-              <Navigation />
-
-              <div style={{ marginLeft: "auto" }}>
-                <SignOutButton />
-              </div>
-            </header>
+            <Navigation />
+          </header>
 
             {children}
 
