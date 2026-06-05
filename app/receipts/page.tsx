@@ -2,8 +2,8 @@ import Link from "next/link";
 import { formatMoney } from "@/app/lib/format-money";
 import { prisma } from "@/app/lib/prisma";
 import { Button } from "@/components/ui/button";
-import { format, parseISO } from "date-fns";
-import { appSettings } from "@/lib/config/app-settings";
+import { formatDisplayDate } from "@/lib/utils/date";
+import { getUserSettings } from "@/app/lib/settings/get-user-settings";
 import { getCurrentUserOrRedirect } from "@/app/lib/auth-user";
 
 const PAGE_SIZE = 8;
@@ -17,6 +17,7 @@ export default async function ReceiptsPage({ searchParams } :
     const skip = (currentPage - 1) * PAGE_SIZE;
 
     const user = await getCurrentUserOrRedirect();
+    const settings = await getUserSettings(user.id);
 
     const [receipts, totalReceipts] = await Promise.all([
       prisma.receipt.findMany({
@@ -76,7 +77,7 @@ export default async function ReceiptsPage({ searchParams } :
                 marginTop: 8,
               }}
             >
-              {formatMoney(receipt.total)}
+              {formatMoney(receipt.total, settings)}
             </div>
 
             <div className="mt-4 space-y-2 text-sm text-muted-foreground">
@@ -93,7 +94,7 @@ export default async function ReceiptsPage({ searchParams } :
                   Purchase Date:
                 </span>{" "}
                 {receipt.purchaseDate
-                  ?  format(parseISO(receipt.purchaseDate), appSettings.date.displayFormat)
+                  ?  formatDisplayDate(receipt.purchaseDate, settings)
                   : "Unknown"}
               </div>
 

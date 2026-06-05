@@ -21,7 +21,6 @@ import {
   AlertTitle,
 } from "@/components/ui/alert";
 
-import { Info } from "lucide-react";
 
 type Props = {
   handleSubmit: (event: React.SubmitEvent<HTMLFormElement>) => void;

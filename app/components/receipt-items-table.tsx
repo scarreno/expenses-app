@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { UserSettings } from "@/app/types/user-settings-types";
 
 type ReceiptCategoryOption = {
   code: string;
@@ -19,6 +20,7 @@ type Props = {
   items: ReceiptItem[];
   readonly: boolean;
   categories?: ReceiptCategoryOption[];
+  settings: UserSettings;
 
   updateItemField?: (
     index: number,
@@ -35,6 +37,7 @@ export function ReceiptItemsTable({
   removeItem,
   readonly,
   categories = [],
+  settings
 }: Props) {
   return (
     <table className="min-w-[1000px] w-full table-fixed text-sm">
@@ -155,7 +158,7 @@ export function ReceiptItemsTable({
 
             <td className="px-3 py-2 text-right">
               {readonly ? (
-                <div>{formatMoney(item.unitPrice)}</div>
+                <div>{formatMoney(item.unitPrice, settings)}</div>
               ) : (
                 <div>
                   <Input
@@ -172,14 +175,14 @@ export function ReceiptItemsTable({
                   />
 
                   <div className="mt-1 text-xs text-muted-foreground">
-                    {formatMoney(item.unitPrice)}
+                    {formatMoney(item.unitPrice, settings)}
                   </div>
                 </div>
               )}
             </td>
 
             <td className="px-3 py-2 text-right align-middle font-semibold">
-              {formatMoney(item.totalPrice)}
+              {formatMoney(item.totalPrice, settings)}
             </td>
 
             {!readonly && (

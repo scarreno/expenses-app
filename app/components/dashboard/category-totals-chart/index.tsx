@@ -1,19 +1,18 @@
 import { prisma } from '@/app/lib/prisma'
 
 import { CategoryTotalsChartClient } from './client'
-import { getCurrentUserOrRedirect } from "@/app/lib/auth-user";
+import { UserSettings } from "@/app/types/user-settings-types";
 
 type Props = {
-    selectedMonth: string;
+    settings: UserSettings;
+    userId: string;
 }
-export async function CategoryTotalsChart({ selectedMonth }: Props) {
-
-  const user = await getCurrentUserOrRedirect();
+export async function CategoryTotalsChart({ settings, userId }: Props) {
 
     const items = await prisma.receiptItem.findMany({
       where: {
         receipt: {
-          userId: user.id,
+          userId: userId,
         },
       },
       select: {
@@ -73,6 +72,7 @@ export async function CategoryTotalsChart({ selectedMonth }: Props) {
       <CategoryTotalsChartClient 
         initialData={data}
         months={months}
+        settings={settings}
       />
     </section>
   );

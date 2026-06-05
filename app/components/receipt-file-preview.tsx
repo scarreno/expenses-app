@@ -17,11 +17,15 @@ export function ReceiptFilePreview({ fileUrl }: Props) {
           className="h-[850px] w-full rounded-lg border border-zinc-800 bg-zinc-900"
         />
       ) : (
-        <img
+          <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
           src={fileUrl}
           alt="Receipt"
           className="max-h-[850px] w-full rounded-lg border border-zinc-800 object-contain"
-        />
+          />
+        </>
+     
       )}
     </div>
   );

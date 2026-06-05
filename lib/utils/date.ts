@@ -1,9 +1,11 @@
-// lib/utils/date.ts
-
 import { format, parseISO } from "date-fns";
-import { appSettings } from "@/lib/config/app-settings";
+import type { UserSettings } from "@/app/types/user-settings-types";
+import { defaultUserSettings } from "@/app/lib/settings/default-user-settings";
 
-export function formatDisplayDate(date: string | Date) {
+export function formatDisplayDate(
+  date: string | Date,
+  settings?: UserSettings
+) {
   const parsed =
     typeof date === "string"
       ? parseISO(date)
@@ -11,6 +13,7 @@ export function formatDisplayDate(date: string | Date) {
 
   return format(
     parsed,
-    appSettings.date.displayFormat
+    settings?.dateFormat ??
+      defaultUserSettings.dateFormat
   );
 }

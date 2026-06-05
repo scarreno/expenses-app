@@ -28,9 +28,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { UserSettings } from "@/app/types/user-settings-types";
 
 type Props = {
     categories: CategoryOption[];   
+    settings: UserSettings;
 };
 
 type UploadedReceiptFile = {
@@ -39,8 +41,7 @@ type UploadedReceiptFile = {
     publicFileUrl: string;
 };
 
-export  function HomePageClient({ categories }: Props) {
-  const [result, setResult] = useState("");
+export  function HomePageClient({ categories, settings }: Props) {
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState<ExtractReceiptResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -102,7 +103,6 @@ export  function HomePageClient({ categories }: Props) {
       const data: ExtractReceiptResponse = await extractResponse.json();
 
       setPreview(data);
-      setResult(JSON.stringify(data, null, 2));
 
       // Si después necesitas guardar el uploadedFile
       // para el Save Receipt:
@@ -377,6 +377,7 @@ return (
               purchaseDate={preview.receipt.purchaseDate}
               editable
               updateReceiptField={updateReceiptField}
+              settings={settings}
             />
 
             <div className="mt-6 overflow-x-auto">
@@ -386,6 +387,7 @@ return (
                 removeItem={removeItem}
                 readonly={false}
                 categories={categories}
+                settings={settings}
               />
             </div>
 

@@ -12,6 +12,7 @@ import { ReceiptItemsTable } from "@/app/components/receipt-items-table";
 import { calculateReceiptTotal } from "@/app/lib/calculate-receipt-total";
 import { CategoryOption } from "@/app/types/category-option";
 import { Spinner } from "@/components/ui/spinner"
+import { UserSettings } from "@/app/types/user-settings-types";
 
 type EditableReceipt = {
   id: string;
@@ -34,13 +35,13 @@ type EditableReceipt = {
 type Props = {
   receipt: EditableReceipt;
   categories: CategoryOption[];
+  settings: UserSettings;
 };
 
-export function EditReceiptClient({ receipt, categories }: Props) {
+export function EditReceiptClient({ receipt, categories, settings }: Props) {
     const router = useRouter();
     const [editableReceipt, setEditableReceipt] = useState(receipt);
     const [saving, setSaving] = useState(false);
-    const [error, setError] = useState<string | null>(null);
 
   function updateReceiptField(
     field: keyof EditableReceipt,
@@ -54,7 +55,6 @@ export function EditReceiptClient({ receipt, categories }: Props) {
 
   async function handleSaveChanges() {
     setSaving(true);
-    setError(null);
 
     try {
         const response = await fetch(
@@ -87,11 +87,7 @@ export function EditReceiptClient({ receipt, categories }: Props) {
             ? error.message
             : "Unknown error";
 
-        setError(message);
-
-        toast.error(
-        "Failed to update receipt"
-        );
+        toast.error(message);
     } finally {
         setSaving(false);
     }
@@ -152,27 +148,6 @@ export function EditReceiptClient({ receipt, categories }: Props) {
     });
   }
 
-  function addItem() {
-    const updatedItems = [
-      ...editableReceipt.items,
-      {
-        id: crypto.randomUUID(),
-        sku: null,
-        description: "",
-        quantity: 1,
-        unit: "UNIT",
-        unitPrice: null,
-        totalPrice: null,
-        category: null,
-      },
-    ];
-
-    setEditableReceipt({
-      ...editableReceipt,
-      total: calculateReceiptTotal(updatedItems),
-      items: updatedItems,
-    });
-  }
 
   return (
     <main className="mx-auto max-w-7xl p-8">
@@ -205,6 +180,7 @@ export function EditReceiptClient({ receipt, categories }: Props) {
             purchaseDate={editableReceipt.purchaseDate}
             editable
             updateReceiptField={updateReceiptField}
+            settings={settings}
           />
 
           <div className="overflow-x-auto">
@@ -214,6 +190,7 @@ export function EditReceiptClient({ receipt, categories }: Props) {
               categories={categories}
               updateItemField={updateItemField}
               removeItem={removeItem}
+              settings={settings}
             />
           </div>
 
