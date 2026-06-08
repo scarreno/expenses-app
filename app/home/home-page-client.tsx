@@ -29,6 +29,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { UserSettings } from "@/app/types/user-settings-types";
+import { PageHeader } from "@/app/components/layout/page-header";
 
 type Props = {
     categories: CategoryOption[];   
@@ -324,14 +325,10 @@ return (
     {preview && (
       <>
         <div className="mb-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">
-              Receipt Preview
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Review and adjust the extracted items before saving.
-            </p>
-          </div>
+          <PageHeader
+            title="Receipt Preview"
+            description="Review and adjust the extracted items before saving."
+          />
 
           <AlertDialog>
             <AlertDialogTrigger asChild>

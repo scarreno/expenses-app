@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { formatDisplayDate } from "@/lib/utils/date";
 import { getUserSettings } from "@/app/lib/settings/get-user-settings";
 import { getCurrentUserOrRedirect } from "@/app/lib/auth-user";
+import { PageHeader } from "@/app/components/layout/page-header";
 
 const PAGE_SIZE = 8;
 
@@ -36,15 +37,12 @@ export default async function ReceiptsPage({ searchParams } :
 
   return (
     <main className="mx-auto max-w-7xl p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">
-          Receipts History
-        </h1>
-
-        <p className="mt-2 text-sm text-muted-foreground">
-          Browse and review your previously processed receipts.
-        </p>
-      </div>
+      <PageHeader
+                  title="Receipts History"
+                  description="Browse and review your previously processed receipts."
+                />
+    
+    <br/>
 
       <div className="
             grid

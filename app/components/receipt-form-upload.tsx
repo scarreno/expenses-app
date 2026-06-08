@@ -20,7 +20,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from "@/components/ui/alert";
-
+import { PageHeader } from "@/app/components/layout/page-header";
 
 type Props = {
   handleSubmit: (event: React.SubmitEvent<HTMLFormElement>) => void;
@@ -37,14 +37,10 @@ export function ReceiptFormUpload({
 
   return (
     <section className="mx-auto max-w-md space-y-6 py-12">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Expenses MVP
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Upload a receipt and extract its items with AI.
-        </p>
-      </div>
+      <PageHeader
+        title="Upload Receipt"
+        description="Upload a receipt and let AI extract the purchase details."
+      />
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <input

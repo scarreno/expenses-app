@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -27,16 +28,14 @@ type SettingsClientProps = {
   };
 };
 
-export function SettingsClient({
-  settings,
-}: SettingsClientProps) {
+export function SettingsClient({ settings }: SettingsClientProps) {
   const [locale, setLocale] = useState(settings.locale);
   const [dateFormat, setDateFormat] = useState(settings.dateFormat);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [currencyLocale, setCurrencyLocale] = useState(settings.currencyLocale);
   const [currencyCode, setCurrencyCode] = useState(settings.currencyCode);
-
   const [saving, setSaving] = useState(false);
+
+  const currencyLocale =
+    currencyCode === "CLP" ? "es-CL" : currencyCode === "EUR" ? "de-DE" : "en-US";
 
   async function handleSave() {
     try {
@@ -68,108 +67,82 @@ export function SettingsClient({
     }
   }
 
-  return (
-    <div className="container mx-auto max-w-2xl py-8">
-      <Card>
-        <CardHeader>
-          <CardTitle>Application Settings</CardTitle>
-        </CardHeader>
+return (
+  <Card>
+    <CardHeader>
+      <CardTitle>Application Settings</CardTitle>
+      <CardDescription>
+        Configure how dates, language and currency are displayed.
+      </CardDescription>
+    </CardHeader>
 
-        <CardContent className="space-y-6">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">
-              Locale
-            </label>
+    <CardContent className="space-y-0">
+      <div className="grid gap-4 border-b py-4 md:grid-cols-[1fr_260px] md:items-center">
+        <div className="space-y-1">
+          <label className="text-sm font-medium">Locale</label>
+          <p className="text-sm text-muted-foreground">
+            Select the language and regional format used by the application.
+          </p>
+        </div>
 
-            <Select
-              value={locale}
-              onValueChange={setLocale}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
+        <Select value={locale} onValueChange={setLocale}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="es-CL">Spanish (Chile)</SelectItem>
+            <SelectItem value="en-US">English (US)</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
-              <SelectContent>
-                <SelectItem value="es-CL">
-                  Spanish (Chile)
-                </SelectItem>
+      <div className="grid gap-4 border-b py-4 md:grid-cols-[1fr_260px] md:items-center">
+        <div className="space-y-1">
+          <label className="text-sm font-medium">Date Format</label>
+          <p className="text-sm text-muted-foreground">
+            Choose how receipt dates are displayed across the app.
+          </p>
+        </div>
 
-                <SelectItem value="en-US">
-                  English (US)
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        <Select value={dateFormat} onValueChange={setDateFormat}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="dd-MM-yyyy">dd-MM-yyyy</SelectItem>
+            <SelectItem value="MM-dd-yyyy">MM-dd-yyyy</SelectItem>
+            <SelectItem value="yyyy-MM-dd">yyyy-MM-dd</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium">
-              Date Format
-            </label>
+      <div className="grid gap-4 border-b py-4 md:grid-cols-[1fr_260px] md:items-start">
+        <div className="space-y-1">
+          <label className="text-sm font-medium">Currency</label>
+          <p className="text-sm text-muted-foreground">
+            Changing the currency updates symbols and formatting only.
+            Existing receipt amounts are not converted.
+          </p>
+        </div>
 
-            <Select
-              value={dateFormat}
-              onValueChange={setDateFormat}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
+        <Select value={currencyCode} onValueChange={setCurrencyCode}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="CLP">Chilean Peso (CLP)</SelectItem>
+            <SelectItem value="USD">US Dollar (USD)</SelectItem>
+            <SelectItem value="EUR">Euro (EUR)</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
-              <SelectContent>
-                <SelectItem value="dd-MM-yyyy">
-                  dd-MM-yyyy
-                </SelectItem>
-
-                <SelectItem value="MM-dd-yyyy">
-                  MM-dd-yyyy
-                </SelectItem>
-
-                <SelectItem value="yyyy-MM-dd">
-                  yyyy-MM-dd
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium">
-              Currency
-            </label>
-
-            <Select
-              value={currencyCode}
-              onValueChange={setCurrencyCode}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-
-              <SelectContent>
-                <SelectItem value="CLP">
-                  Chilean Peso (CLP)
-                </SelectItem>
-
-                <SelectItem value="USD">
-                  US Dollar (USD)
-                </SelectItem>
-
-                <SelectItem value="EUR">
-                  Euro (EUR)
-                </SelectItem>
-              </SelectContent>
-            </Select>
-            <p className="text-xs text-muted-foreground">
-              Changing the currency updates symbols and formatting only. Existing receipt amounts are not converted.
-            </p>
-          </div>
-
-          <Button
-            onClick={handleSave}
-            disabled={saving}
-          >
-            {saving ? "Saving..." : "Save Settings"}
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
-  );
+      <div className="flex justify-end pt-6">
+        <Button onClick={handleSave} disabled={saving}>
+          {saving ? "Saving..." : "Save Settings"}
+        </Button>
+      </div>
+    </CardContent>
+  </Card>
+);
 }

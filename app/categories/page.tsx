@@ -20,6 +20,7 @@ import {
   reactivateCategory
 } from "./actions";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PageHeader } from "@/app/components/layout/page-header";
 
 export default async function CategoriesPage() {
   const user = await getCurrentUserOrRedirect();
@@ -43,13 +44,11 @@ export default async function CategoriesPage() {
 
 return (
   <main className="mx-auto max-w-4xl space-y-6 p-6">
-    <div>
-      <h1 className="text-3xl font-bold tracking-tight">Categories</h1>
-      <p className="text-muted-foreground">
-        Manage the categories used to classify your receipt items.
-      </p>
-    </div>
-
+    <PageHeader
+                title="Categories"
+                description="Manage the categories used to classify your receipt items."
+              />
+    
     <Tabs defaultValue="default" className="w-full">
       <TabsList className="grid w-full grid-cols-3">
         <TabsTrigger value="default">
