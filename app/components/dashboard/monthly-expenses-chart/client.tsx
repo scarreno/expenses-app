@@ -21,15 +21,10 @@ type Props = {
   data: MonthlyExpensesChartData[];
 };
 
-export function MonthlyExpensesChartClient({
-  data,
-}: Props) {
+export function MonthlyExpensesChartClient({ data }: Props) {
   return (
-    <ChartContainer
-      config={chartConfig}
-      className="h-[300px] w-full"
-    >
-      <BarChart data={data}>
+    <ChartContainer config={chartConfig} className="h-[300px] w-full">
+      <BarChart data={data} margin={{ left: 24, right: 12 }}>
         <CartesianGrid vertical={false} />
 
         <XAxis
@@ -38,28 +33,29 @@ export function MonthlyExpensesChartClient({
           axisLine={false}
         />
 
-       <YAxis
-        tickLine={false}
-        axisLine={false}
-        tickFormatter={(value) =>
+        <YAxis
+          width={90}
+          tickLine={false}
+          axisLine={false}
+          tickFormatter={(value) =>
             `$${Number(value).toLocaleString("es-CL")}`
-        }
+          }
         />
 
         <ChartTooltip
-            content={
-                <ChartTooltipContent
-                formatter={(value) =>
-                    `$${Number(value).toLocaleString("es-CL")}`
-                }
-                />
-            }
+          content={
+            <ChartTooltipContent
+              formatter={(value) =>
+                `$${Number(value).toLocaleString("es-CL")}`
+              }
             />
+          }
+        />
 
         <Bar
-        dataKey="total"
-        fill="#1783e1"
-        radius={[6, 6, 0, 0]}
+          dataKey="total"
+          fill="var(--chart-1)"
+          radius={[6, 6, 0, 0]}
         />
       </BarChart>
     </ChartContainer>

@@ -1,10 +1,10 @@
-import { notFound } from "next/navigation";
-import { getCategoryLabel } from "@/app/lib/category-labels";
-import { prisma } from "@/app/lib/prisma";
+import { EditReceiptClient } from "@/app/components/edit-receipt-client";
 import { getCurrentUserOrRedirect } from "@/app/lib/auth-user";
 import { getAvailableCategoriesForPreview } from "@/app/lib/categories";
-import { EditReceiptClient } from "@/app/components/edit-receipt-client";
+import { getCategoryLabel } from "@/app/lib/category-labels";
+import { prisma } from "@/app/lib/prisma";
 import { getUserSettings } from "@/app/lib/settings/get-user-settings";
+import { notFound } from "next/navigation";
 
 export default async function ReceiptEditPage({
   params,
@@ -12,8 +12,10 @@ export default async function ReceiptEditPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+
   const user = await getCurrentUserOrRedirect();
   const settings = await getUserSettings(user.id);
+
   const receipt = await prisma.receipt.findFirst({
     where: {
       id,
@@ -33,16 +35,17 @@ export default async function ReceiptEditPage({
   }
 
   const categories = await getAvailableCategoriesForPreview(user.id);
+
   const categoryOptions = categories.map((category) => ({
-      code: category.code,
-      label: getCategoryLabel(category, "en"),
-    }));
+    code: category.code,
+    label: getCategoryLabel(category, "en"),
+  }));
+
   return (
     <EditReceiptClient
       receipt={receipt}
       categories={categoryOptions}
       settings={settings}
-
     />
   );
 }

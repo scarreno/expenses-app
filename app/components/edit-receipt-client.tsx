@@ -13,6 +13,9 @@ import { calculateReceiptTotal } from "@/app/lib/calculate-receipt-total";
 import { CategoryOption } from "@/app/types/category-option";
 import { Spinner } from "@/components/ui/spinner"
 import { UserSettings } from "@/app/types/user-settings-types";
+import { PageContainer } from "@/app/components/layout/page-container";
+import { PageHeader } from "@/app/components/layout/page-header";
+import { PageHeaderActions } from "@/app/components/layout/page-header-actions";
 
 type EditableReceipt = {
   id: string;
@@ -149,28 +152,23 @@ export function EditReceiptClient({ receipt, categories, settings }: Props) {
   }
 
 
-  return (
-    <main className="mx-auto max-w-7xl p-8">
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Edit Receipt
-          </h1>
+ return (
+  <PageContainer className="max-w-[1600px]">
+    <PageHeaderActions>
+      <PageHeader
+        title="Edit Receipt"
+        description="Update the receipt information and adjust extracted items."
+      />
 
-          <p className="mt-2 text-sm text-muted-foreground">
-            Update the receipt information and adjust extracted items.
-          </p>
-        </div>
+      <Button asChild variant="outline">
+        <Link href="/receipts">
+          <IconChevronsLeft className="mr-2 size-4" />
+          Back to receipts
+        </Link>
+      </Button>
+    </PageHeaderActions>
 
-        <Button asChild variant="outline">
-          <Link href={`/receipts`}>
-            <IconChevronsLeft className="mr-2 size-4" />
-            Back to receipts
-          </Link>
-        </Button>
-      </div>
-
-      <section className="grid gap-6 lg:grid-cols-[35%_65%]">
+      <section className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)] xl:grid-cols-[360px_minmax(0,1fr)]">
         <ReceiptFilePreview fileUrl={editableReceipt.publicFileUrl ?? ""} />
 
         <div className="space-y-6">
@@ -183,7 +181,6 @@ export function EditReceiptClient({ receipt, categories, settings }: Props) {
             settings={settings}
           />
 
-          <div className="overflow-x-auto">
             <ReceiptItemsTable
               items={editableReceipt.items}
               readonly={false}
@@ -192,9 +189,8 @@ export function EditReceiptClient({ receipt, categories, settings }: Props) {
               removeItem={removeItem}
               settings={settings}
             />
-          </div>
 
-          <div className="flex justify-end gap-3">
+          <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
             <Button asChild variant="outline">
               <Link href={`/receipts`}>
                 Cancel
@@ -223,6 +219,6 @@ export function EditReceiptClient({ receipt, categories, settings }: Props) {
           </div>
         </div>
       </section>
-    </main>
+    </PageContainer>
   );
 }

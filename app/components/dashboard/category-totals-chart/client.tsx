@@ -1,4 +1,5 @@
-'use client'
+"use client";
+
 import { useState } from "react";
 import {
   Bar,
@@ -6,10 +7,15 @@ import {
   CartesianGrid,
   XAxis,
   YAxis,
-  Tooltip,
-  ResponsiveContainer
-} from 'recharts'
+} from "recharts";
 
+import { formatMoney } from "@/app/lib/format-money";
+import { UserSettings } from "@/app/types/user-settings-types";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 import {
   Select,
   SelectContent,
@@ -17,9 +23,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { formatMoney }
-from "@/app/lib/format-money";
-import { UserSettings } from "@/app/types/user-settings-types";
 
 type ChartData = {
   category: string;
@@ -32,87 +35,92 @@ type Props = {
   settings: UserSettings;
 };
 
+const chartConfig = {
+  total: {
+    label: "Total",
+    color: "var(--chart-2)",
+  },
+};
 
 export function CategoryTotalsChartClient({
-    initialData,
-    months,
-    settings
-    }: Props) {
+  initialData,
+  months,
+  settings,
+}: Props) {
+  const [data, setData] = useState(initialData);
+  const [selectedMonth, setSelectedMonth] = useState("all");
 
-    const [data, setData] = useState(initialData);
-    const [selectedMonth, setSelectedMonth] = useState("all");
-    
-    async function handleMonthChange(value: string) {
-      setSelectedMonth(value);
+  async function handleMonthChange(value: string) {
+    setSelectedMonth(value);
 
-      
-      try {
-        const response = await fetch(
-          `/api/dashboard/category-totals?month=${value}`
-        );
+    const response = await fetch(`/api/dashboard/category-totals?month=${value}`);
 
-        const result = await response.json();
-
-        setData(result);
-      } finally {
-
-      }
+    if (!response.ok) {
+      return;
     }
-    
+
+    const result = await response.json();
+    setData(result);
+  }
+
   return (
-      <div className="rounded-xl border p-6">
-        <div className="mb-4 flex items-start justify-between gap-4">
-          <div>
-            <h2 className="text-xl font-semibold">Expenses by Category</h2>
-            <p className="text-sm text-muted-foreground">
-              Total spending per category
-            </p>
-          </div>
+    <div className="space-y-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 
-          <Select
-            value={selectedMonth}
-            onValueChange={handleMonthChange}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select month" />
-            </SelectTrigger>
+        <Select value={selectedMonth} onValueChange={handleMonthChange}>
+          <SelectTrigger className="w-full sm:w-[180px]">
+            <SelectValue placeholder="Select month" />
+          </SelectTrigger>
 
-            <SelectContent className="z-50 bg-zinc-950 text-zinc-50 border border-zinc-800 shadow-xl">
-              <SelectItem value="all">
-                All
+          <SelectContent>
+            <SelectItem value="all">All</SelectItem>
+
+            {months.map((month) => (
+              <SelectItem key={month} value={month}>
+                {month}
               </SelectItem>
-
-              {months.map((month) => (
-                <SelectItem
-                  key={month}
-                  value={month}
-                >
-                  {month}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="h-[360px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data}>
-              <CartesianGrid vertical={false} />
-              <XAxis dataKey="category" />
-              <YAxis
-                tickFormatter={(value) =>
-                  formatMoney(Number(value), settings)
-                }
-              />
-              <Tooltip
-                formatter={(value) =>
-                  formatMoney(Number(value), settings)
-                }
-              />
-              <Bar dataKey="total" fill="#22c55e" radius={[6, 6, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
-    );
+
+      <ChartContainer config={chartConfig} className="h-[360px] w-full">
+        <BarChart data={data} margin={{ left: 24, right: 12, bottom: 24 }}>
+          <CartesianGrid vertical={false} />
+
+          <XAxis
+            dataKey="category"
+            tickLine={false}
+            axisLine={false}
+            interval={0}
+            angle={-20}
+            textAnchor="end"
+            height={70}
+            tickFormatter={(value) => String(value)}
+          />
+
+          <YAxis
+            width={90}
+            tickLine={false}
+            axisLine={false}
+            tickFormatter={(value) => formatMoney(Number(value), settings)}
+          />
+
+          <ChartTooltip
+            content={
+              <ChartTooltipContent
+                formatter={(value) => formatMoney(Number(value), settings)}
+              />
+            }
+          />
+
+          <Bar
+            dataKey="total"
+            fill="var(--chart-2)"
+            radius={[6, 6, 0, 0]}
+          />
+        </BarChart>
+      </ChartContainer>
+    </div>
+  );
 }

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -35,7 +36,11 @@ export function SettingsClient({ settings }: SettingsClientProps) {
   const [saving, setSaving] = useState(false);
 
   const currencyLocale =
-    currencyCode === "CLP" ? "es-CL" : currencyCode === "EUR" ? "de-DE" : "en-US";
+    currencyCode === "CLP"
+      ? "es-CL"
+      : currencyCode === "EUR"
+        ? "de-DE"
+        : "en-US";
 
   async function handleSave() {
     try {
@@ -67,82 +72,93 @@ export function SettingsClient({ settings }: SettingsClientProps) {
     }
   }
 
-return (
-  <Card>
-    <CardHeader>
-      <CardTitle>Application Settings</CardTitle>
-      <CardDescription>
-        Configure how dates, language and currency are displayed.
-      </CardDescription>
-    </CardHeader>
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Application Settings</CardTitle>
+        <CardDescription>
+          Configure how dates, language and currency are displayed.
+        </CardDescription>
+      </CardHeader>
 
-    <CardContent className="space-y-0">
-      <div className="grid gap-4 border-b py-4 md:grid-cols-[1fr_260px] md:items-center">
-        <div className="space-y-1">
-          <label className="text-sm font-medium">Locale</label>
-          <p className="text-sm text-muted-foreground">
-            Select the language and regional format used by the application.
-          </p>
+      <CardContent>
+        <div className="grid gap-4 border-b py-4 md:grid-cols-[1fr_260px] md:items-center">
+          <div className="space-y-1">
+            <label className="text-sm font-medium">Locale</label>
+            <p className="text-sm text-muted-foreground">
+              Select the language and regional format used by the application.
+            </p>
+          </div>
+
+          <Select value={locale} onValueChange={setLocale}>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="es-CL">Spanish (Chile)</SelectItem>
+              <SelectItem value="en-US">English (US)</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
-        <Select value={locale} onValueChange={setLocale}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="es-CL">Spanish (Chile)</SelectItem>
-            <SelectItem value="en-US">English (US)</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+        <div className="grid gap-4 border-b py-4 md:grid-cols-[1fr_260px] md:items-center">
+          <div className="space-y-1">
+            <label className="text-sm font-medium">Date Format</label>
+            <p className="text-sm text-muted-foreground">
+              Choose how receipt dates are displayed across the app.
+            </p>
+          </div>
 
-      <div className="grid gap-4 border-b py-4 md:grid-cols-[1fr_260px] md:items-center">
-        <div className="space-y-1">
-          <label className="text-sm font-medium">Date Format</label>
-          <p className="text-sm text-muted-foreground">
-            Choose how receipt dates are displayed across the app.
-          </p>
+          <Select value={dateFormat} onValueChange={setDateFormat}>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="dd-MM-yyyy">dd-MM-yyyy</SelectItem>
+              <SelectItem value="MM-dd-yyyy">MM-dd-yyyy</SelectItem>
+              <SelectItem value="yyyy-MM-dd">yyyy-MM-dd</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
-        <Select value={dateFormat} onValueChange={setDateFormat}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="dd-MM-yyyy">dd-MM-yyyy</SelectItem>
-            <SelectItem value="MM-dd-yyyy">MM-dd-yyyy</SelectItem>
-            <SelectItem value="yyyy-MM-dd">yyyy-MM-dd</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+        <div className="grid gap-4 border-b py-4 md:grid-cols-[1fr_260px] md:items-start">
+          <div className="space-y-1">
+            <label className="text-sm font-medium">Currency</label>
+            <p className="text-sm text-muted-foreground">
+              Changing the currency updates symbols and formatting only.
+              Existing receipt amounts are not converted.
+            </p>
+          </div>
 
-      <div className="grid gap-4 border-b py-4 md:grid-cols-[1fr_260px] md:items-start">
-        <div className="space-y-1">
-          <label className="text-sm font-medium">Currency</label>
-          <p className="text-sm text-muted-foreground">
-            Changing the currency updates symbols and formatting only.
-            Existing receipt amounts are not converted.
-          </p>
+          <Select value={currencyCode} onValueChange={setCurrencyCode}>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="CLP">Chilean Peso (CLP)</SelectItem>
+              <SelectItem value="USD">US Dollar (USD)</SelectItem>
+              <SelectItem value="EUR">Euro (EUR)</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
-        <Select value={currencyCode} onValueChange={setCurrencyCode}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="CLP">Chilean Peso (CLP)</SelectItem>
-            <SelectItem value="USD">US Dollar (USD)</SelectItem>
-            <SelectItem value="EUR">Euro (EUR)</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="flex justify-end pt-6">
-        <Button onClick={handleSave} disabled={saving}>
-          {saving ? "Saving..." : "Save Settings"}
-        </Button>
-      </div>
-    </CardContent>
-  </Card>
-);
+        <div className="flex pt-6 sm:justify-end">
+          <Button
+            onClick={handleSave}
+            disabled={saving}
+            className="w-full sm:w-auto"
+          >
+            {saving ? (
+              <>
+                <Spinner className="mr-2 size-4" />
+                Saving...
+              </>
+            ) : (
+              "Save Settings"
+            )}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
 }

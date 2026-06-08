@@ -1,10 +1,26 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { IconUpload, IconFileUpload, IconInfoCircle } from '@tabler/icons-react';
-import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner"
+import {
+  IconFileUpload,
+  IconInfoCircle,
+  IconUpload,
+} from "@tabler/icons-react";
 
+import { PageHeader } from "@/app/components/layout/page-header";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -13,122 +29,107 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@/components/ui/alert";
-import { PageHeader } from "@/app/components/layout/page-header";
+} from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
 
 type Props = {
-  handleSubmit: (event: React.SubmitEvent<HTMLFormElement>) => void;
+  handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   loading: boolean;
 };
 
-export function ReceiptFormUpload({
-  handleSubmit,
-  loading,
-}: Props) {
+export function ReceiptFormUpload({ handleSubmit, loading }: Props) {
   const [receiptType, setReceiptType] = useState("");
   const [fileName, setFileName] = useState("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   return (
-    <section className="mx-auto max-w-md space-y-6 py-12">
+    <section className="mx-auto w-full max-w-md space-y-6 py-12">
       <PageHeader
         title="Upload Receipt"
         description="Upload a receipt and let AI extract the purchase details."
       />
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="hidden"
-          name="receiptType"
-          value={receiptType}
-        />
+      <Card>
+        <CardHeader>
+          <CardTitle>Receipt information</CardTitle>
+          <CardDescription>
+            Select the business type and upload the receipt file.
+          </CardDescription>
+        </CardHeader>
 
-        <Select
-          value={receiptType}
-          onValueChange={setReceiptType}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select business type" />
-          </SelectTrigger>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <input type="hidden" name="receiptType" value={receiptType} />
 
-          <SelectContent className="z-50 bg-zinc-950 text-zinc-50 border border-zinc-800 shadow-xl">
-            <SelectGroup>
-              <SelectLabel>Select business type</SelectLabel>
-              <SelectItem value="SUPERMARKET">Supermarket</SelectItem>
-              <SelectItem value="MARKET">Market</SelectItem>
-              <SelectItem value="GAS">Bencina</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+            <Select value={receiptType} onValueChange={setReceiptType}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select business type" />
+              </SelectTrigger>
 
-        <input
-          ref={fileInputRef}
-          className="hidden"
-          type="file"
-          name="file"
-          accept="image/*,application/pdf"
-          required
-          onChange={(event) => {
-            const file = event.target.files?.[0];
-            setFileName(file?.name ?? "");
-          }}
-        />
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Select business type</SelectLabel>
+                  <SelectItem value="SUPERMARKET">Supermarket</SelectItem>
+                  <SelectItem value="MARKET">Market</SelectItem>
+                  <SelectItem value="GAS">Gas</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
 
+            <input
+              ref={fileInputRef}
+              className="hidden"
+              type="file"
+              name="file"
+              accept="image/*,application/pdf"
+              required
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                setFileName(file?.name ?? "");
+              }}
+            />
 
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full justify-start"
-          onClick={() => fileInputRef.current?.click()}
-        >
-          <IconFileUpload className="mr-2 size-4" />
-          {fileName || "Select receipt file"}
-        </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full justify-start"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <IconFileUpload className="mr-2 size-4" />
+              {fileName || "Select receipt file"}
+            </Button>
 
-        <p/>
-        <p/>
-        <p/>
+            <Button
+              className="w-full"
+              type="submit"
+              disabled={loading || !receiptType || !fileName}
+            >
+              {loading ? (
+                <>
+                  <Spinner className="mr-2 size-4" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <IconUpload className="mr-2 size-4" />
+                  Upload receipt
+                </>
+              )}
+            </Button>
 
-        <Button
-          variant="outline"
-          className="w-full"
-          type="submit"
-          disabled={loading || !receiptType || !fileName}
-        >
-          {loading ? (
-            <>
-              <Spinner className="mr-2 size-4" />
-              Processing...
-            </>
-          ) : (
-            <>
-              <IconUpload className="mr-2 size-4" />
-              Upload receipt
-            </>
-          )}
-        </Button>
+            <Alert>
+              <IconInfoCircle className="h-4 w-4" />
 
-        <p/>
-        <p/>
+              <AlertTitle>Receipt Type Matters</AlertTitle>
 
-
-        <Alert className="mt-4">
-          <IconInfoCircle className="h-4 w-4" />
-
-          <AlertTitle>Receipt Type Matters</AlertTitle>
-
-          <AlertDescription>
-            Selecting the correct business type improves extraction accuracy and category classification.
-          </AlertDescription>
-        </Alert>
-      </form>
-
+              <AlertDescription>
+                Selecting the correct business type improves extraction
+                accuracy and category classification.
+              </AlertDescription>
+            </Alert>
+          </form>
+        </CardContent>
+      </Card>
     </section>
   );
 }

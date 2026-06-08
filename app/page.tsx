@@ -1,8 +1,8 @@
+import { HomePageClient } from "@/app/home/home-page-client";
 import { getCurrentUserOrRedirect } from "@/app/lib/auth-user";
 import { getAvailableCategoriesForPreview } from "@/app/lib/categories";
 import { getCategoryLabel } from "@/app/lib/category-labels";
-import { HomePageClient } from "@/app/home/home-page-client";
-import { getUserSettings } from "@/app/lib/settings/get-user-settings"
+import { getUserSettings } from "@/app/lib/settings/get-user-settings";
 
 export default async function Page() {
   const currentUser = await getCurrentUserOrRedirect();
@@ -15,8 +15,10 @@ export default async function Page() {
     label: getCategoryLabel(category, "en"),
   }));
 
-  return <HomePageClient 
-            categories={categoryOptions}
-            settings={settings}
-             />;
+  return (
+    <HomePageClient
+      categories={categoryOptions}
+      settings={settings}
+    />
+  );
 }

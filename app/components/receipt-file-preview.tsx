@@ -1,3 +1,10 @@
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
 type Props = {
   fileUrl: string;
 };
@@ -6,27 +13,29 @@ export function ReceiptFilePreview({ fileUrl }: Props) {
   const isPdf = fileUrl.endsWith(".pdf");
 
   return (
-    <div className="w-full">
-      <h2 className="text-xl font-semibold">
-            Receipt File
-        </h2>
+    <Card>
+      <CardHeader>
+        <CardTitle>Receipt File</CardTitle>
+      </CardHeader>
 
-      {isPdf ? (
-        <iframe
-          src={`${fileUrl}#view=Fit`}
-          className="h-[850px] w-full rounded-lg border border-zinc-800 bg-zinc-900"
-        />
-      ) : (
-          <>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-          src={fileUrl}
-          alt="Receipt"
-          className="max-h-[850px] w-full rounded-lg border border-zinc-800 object-contain"
+      <CardContent>
+        {isPdf ? (
+          <iframe
+            src={`${fileUrl}#view=Fit`}
+            title="Receipt PDF"
+            className="h-[850px] w-full rounded-md border"
           />
-        </>
-     
-      )}
-    </div>
+        ) : (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={fileUrl}
+              alt="Receipt"
+              className="max-h-[850px] w-full rounded-md border object-contain"
+            />
+          </>
+        )}
+      </CardContent>
+    </Card>
   );
 }

@@ -1,5 +1,5 @@
 "use client";
-
+import { PageContainer } from "@/app/components/layout/page-container";
 import { useState } from "react";
 import { ExtractReceiptResponse } from "@/app/types/receipt";
 import { ReceiptItemsTable } from "@/app/components/receipt-items-table"
@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { UserSettings } from "@/app/types/user-settings-types";
 import { PageHeader } from "@/app/components/layout/page-header";
+import { PageHeaderActions } from "@/app/components/layout/page-header-actions";
 
 type Props = {
     categories: CategoryOption[];   
@@ -312,7 +313,7 @@ function updateItemField(
 }
 
 return (
-  <main className="p-8">
+  <PageContainer className="max-w-[1600px]">
     {!preview && (
       <ReceiptFormUpload
         handleSubmit={handleSubmit}
@@ -324,7 +325,7 @@ return (
 
     {preview && (
       <>
-        <div className="mb-6 flex items-center justify-between">
+        <PageHeaderActions>
           <PageHeader
             title="Receipt Preview"
             description="Review and adjust the extracted items before saving."
@@ -332,10 +333,7 @@ return (
 
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button
-                type="button"
-                variant="outline"
-              >
+              <Button type="button" variant="outline">
                 Upload another receipt
               </Button>
             </AlertDialogTrigger>
@@ -346,8 +344,8 @@ return (
                   Discard receipt preview?
                 </AlertDialogTitle>
                 <AlertDialogDescription>
-                  This will delete the uploaded file and discard all extracted data.
-                  This action cannot be undone.
+                  This will delete the uploaded file and discard all extracted
+                  data. This action cannot be undone.
                 </AlertDialogDescription>
               </AlertDialogHeader>
 
@@ -362,12 +360,12 @@ return (
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-        </div>
+        </PageHeaderActions>
 
-        <section className="grid gap-6 lg:grid-cols-[25%_75%]">
+        <section className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)] xl:grid-cols-[360px_minmax(0,1fr)]">
           <ReceiptFilePreview fileUrl={preview.file.publicFileUrl} />
 
-          <div>
+          <div className="space-y-6">
             <ReceiptItemsSummary
               store={preview.receipt.store}
               total={preview.receipt.total}
@@ -377,7 +375,6 @@ return (
               settings={settings}
             />
 
-            <div className="mt-6 overflow-x-auto">
               <ReceiptItemsTable
                 items={preview.receipt.items}
                 updateItemField={updateItemField}
@@ -386,7 +383,6 @@ return (
                 categories={categories}
                 settings={settings}
               />
-            </div>
 
             <ReceiptActions
               addItem={addItem}
@@ -398,6 +394,6 @@ return (
         </section>
       </>
     )}
-  </main>
+  </PageContainer>
 );
 }

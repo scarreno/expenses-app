@@ -1,17 +1,19 @@
 // app/profile/page.tsx
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getCurrentUserOrRedirect } from "@/app/lib/auth-user";
+import { PageContainer } from "@/app/components/layout/page-container";
 import { PageHeader } from "@/app/components/layout/page-header";
+import { getCurrentUserOrRedirect } from "@/app/lib/auth-user";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default async function ProfilePage() {
   const user = await getCurrentUserOrRedirect();
 
   return (
-    <main className="mx-auto max-w-3xl space-y-6 p-6">
+    <PageContainer className="max-w-4xl">
       <PageHeader
-                  title="Profile"
-                  description="Manage your account information and preferences."
-                />      
+        title="Profile"
+        description="Manage your account information and preferences."
+      />
+
       <Card>
         <CardHeader>
           <CardTitle>User information</CardTitle>
@@ -43,7 +45,7 @@ export default async function ProfilePage() {
           </p>
         </CardContent>
       </Card>
-    </main>
+    </PageContainer>
   );
 }
 
