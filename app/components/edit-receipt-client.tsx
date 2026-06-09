@@ -168,10 +168,12 @@ export function EditReceiptClient({ receipt, categories, settings }: Props) {
       </Button>
     </PageHeaderActions>
 
-      <section className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)] xl:grid-cols-[360px_minmax(0,1fr)]">
-        <ReceiptFilePreview fileUrl={editableReceipt.publicFileUrl ?? ""} />
+      <section className="grid min-w-0 gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
+        <div className="min-w-0">
+          <ReceiptFilePreview fileUrl={editableReceipt.publicFileUrl ?? ""} />
+        </div>
 
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-6">
           <ReceiptItemsSummary
             store={editableReceipt.store}
             total={editableReceipt.total}

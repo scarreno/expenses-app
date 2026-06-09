@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 type ReceiptCategoryOption = {
   code: string;
@@ -48,8 +49,13 @@ export function ReceiptItemsTable({
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border bg-card">
-      <table className="w-full min-w-[980px] table-fixed text-sm">
+    <div className="max-w-full overflow-x-auto rounded-lg border bg-card">
+      <table
+        className={cn(
+          "w-full table-fixed text-sm",
+          readonly ? "min-w-[760px]" : "min-w-[980px]"
+        )}
+      >
         <thead className="bg-muted/50 text-left text-muted-foreground">
           <tr>
             <th className="w-[28%] border-b px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wide">

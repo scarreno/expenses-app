@@ -1,5 +1,6 @@
 import { CategoryTotalsChartClient } from "./client";
 
+import { getCategoryLabel } from "@/app/lib/category-labels";
 import { prisma } from "@/app/lib/prisma";
 import { UserSettings } from "@/app/types/user-settings-types";
 import {
@@ -9,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { toTitleCase } from "@/app/lib/to-title-case";
 
 type Props = {
   settings: UserSettings;
@@ -28,17 +30,32 @@ export async function CategoryTotalsChart({ settings, userId }: Props) {
     },
   });
 
+  const categories = await prisma.category.findMany({
+    where: {
+      userId,
+    },
+  });
+
+  const categoryMap = new Map(
+    categories.map((category) => [category.code, category])
+  );
+
   const data = Object.values(
     items.reduce<Record<string, { category: string; total: number }>>(
       (acc, item) => {
-        const category = item.category ?? "UNKNOWN";
+        const categoryCode = item.category ?? "UNKNOWN";
+        const category = categoryMap.get(categoryCode);
 
-        acc[category] ??= {
-          category,
+        const categoryLabel = category
+          ? getCategoryLabel(category, "en")
+          : toTitleCase(categoryCode);
+
+        acc[categoryLabel] ??= {
+          category: categoryLabel,
           total: 0,
         };
 
-        acc[category].total += item.totalPrice ?? 0;
+        acc[categoryLabel].total += item.totalPrice ?? 0;
 
         return acc;
       },

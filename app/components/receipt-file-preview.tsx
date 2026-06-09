@@ -6,14 +6,30 @@ import {
 } from "@/components/ui/card";
 
 type Props = {
-  fileUrl: string;
+  fileUrl?: string | null;
 };
 
 export function ReceiptFilePreview({ fileUrl }: Props) {
-  const isPdf = fileUrl.endsWith(".pdf");
+  if (!fileUrl) {
+    return (
+      <Card className="min-w-0">
+        <CardHeader>
+          <CardTitle>Receipt File</CardTitle>
+        </CardHeader>
+
+        <CardContent>
+          <div className="flex h-[320px] items-center justify-center rounded-md border bg-muted/30 text-sm text-muted-foreground">
+            Receipt file is not available.
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const isPdf = fileUrl.toLowerCase().endsWith(".pdf");
 
   return (
-    <Card>
+    <Card className="min-w-0">
       <CardHeader>
         <CardTitle>Receipt File</CardTitle>
       </CardHeader>
@@ -23,7 +39,7 @@ export function ReceiptFilePreview({ fileUrl }: Props) {
           <iframe
             src={`${fileUrl}#view=Fit`}
             title="Receipt PDF"
-            className="h-[850px] w-full rounded-md border"
+            className="h-[650px] w-full rounded-md border"
           />
         ) : (
           <>
@@ -31,7 +47,7 @@ export function ReceiptFilePreview({ fileUrl }: Props) {
             <img
               src={fileUrl}
               alt="Receipt"
-              className="max-h-[850px] w-full rounded-md border object-contain"
+              className="max-h-[650px] w-full rounded-md border object-contain"
             />
           </>
         )}

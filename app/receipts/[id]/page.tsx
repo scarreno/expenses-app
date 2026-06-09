@@ -59,10 +59,12 @@ export default async function ReceiptDetailPage({
         </div>
       </PageHeaderActions>
 
-      <section className="grid gap-6 lg:grid-cols-[35%_65%]">
-        <ReceiptFilePreview fileUrl={receipt.publicFileUrl ?? ""} />
+      <section className="grid min-w-0 gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
+        <div className="min-w-0">
+          <ReceiptFilePreview fileUrl={receipt.publicFileUrl ?? ""} />
+        </div>
 
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-6">
           <ReceiptItemsSummary
             store={receipt.store}
             total={receipt.total}

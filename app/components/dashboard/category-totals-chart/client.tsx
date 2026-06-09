@@ -42,6 +42,12 @@ const chartConfig = {
   },
 };
 
+function truncateLabel(value: string, maxLength = 14) {
+  return value.length > maxLength
+    ? `${value.slice(0, maxLength)}...`
+    : value;
+}
+
 export function CategoryTotalsChartClient({
   initialData,
   months,
@@ -65,8 +71,7 @@ export function CategoryTotalsChartClient({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-
+      <div className="flex justify-end">
         <Select value={selectedMonth} onValueChange={handleMonthChange}>
           <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="Select month" />
@@ -96,7 +101,7 @@ export function CategoryTotalsChartClient({
             angle={-20}
             textAnchor="end"
             height={70}
-            tickFormatter={(value) => String(value)}
+            tickFormatter={(value) => truncateLabel(String(value))}
           />
 
           <YAxis
