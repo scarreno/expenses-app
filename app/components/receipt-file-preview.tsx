@@ -1,32 +1,57 @@
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
 type Props = {
-  fileUrl: string;
+  fileUrl?: string | null;
 };
 
 export function ReceiptFilePreview({ fileUrl }: Props) {
-  const isPdf = fileUrl.endsWith(".pdf");
+  if (!fileUrl) {
+    return (
+      <Card className="min-w-0">
+        <CardHeader>
+          <CardTitle>Receipt File</CardTitle>
+        </CardHeader>
+
+        <CardContent>
+          <div className="flex h-[320px] items-center justify-center rounded-md border bg-muted/30 text-sm text-muted-foreground">
+            Receipt file is not available.
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const isPdf = fileUrl.toLowerCase().endsWith(".pdf");
 
   return (
-    <div className="w-full">
-      <h2 className="text-xl font-semibold">
-            Receipt File
-        </h2>
+    <Card className="min-w-0">
+      <CardHeader>
+        <CardTitle>Receipt File</CardTitle>
+      </CardHeader>
 
-      {isPdf ? (
-        <iframe
-          src={`${fileUrl}#view=Fit`}
-          className="h-[850px] w-full rounded-lg border border-zinc-800 bg-zinc-900"
-        />
-      ) : (
-          <>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-          src={fileUrl}
-          alt="Receipt"
-          className="max-h-[850px] w-full rounded-lg border border-zinc-800 object-contain"
+      <CardContent>
+        {isPdf ? (
+          <iframe
+            src={`${fileUrl}#view=Fit`}
+            title="Receipt PDF"
+            className="h-[650px] w-full rounded-md border"
           />
-        </>
-     
-      )}
-    </div>
+        ) : (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={fileUrl}
+              alt="Receipt"
+              className="max-h-[650px] w-full rounded-md border object-contain"
+            />
+          </>
+        )}
+      </CardContent>
+    </Card>
   );
 }

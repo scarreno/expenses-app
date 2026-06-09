@@ -5,22 +5,20 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardHeader
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import { MonthlyExpensesChartClient } from "./client";
 import { MonthlyExpensesChartData } from "./types";
 
-
 type Props = {
-    userId: string;
-}
-
+  userId: string;
+};
 
 export async function MonthlyExpensesChart({ userId }: Props) {
-
   const receipts = await prisma.receipt.findMany({
-    where:{
-      userId: userId
+    where: {
+      userId,
     },
     orderBy: {
       createdAt: "desc",
@@ -47,31 +45,23 @@ export async function MonthlyExpensesChart({ userId }: Props) {
     {}
   );
 
-  const chartData: MonthlyExpensesChartData[] =
-    Object.entries(monthlyData).map(
-      ([month, total]) => ({
-        month,
-        total,
-      })
-    );
+  const chartData: MonthlyExpensesChartData[] = Object.entries(monthlyData).map(
+    ([month, total]) => ({
+      month,
+      total,
+    })
+  );
 
   return (
-    <Card className="mt-8">
-        <CardHeader>
-            <h2 className="text-xl font-semibold">
-                Monthly expenses
-            </h2>
-            <CardDescription>
-            Total spent grouped by month.
-            </CardDescription>
-        </CardHeader>
+    <Card>
+      <CardHeader>
+        <CardTitle>Monthly Expenses</CardTitle>
+        <CardDescription>Total spent grouped by month.</CardDescription>
+      </CardHeader>
 
-        <CardContent>
-            <MonthlyExpensesChartClient
-            data={chartData}
-            />
-        </CardContent>
+      <CardContent>
+        <MonthlyExpensesChartClient data={chartData} />
+      </CardContent>
     </Card>
-
   );
 }

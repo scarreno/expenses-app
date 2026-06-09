@@ -22,11 +22,12 @@ export async function getCurrentUserOrRedirect() {
   return user;
 }
 
+
 export async function getCurrentUser() {
   const session = await auth();
 
   if (!session?.user?.email) {
-    return null;
+    throw new Error("User not authenticated");
   }
 
   const user = await prisma.user.findUnique({
@@ -34,6 +35,10 @@ export async function getCurrentUser() {
       email: session.user.email,
     },
   });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
 
   return user;
 }

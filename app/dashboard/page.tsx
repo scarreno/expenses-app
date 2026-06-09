@@ -1,44 +1,37 @@
 import Link from "next/link";
-import { MonthlyExpensesChart } from "@/app/components/dashboard/monthly-expenses-chart/index"
-import { Button } from "@/components/ui/button";
-import { DashboardReceiptSummary } from "@/app/components/dashboard/dashboard-receipts-summary";
+
 import { CategoryTotalsChart } from "@/app/components/dashboard/category-totals-chart/index";
+import { DashboardReceiptSummary } from "@/app/components/dashboard/dashboard-receipts-summary";
+import { MonthlyExpensesChart } from "@/app/components/dashboard/monthly-expenses-chart/index";
+import { PageContainer } from "@/app/components/layout/page-container";
+import { PageHeader } from "@/app/components/layout/page-header";
+import { PageHeaderActions } from "@/app/components/layout/page-header-actions";
 import { getCurrentUserOrRedirect } from "@/app/lib/auth-user";
 import { getUserSettings } from "@/app/lib/settings/get-user-settings";
+import { Button } from "@/components/ui/button";
 
-export default async function DashboardPage({ searchParams }: {
-    searchParams: Promise<{ month?: string }>;
-  }) {
-
+export default async function DashboardPage() {
   const user = await getCurrentUserOrRedirect();
   const settings = await getUserSettings(user.id);
 
   return (
-    <main className="mx-auto max-w-7xl p-8">
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Dashboard
-          </h1>
-
-          <p className="mt-2 text-sm text-muted-foreground">
-            Overview of your receipts and expenses.
-          </p>
-        </div>
+    <PageContainer className="max-w-7xl">
+      <PageHeaderActions>
+        <PageHeader
+          title="Dashboard"
+          description="Overview of your receipts and expenses."
+        />
 
         <Button asChild>
           <Link href="/">Upload receipt</Link>
         </Button>
-      </div>
+      </PageHeaderActions>
 
-      <DashboardReceiptSummary settings={settings} userId={user.id}/>      
-      <CategoryTotalsChart 
-        settings={settings}
-        userId={user.id}
-        />
-      <MonthlyExpensesChart userId={user.id}/>
+      <DashboardReceiptSummary settings={settings} userId={user.id} />
 
-        
-    </main>
+      <CategoryTotalsChart settings={settings} userId={user.id} />
+
+      <MonthlyExpensesChart userId={user.id} />
+    </PageContainer>
   );
 }

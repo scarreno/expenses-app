@@ -1,18 +1,17 @@
-import { formatMoney } from "@/app/lib/format-money";
 import { DashboardCard } from "@/app/components/dashboard-card";
+import { formatMoney } from "@/app/lib/format-money";
 import { prisma } from "@/app/lib/prisma";
 import { UserSettings } from "@/app/types/user-settings-types";
 
 type Props = {
   settings: UserSettings;
-  userId: string
+  userId: string;
 };
 
-export async function DashboardReceiptSummary({ settings, userId }: Props){
-  
+export async function DashboardReceiptSummary({ settings, userId }: Props) {
   const receipts = await prisma.receipt.findMany({
     where: {
-      userId: userId
+      userId,
     },
     include: {
       items: true,
@@ -34,29 +33,24 @@ export async function DashboardReceiptSummary({ settings, userId }: Props){
     0
   );
 
-  const averageReceipt = totalReceipts > 0 ? Math.round(totalSpent / totalReceipts) : 0;
+  const averageReceipt =
+    totalReceipts > 0 ? Math.round(totalSpent / totalReceipts) : 0;
 
-    return (
-        <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-        <DashboardCard
-          title="Total Spent"
-          value={formatMoney(totalSpent, settings)}
-        />
+  return (
+    <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      <DashboardCard
+        title="Total Spent"
+        value={formatMoney(totalSpent, settings)}
+      />
 
-        <DashboardCard
-          title="Receipts"
-          value={String(totalReceipts)}
-        />
+      <DashboardCard title="Receipts" value={String(totalReceipts)} />
 
-        <DashboardCard
-          title="Items"
-          value={String(totalItems)}
-        />
+      <DashboardCard title="Items" value={String(totalItems)} />
 
-        <DashboardCard
-          title="Average Receipt"
-          value={formatMoney(averageReceipt, settings)}
-        />
-      </section>
-    );
+      <DashboardCard
+        title="Average Receipt"
+        value={formatMoney(averageReceipt, settings)}
+      />
+    </section>
+  );
 }
