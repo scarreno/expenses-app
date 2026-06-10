@@ -1,34 +1,150 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Expenses v1.0.0
 
-## Getting Started
+Expenses is an AI-powered household expense tracking application built with Next.js, Prisma, Neon PostgreSQL and OpenAI.
 
-First, run the development server:
+The goal of the project is to simplify receipt processing by automatically extracting purchase information from images and PDF receipts, allowing users to review, edit and categorize their purchases before saving them.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+The application also provides spending insights through dashboards and category-based analytics.
+
+---
+
+# Features
+
+## Authentication
+
+* Google Authentication using NextAuth
+* Protected routes
+* User ownership and data isolation
+
+## Receipt Processing
+
+* Upload receipt images and PDFs
+* AI-powered data extraction using OpenAI
+* Support for different business types
+* Editable preview before saving
+* Receipt file storage
+
+## Receipt Management
+
+* Receipt history
+* Receipt detail view
+* Receipt editing
+* Receipt deletion
+* Pagination
+
+## Categories
+
+* Default system categories
+* Custom user categories
+* Category activation and deactivation
+* Manual category reassignment
+
+## Dashboard
+
+* Total spending summary
+* Monthly expenses chart
+* Spending by category
+* User-specific analytics
+
+## User Preferences
+
+* Locale configuration
+* Currency formatting
+* Date formatting
+
+---
+
+# Screenshots
+
+> Screenshots will be added in future updates.
+
+## Upload Receipt
+
+![Upload](docs/screenshots/upload.png)
+
+## Receipt Preview
+
+![Preview](docs/screenshots/preview.png)
+
+## Receipt History
+
+![Receipts](docs/screenshots/receipts.png)
+
+## Dashboard
+
+![Dashboard](docs/screenshots/dashboard.png)
+
+---
+
+# Technology Stack
+
+## Frontend
+
+* Next.js 15
+* React
+* TypeScript
+* Tailwind CSS
+* shadcn/ui
+
+## Backend
+
+* Next.js Route Handlers
+* Prisma ORM
+* Neon PostgreSQL
+
+## AI
+
+* OpenAI Responses API
+* GPT-4.1 Mini
+
+## Authentication
+
+* NextAuth
+* Google OAuth
+
+## Storage
+
+* Local File Storage (Development)
+* Vercel Blob Storage (Production)
+
+---
+
+# Architecture
+
+Receipt processing flow:
+
+```text
+Upload File
+    ↓
+Storage
+    ↓
+OpenAI Extraction
+    ↓
+Review & Edit
+    ↓
+Save Receipt
+    ↓
+Dashboard & Analytics
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+# Running Locally
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Prerequisites
 
-# Database setup - Neon + Prisma
+* Node.js 22+
+* PostgreSQL or Neon Database
+* OpenAI API Key
+* Google OAuth Credentials
 
-## 1. Initialize database using the existing schema
+## Installation
 
-Create a `.env` file in the project root:
+Clone the repository:
 
-```env
-DATABASE_URL="your_neon_connection_string"
-OPENAI_API_KEY="your_openai_api_key"
+```bash
+git clone <repository-url>
+cd expenses-v2
 ```
 
 Install dependencies:
@@ -37,19 +153,42 @@ Install dependencies:
 pnpm install
 ```
 
+---
+
+## Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+DATABASE_URL=
+
+OPENAI_API_KEY=
+
+AUTH_SECRET=
+
+AUTH_GOOGLE_ID=
+AUTH_GOOGLE_SECRET=
+
+NEXT_PUBLIC_STORAGE_DRIVER=local
+```
+
+---
+
+## Database Setup
+
 Generate Prisma Client:
 
 ```bash
 pnpm prisma generate
 ```
 
-Apply existing migrations to Neon:
+Apply existing migrations:
 
 ```bash
 pnpm prisma migrate deploy
 ```
 
-Optional: open Prisma Studio:
+Optional:
 
 ```bash
 pnpm prisma studio
@@ -57,21 +196,21 @@ pnpm prisma studio
 
 ---
 
-## 2. Update database after modifying `schema.prisma`
+## Creating New Migrations
 
-After changing:
+After modifying:
 
 ```text
 prisma/schema.prisma
 ```
 
-create and apply a new migration:
+Create and apply a migration:
 
 ```bash
 pnpm prisma migrate dev --name describe_your_change
 ```
 
-Then regenerate Prisma Client:
+Regenerate Prisma Client:
 
 ```bash
 pnpm prisma generate
@@ -86,33 +225,64 @@ pnpm prisma generate
 
 ---
 
-## 3. Development reset only
+## Development Reset
 
-Use this only in local/dev environments if the database gets out of sync:
+Only for local development:
 
 ```bash
 pnpm prisma migrate reset
 ```
 
-If migrations are broken and this is still a disposable dev database:
+If working with a disposable database:
 
 ```bash
 pnpm prisma db push
 ```
 
-Do not use these commands in production.
+Do not use these commands in production environments.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Start Development Server
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+pnpm dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Open:
 
-## Deploy on Vercel
+```text
+http://localhost:3000
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Roadmap
+
+Planned future improvements:
+
+* Budget management
+* Budget alerts
+* Spending projections
+* Household consumption analytics
+* Product inflation tracking
+* Purchase recommendations
+* Advanced dashboard insights
+
+---
+
+# Version
+
+Current version:
+
+```text
+v1.0.0
+```
+
+Initial stable release.
+
+---
+
+# License
+
+MIT
