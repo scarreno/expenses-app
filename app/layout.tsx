@@ -24,7 +24,9 @@ export default function RootLayout({
       <body>
           <SessionProvider>
           <header className="flex items-center gap-6 border-b border-border px-8 py-4">
-            <Link href="/"><strong className="text-lg font-semibold">Expenses MVP</strong></Link>
+            <Link href="/" className="hidden text-sm font-semibold lg:block">
+              <strong className="text-lg font-semibold">Expenses MVP</strong>
+            </Link>
 
             <Navigation />
           </header>
