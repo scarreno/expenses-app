@@ -1,52 +1,100 @@
 # Expenses v1.0.0
 
-Expenses is an AI-powered household expense tracking application built with Next.js, Prisma, Neon PostgreSQL and OpenAI.
+AI-powered household expense tracking application built with Next.js, Prisma, Neon PostgreSQL and OpenAI.
 
-The goal of the project is to simplify receipt processing by automatically extracting purchase information from images and PDF receipts, allowing users to review, edit and categorize their purchases before saving them.
+Expenses helps automate receipt processing by extracting purchase information from images and PDF receipts, allowing users to review, edit and categorize purchases before saving them.
 
 The application also provides spending insights through dashboards and category-based analytics.
 
 ---
 
-# Features
+## Why I Built This
 
-## Authentication
+This project started as a personal tool to simplify household expense tracking while exploring AI-assisted document processing using OpenAI.
+
+The goal was to build a complete end-to-end application covering:
+
+* Authentication and user ownership
+* File storage and management
+* AI-powered receipt extraction
+* Data validation and correction workflows
+* Analytics and reporting
+* Modern full-stack architecture using Next.js
+
+---
+
+## Screenshots
+
+### Dashboard
+
+![Dashboard](docs/screenshots/dashboard.png)
+
+### Upload Receipt
+
+![Upload](docs/screenshots/upload.png)
+
+### Receipt Preview
+
+![Preview](docs/screenshots/preview.png)
+
+### Receipt History
+
+![Receipts](docs/screenshots/receipts.png)
+
+### Receipt Detail
+
+![Receipt Detail](docs/screenshots/receipt-detail.png)
+
+### Categories
+
+![Categories](docs/screenshots/categories.png)
+
+### Settings
+
+![Settings](docs/screenshots/settings.png)
+
+---
+
+## Features
+
+### Authentication
 
 * Google Authentication using NextAuth
 * Protected routes
 * User ownership and data isolation
 
-## Receipt Processing
+### Receipt Processing
 
-* Upload receipt images and PDFs
-* AI-powered data extraction using OpenAI
-* Support for different business types
-* Editable preview before saving
-* Receipt file storage
+* Upload receipt images and PDF files
+* AI-powered extraction using OpenAI
+* Support for multiple business types
+* Editable extraction preview before saving
+* Automatic receipt item categorization
+* Local and cloud file storage support
 
-## Receipt Management
+### Receipt Management
 
 * Receipt history
 * Receipt detail view
 * Receipt editing
 * Receipt deletion
-* Pagination
+* Pagination support
 
-## Categories
+### Categories
 
 * Default system categories
 * Custom user categories
 * Category activation and deactivation
 * Manual category reassignment
 
-## Dashboard
+### Dashboard
 
 * Total spending summary
 * Monthly expenses chart
 * Spending by category
 * User-specific analytics
 
-## User Preferences
+### User Preferences
 
 * Locale configuration
 * Currency formatting
@@ -54,62 +102,40 @@ The application also provides spending insights through dashboards and category-
 
 ---
 
-# Screenshots
+## Technology Stack
 
-> Screenshots will be added in future updates.
+### Frontend
 
-## Upload Receipt
-
-![Upload](docs/screenshots/upload.png)
-
-## Receipt Preview
-
-![Preview](docs/screenshots/preview.png)
-
-## Receipt History
-
-![Receipts](docs/screenshots/receipts.png)
-
-## Dashboard
-
-![Dashboard](docs/screenshots/dashboard.png)
-
----
-
-# Technology Stack
-
-## Frontend
-
-* Next.js 15
+* Next.js 15 (App Router)
 * React
 * TypeScript
 * Tailwind CSS
 * shadcn/ui
 
-## Backend
+### Backend
 
 * Next.js Route Handlers
 * Prisma ORM
 * Neon PostgreSQL
 
-## AI
+### AI
 
 * OpenAI Responses API
 * GPT-4.1 Mini
 
-## Authentication
+### Authentication
 
 * NextAuth
 * Google OAuth
 
-## Storage
+### Storage
 
 * Local File Storage (Development)
 * Vercel Blob Storage (Production)
 
 ---
 
-# Architecture
+## Architecture
 
 Receipt processing flow:
 
@@ -129,16 +155,16 @@ Dashboard & Analytics
 
 ---
 
-# Running Locally
+## Running Locally
 
-## Prerequisites
+### Prerequisites
 
 * Node.js 22+
 * PostgreSQL or Neon Database
 * OpenAI API Key
 * Google OAuth Credentials
 
-## Installation
+### Installation
 
 Clone the repository:
 
@@ -155,7 +181,7 @@ pnpm install
 
 ---
 
-## Environment Variables
+### Environment Variables
 
 Create a `.env` file in the project root:
 
@@ -174,7 +200,7 @@ NEXT_PUBLIC_STORAGE_DRIVER=local
 
 ---
 
-## Database Setup
+### Database Setup
 
 Generate Prisma Client:
 
@@ -196,7 +222,7 @@ pnpm prisma studio
 
 ---
 
-## Creating New Migrations
+### Creating New Migrations
 
 After modifying:
 
@@ -225,7 +251,7 @@ pnpm prisma generate
 
 ---
 
-## Development Reset
+### Development Reset
 
 Only for local development:
 
@@ -243,7 +269,7 @@ Do not use these commands in production environments.
 
 ---
 
-## Start Development Server
+### Start Development Server
 
 ```bash
 pnpm dev
@@ -257,7 +283,29 @@ http://localhost:3000
 
 ---
 
-# Roadmap
+## Project Status
+
+Current version:
+
+```text
+v1.0.0
+```
+
+This release includes:
+
+* Google Authentication
+* Multi-user support
+* AI receipt extraction
+* Receipt editing workflows
+* Categories management
+* Dashboard analytics
+* User settings
+* Local and cloud storage support
+* Responsive UI
+
+---
+
+## Roadmap
 
 Planned future improvements:
 
@@ -271,18 +319,6 @@ Planned future improvements:
 
 ---
 
-# Version
-
-Current version:
-
-```text
-v1.0.0
-```
-
-Initial stable release.
-
----
-
-# License
+## License
 
 MIT
