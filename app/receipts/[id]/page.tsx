@@ -14,6 +14,7 @@ import { prisma } from "@/app/lib/prisma";
 import { getUserSettings } from "@/app/lib/settings/get-user-settings";
 import { Button } from "@/components/ui/button";
 import { formatDisplayDate } from "@/lib/utils/date";
+import { getDictionary } from "@/app/lib/i18n/get-dictionary";
 
 export default async function ReceiptDetailPage({
   params,
@@ -24,6 +25,7 @@ export default async function ReceiptDetailPage({
 
   const user = await getCurrentUserOrRedirect();
   const settings = await getUserSettings(user.id);
+  const dictionary = await getDictionary(settings.language);
 
   const receipt = await prisma.receipt.findUnique({
     where: {
@@ -43,25 +45,25 @@ export default async function ReceiptDetailPage({
     <PageContainer>
       <PageHeaderActions>
         <PageHeader
-          title="Receipt Detail"
-          description="Review the original receipt and extracted items."
+          title={dictionary.receipt.pages.detail.title}
+          description={dictionary.receipt.pages.detail.description}
         />
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <Button variant="outline" asChild>
             <Link href="/receipts">
               <IconChevronsLeft className="mr-2 size-4" />
-              Back to receipts
+              {dictionary.receipt.actions.backToReceipts}
             </Link>
           </Button>
 
-          <DeleteReceiptButton receiptId={receipt.id} />
+          <DeleteReceiptButton receiptId={receipt.id} dictionary={dictionary} />
         </div>
       </PageHeaderActions>
 
       <section className="grid min-w-0 gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
         <div className="min-w-0">
-          <ReceiptFilePreview fileUrl={receipt.publicFileUrl ?? ""} />
+          <ReceiptFilePreview fileUrl={receipt.publicFileUrl ?? ""} dictionary={dictionary} />
         </div>
 
         <div className="min-w-0 space-y-6">
@@ -74,12 +76,14 @@ export default async function ReceiptDetailPage({
                 : null
             }
             settings={settings}
+            dictionary={dictionary}
           />
 
             <ReceiptItemsTable
               items={receipt.items}
               readonly
               settings={settings}
+              dictionary={dictionary}
             />
         </div>
       </section>

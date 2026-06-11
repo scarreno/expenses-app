@@ -10,12 +10,14 @@ import {
 } from "@/components/ui/card";
 import { MonthlyExpensesChartClient } from "./client";
 import { MonthlyExpensesChartData } from "./types";
+import { Dictionary } from "@/app/types/dictionary";
 
 type Props = {
   userId: string;
+  dictionary: Dictionary;
 };
 
-export async function MonthlyExpensesChart({ userId }: Props) {
+export async function MonthlyExpensesChart({ userId, dictionary }: Props) {
   const receipts = await prisma.receipt.findMany({
     where: {
       userId,
@@ -55,8 +57,8 @@ export async function MonthlyExpensesChart({ userId }: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Monthly Expenses</CardTitle>
-        <CardDescription>Total spent grouped by month.</CardDescription>
+        <CardTitle>{dictionary.dashboard.monthlyExpenses.title}</CardTitle>
+        <CardDescription>{dictionary.dashboard.monthlyExpenses.description}</CardDescription>
       </CardHeader>
 
       <CardContent>

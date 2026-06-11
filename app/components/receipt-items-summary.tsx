@@ -17,6 +17,7 @@ import {
 import { formatDisplayDate } from "@/lib/utils/date";
 import { CalendarIcon } from "lucide-react";
 import { format, parseISO } from "date-fns";
+import { Dictionary } from "@/app/types/dictionary";
 
 type Props = {
   store: string | null;
@@ -24,6 +25,7 @@ type Props = {
   editable?: boolean;
   purchaseDate: string | null;
   settings: UserSettings;
+  dictionary: Dictionary;
   updateReceiptField?: (field: "store" | "purchaseDate", value: string) => void;
 };
 
@@ -33,6 +35,7 @@ export function ReceiptItemsSummary({
   editable,
   purchaseDate,
   settings,
+  dictionary,
   updateReceiptField,
 }: Props) {
   const selectedDate = purchaseDate ? parseISO(purchaseDate) : undefined;
@@ -40,12 +43,12 @@ export function ReceiptItemsSummary({
   return (
     <Card>
       <CardHeader className="space-y-4">
-        <CardTitle>Receipt Summary</CardTitle>
+        <CardTitle>{dictionary.receipt.summary.title}</CardTitle>
 
         <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_220px] md:items-end">
           <div className="min-w-0 space-y-2">
             <label className="text-sm font-medium text-muted-foreground">
-              Store
+              {dictionary.receipt.summary.store}
             </label>
 
             {editable ? (
@@ -58,14 +61,14 @@ export function ReceiptItemsSummary({
               />
             ) : (
               <div className="truncate text-2xl font-semibold">
-                {store ?? "Unknown store"}
+                {store ?? dictionary.receipt.summary.unknownStore}
               </div>
             )}
           </div>
 
           <div className="w-full space-y-2 md:w-[220px]">
             <label className="text-sm font-medium text-muted-foreground">
-              Purchase Date
+              {dictionary.receipt.summary.purchaseDate}
             </label>
 
             {editable ? (
@@ -78,7 +81,7 @@ export function ReceiptItemsSummary({
                     <CalendarIcon className="mr-2 size-4" />
                     {selectedDate
                       ? formatDisplayDate(selectedDate, settings)
-                      : "Select date"}
+                      : dictionary.receipt.actions.selectDate}
                   </Button>
                 </PopoverTrigger>
 
@@ -112,7 +115,7 @@ export function ReceiptItemsSummary({
         </div>
 
         <p className="mt-2 text-sm text-muted-foreground">
-          Total extracted from receipt items
+          {dictionary.receipt.summary.totalExtracted}
         </p>
       </CardContent>
     </Card>

@@ -125,6 +125,7 @@ model UserSettings {
   id         String   @id @default(uuid())
   userId     String   @unique
 
+  language       String   @default("en")
   locale     String   @default("es-CL")
   dateFormat String   @default("dd-MM-yyyy")
 

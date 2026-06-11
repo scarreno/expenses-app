@@ -17,6 +17,7 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { formatDisplayDate } from "@/lib/utils/date";
+import { getDictionary } from "@/app/lib/i18n/get-dictionary";
 
 const PAGE_SIZE = 8;
 
@@ -39,6 +40,7 @@ export default async function ReceiptsPage({
 
   const user = await getCurrentUserOrRedirect();
   const settings = await getUserSettings(user.id);
+  const dictionary = getDictionary(settings.language);
 
   const where: Prisma.ReceiptWhereInput = {
     userId: user.id,
@@ -113,14 +115,15 @@ export default async function ReceiptsPage({
   return (
     <PageContainer className="max-w-7xl">
       <PageHeader
-        title="Receipts History"
-        description="Browse and review your previously processed receipts."
+        title={dictionary.receiptsHistory.title}
+        description={dictionary.receiptsHistory.description}
       />
 
       <ReceiptHistoryFilters
         years={years}
         selectedMonth={selectedMonth}
         selectedYear={selectedYear}
+        dictionary={dictionary}
       />
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -143,13 +146,13 @@ export default async function ReceiptsPage({
 
               <div className="mt-auto space-y-2 text-sm text-muted-foreground">
                 <div>
-                  <span className="font-medium text-foreground">Created:</span>{" "}
+                  <span className="font-medium text-foreground">{dictionary.receiptsHistory.card.created}</span>{" "}
                   {receipt.createdAt.toLocaleString()}
                 </div>
 
                 <div>
                   <span className="font-medium text-foreground">
-                    Purchase Date:
+                    {dictionary.receiptsHistory.card.purchaseDate}
                   </span>{" "}
                   {receipt.purchaseDate
                     ? formatDisplayDate(receipt.purchaseDate, settings)
@@ -160,12 +163,12 @@ export default async function ReceiptsPage({
 
             <CardFooter className="mt-auto flex flex-col gap-2 sm:flex-row">
               <Button asChild variant="outline" className="w-full sm:flex-1">
-                <Link href={`/receipts/${receipt.id}`}>View Detail</Link>
+                <Link href={`/receipts/${receipt.id}`}>{dictionary.receiptsHistory.actions.viewDetail}</Link>
               </Button>
 
               <Button asChild className="w-full sm:flex-1">
                 <Link href={`/receipts/${receipt.id}/edit`}>
-                  Edit Receipt
+                  {dictionary.receiptsHistory.actions.editReceipt}
                 </Link>
               </Button>
             </CardFooter>
@@ -176,16 +179,16 @@ export default async function ReceiptsPage({
       <div className="flex items-center justify-center gap-4">
         {currentPage > 1 ? (
           <Button variant="outline" asChild>
-            <Link href={getPaginationHref(currentPage - 1)}>Previous</Link>
+            <Link href={getPaginationHref(currentPage - 1)}>{dictionary.receiptsHistory.pagination.previous}</Link>
           </Button>
         ) : (
           <Button variant="outline" disabled>
-            Previous
+            {dictionary.receiptsHistory.pagination.previous}
           </Button>
         )}
 
         <span className="text-sm text-muted-foreground">
-          Page {currentPage} of {totalPages}
+          {dictionary.receiptsHistory.pagination.page} {currentPage} {dictionary.receiptsHistory.pagination.of} {totalPages}
         </span>
 
         {currentPage < totalPages ? (
@@ -194,7 +197,7 @@ export default async function ReceiptsPage({
           </Button>
         ) : (
           <Button variant="outline" disabled>
-            Next
+            {dictionary.receiptsHistory.pagination.next}
           </Button>
         )}
       </div>

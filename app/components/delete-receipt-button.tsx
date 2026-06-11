@@ -16,12 +16,14 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Dictionary } from "@/app/types/dictionary";
 
 type Props = {
   receiptId: string;
+  dictionary: Dictionary;
 };
 
-export function DeleteReceiptButton({ receiptId }: Props) {
+export function DeleteReceiptButton({ receiptId, dictionary }: Props) {
   const router = useRouter();
 
   async function handleDeleteReceipt() {
@@ -31,16 +33,16 @@ export function DeleteReceiptButton({ receiptId }: Props) {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to delete receipt");
+        throw new Error(dictionary.receipt.notifications.deleteFailed);
       }
 
-      toast.success("Receipt deleted successfully");
+      toast.success(dictionary.receipt.notifications.deleted);
 
       router.push("/receipts");
       router.refresh();
     } catch (error) {
       console.error(error);
-      toast.error("Failed to delete receipt");
+      toast.error(dictionary.receipt.notifications.deleteFailed);
     }
   }
 
@@ -53,27 +55,26 @@ export function DeleteReceiptButton({ receiptId }: Props) {
           className="border-red-900/60 text-red-400 hover:bg-red-950 hover:text-red-200"
         >
           <IconCircleDashedMinus className="mr-2 size-4" />
-          Delete Receipt
+          {dictionary.receipt.dialogs.delete.title}
         </Button>
       </AlertDialogTrigger>
 
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete receipt?</AlertDialogTitle>
+          <AlertDialogTitle>{dictionary.receipt.dialogs.delete.actions.confirm}</AlertDialogTitle>
           <AlertDialogDescription>
-            This will permanently delete this receipt and its extracted items.
-            This action cannot be undone.
+            {dictionary.receipt.dialogs.delete.description}
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel>{dictionary.receipt.dialogs.delete.actions.cancel}</AlertDialogCancel>
 
           <AlertDialogAction
             onClick={handleDeleteReceipt}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            Delete Receipt
+            {dictionary.receipt.dialogs.delete.title}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

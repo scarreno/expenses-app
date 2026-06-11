@@ -9,29 +9,42 @@ import { PageHeaderActions } from "@/app/components/layout/page-header-actions";
 import { getCurrentUserOrRedirect } from "@/app/lib/auth-user";
 import { getUserSettings } from "@/app/lib/settings/get-user-settings";
 import { Button } from "@/components/ui/button";
+import { getDictionary } from "@/app/lib/i18n/get-dictionary";
 
 export default async function DashboardPage() {
   const user = await getCurrentUserOrRedirect();
   const settings = await getUserSettings(user.id);
+  const dictionary = getDictionary(settings.language);
 
   return (
     <PageContainer className="max-w-7xl">
       <PageHeaderActions>
         <PageHeader
-          title="Dashboard"
-          description="Overview of your receipts and expenses."
+          title={dictionary.dashboard.title}
+          description={dictionary.dashboard.description}
         />
 
         <Button asChild>
-          <Link href="/">Upload receipt</Link>
+          <Link href="/">{dictionary.dashboard.actions.uploadReceipt}</Link>
         </Button>
       </PageHeaderActions>
 
-      <DashboardReceiptSummary settings={settings} userId={user.id} />
+      <DashboardReceiptSummary 
+        settings={settings} 
+        userId={user.id} 
+        dictionary={dictionary}
+      />
 
-      <CategoryTotalsChart settings={settings} userId={user.id} />
+      <CategoryTotalsChart 
+        settings={settings} 
+        userId={user.id} 
+        dictionary={dictionary}
+      />
 
-      <MonthlyExpensesChart userId={user.id} />
+      <MonthlyExpensesChart 
+        userId={user.id} 
+        dictionary={dictionary}
+      />
     </PageContainer>
   );
 }

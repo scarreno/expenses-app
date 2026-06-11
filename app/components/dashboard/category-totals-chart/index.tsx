@@ -11,13 +11,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { toTitleCase } from "@/app/lib/to-title-case";
+import { Dictionary } from "@/app/types/dictionary";
 
 type Props = {
   settings: UserSettings;
   userId: string;
+  dictionary: Dictionary;
 };
 
-export async function CategoryTotalsChart({ settings, userId }: Props) {
+export async function CategoryTotalsChart({ settings, userId, dictionary }: Props) {
   const items = await prisma.receiptItem.findMany({
     where: {
       receipt: {
@@ -86,9 +88,9 @@ export async function CategoryTotalsChart({ settings, userId }: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Category Insights</CardTitle>
+        <CardTitle>{dictionary.dashboard.categoryInsights.title}</CardTitle>
         <CardDescription>
-          Total spending distribution by category.
+          {dictionary.dashboard.categoryInsights.description}
         </CardDescription>
       </CardHeader>
 
@@ -97,6 +99,7 @@ export async function CategoryTotalsChart({ settings, userId }: Props) {
           initialData={data}
           months={months}
           settings={settings}
+          dictionary={dictionary}
         />
       </CardContent>
     </Card>

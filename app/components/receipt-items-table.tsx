@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { Dictionary } from "@/app/types/dictionary";
 
 type ReceiptCategoryOption = {
   code: string;
@@ -22,6 +23,7 @@ type Props = {
   readonly: boolean;
   categories?: ReceiptCategoryOption[];
   settings: UserSettings;
+  dictionary: Dictionary;
 
   updateItemField?: (
     index: number,
@@ -39,6 +41,7 @@ export function ReceiptItemsTable({
   readonly,
   categories = [],
   settings,
+  dictionary
 }: Props) {
   function getCategoryLabel(code?: string | null) {
     if (!code) {
@@ -59,32 +62,32 @@ export function ReceiptItemsTable({
         <thead className="bg-muted/50 text-left text-muted-foreground">
           <tr>
             <th className="w-[28%] border-b px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wide">
-              Description
+              {dictionary.receipt.items.description}
             </th>
 
             <th className="w-[20%] border-b px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wide">
-              Category
+              {dictionary.receipt.items.category}
             </th>
 
             <th className="w-[10%] border-b px-3 py-2 text-center text-[11px] font-medium uppercase tracking-wide">
-              Quantity
+              {dictionary.receipt.items.quantity}
             </th>
 
             <th className="w-[9%] border-b px-3 py-2 text-center text-[11px] font-medium uppercase tracking-wide">
-              Unit
+              {dictionary.receipt.items.unit}
             </th>
 
             <th className="w-[12%] border-b px-3 py-2 text-right text-[11px] font-medium uppercase tracking-wide">
-              Unit Price
+              {dictionary.receipt.items.unitPrice}
             </th>
 
             <th className="w-[10%] border-b px-3 py-2 text-right text-[11px] font-medium uppercase tracking-wide">
-              Total
+              {dictionary.receipt.items.total}
             </th>
 
             {!readonly && (
               <th className="w-[11%] border-b px-3 py-2 text-center text-[11px] font-medium uppercase tracking-wide">
-                Actions
+                {dictionary.receipt.items.actions}
               </th>
             )}
           </tr>
@@ -211,7 +214,7 @@ export function ReceiptItemsTable({
                     size="sm"
                     onClick={() => removeItem?.(index)}
                   >
-                    Remove
+                    {dictionary.receipt.actions.removeItem}
                   </Button>
                 </td>
               )}

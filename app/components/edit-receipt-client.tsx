@@ -16,6 +16,7 @@ import { UserSettings } from "@/app/types/user-settings-types";
 import { PageContainer } from "@/app/components/layout/page-container";
 import { PageHeader } from "@/app/components/layout/page-header";
 import { PageHeaderActions } from "@/app/components/layout/page-header-actions";
+import { Dictionary } from "@/app/types/dictionary";
 
 type EditableReceipt = {
   id: string;
@@ -39,9 +40,10 @@ type Props = {
   receipt: EditableReceipt;
   categories: CategoryOption[];
   settings: UserSettings;
+  dictionary: Dictionary;
 };
 
-export function EditReceiptClient({ receipt, categories, settings }: Props) {
+export function EditReceiptClient({ receipt, categories, settings, dictionary }: Props) {
     const router = useRouter();
     const [editableReceipt, setEditableReceipt] = useState(receipt);
     const [saving, setSaving] = useState(false);
@@ -74,12 +76,10 @@ export function EditReceiptClient({ receipt, categories, settings }: Props) {
         );
 
         if (!response.ok) {
-        throw new Error("Failed to update receipt");
+        throw new Error(dictionary.receipt.notifications.updateFailed);
         }
 
-        toast.success(
-        "Receipt updated successfully"
-        );
+        toast.success(dictionary.receipt.notifications.updated);
 
         router.push("/receipts");
     } catch (error) {
@@ -88,7 +88,7 @@ export function EditReceiptClient({ receipt, categories, settings }: Props) {
         const message =
         error instanceof Error
             ? error.message
-            : "Unknown error";
+            : dictionary.receipt.errors.unknown;
 
         toast.error(message);
     } finally {
@@ -156,21 +156,23 @@ export function EditReceiptClient({ receipt, categories, settings }: Props) {
   <PageContainer className="max-w-[1600px]">
     <PageHeaderActions>
       <PageHeader
-        title="Edit Receipt"
-        description="Update the receipt information and adjust extracted items."
+        title={dictionary.receipt.pages.edit.title}
+        description={dictionary.receipt.pages.edit.description}
       />
 
       <Button asChild variant="outline">
         <Link href="/receipts">
           <IconChevronsLeft className="mr-2 size-4" />
-          Back to receipts
+          {dictionary.receipt.actions.backToReceipts}
         </Link>
       </Button>
     </PageHeaderActions>
 
       <section className="grid min-w-0 gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
         <div className="min-w-0">
-          <ReceiptFilePreview fileUrl={editableReceipt.publicFileUrl ?? ""} />
+          <ReceiptFilePreview 
+            fileUrl={editableReceipt.publicFileUrl ?? ""}
+            dictionary={dictionary} />
         </div>
 
         <div className="min-w-0 space-y-6">
@@ -181,6 +183,7 @@ export function EditReceiptClient({ receipt, categories, settings }: Props) {
             editable
             updateReceiptField={updateReceiptField}
             settings={settings}
+            dictionary={dictionary}
           />
 
             <ReceiptItemsTable
@@ -190,12 +193,13 @@ export function EditReceiptClient({ receipt, categories, settings }: Props) {
               updateItemField={updateItemField}
               removeItem={removeItem}
               settings={settings}
+              dictionary={dictionary}
             />
 
           <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
             <Button asChild variant="outline">
               <Link href={`/receipts`}>
-                Cancel
+                {dictionary.receipt.actions.cancel}
               </Link>
             </Button>
 
@@ -208,12 +212,12 @@ export function EditReceiptClient({ receipt, categories, settings }: Props) {
                 {saving ? (
                             <>
                             <Spinner className="mr-2 size-4" />
-                            Saving...
+                            {dictionary.receipt.actions.savingChanges}
                             </>
                         ) : (
                             <>
                             <IconDeviceFloppy className="mr-2 size-4" />
-                            Save Changes
+                            {dictionary.receipt.actions.saveChanges}
                             </>
                         )}
 

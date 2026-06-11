@@ -5,6 +5,7 @@ import { getCategoryLabel } from "@/app/lib/category-labels";
 import { prisma } from "@/app/lib/prisma";
 import { getUserSettings } from "@/app/lib/settings/get-user-settings";
 import { notFound } from "next/navigation";
+import { getDictionary } from "@/app/lib/i18n/get-dictionary";
 
 export default async function ReceiptEditPage({
   params,
@@ -15,6 +16,7 @@ export default async function ReceiptEditPage({
 
   const user = await getCurrentUserOrRedirect();
   const settings = await getUserSettings(user.id);
+  const dictionary = await getDictionary(settings.language);
 
   const receipt = await prisma.receipt.findFirst({
     where: {
@@ -46,6 +48,7 @@ export default async function ReceiptEditPage({
       receipt={receipt}
       categories={categoryOptions}
       settings={settings}
+      dictionary={dictionary}
     />
   );
 }

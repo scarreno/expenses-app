@@ -9,32 +9,35 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Dictionary } from "@/app/types/dictionary";
 
 type Props = {
   years: string[];
   selectedMonth: string;
   selectedYear: string;
+  dictionary: Dictionary;
 };
 
 const months = [
-  { value: "01", label: "January" },
-  { value: "02", label: "February" },
-  { value: "03", label: "March" },
-  { value: "04", label: "April" },
-  { value: "05", label: "May" },
-  { value: "06", label: "June" },
-  { value: "07", label: "July" },
-  { value: "08", label: "August" },
-  { value: "09", label: "September" },
-  { value: "10", label: "October" },
-  { value: "11", label: "November" },
-  { value: "12", label: "December" },
-];
+  { value: "01", key: "january" },
+  { value: "02", key: "february" },
+  { value: "03", key: "march" },
+  { value: "04", key: "april" },
+  { value: "05", key: "may" },
+  { value: "06", key: "june" },
+  { value: "07", key: "july" },
+  { value: "08", key: "august" },
+  { value: "09", key: "september" },
+  { value: "10", key: "october" },
+  { value: "11", key: "november" },
+  { value: "12", key: "december" },
+] as const;
 
 export function ReceiptHistoryFilters({
   years,
   selectedMonth,
   selectedYear,
+  dictionary
 }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -64,11 +67,11 @@ export function ReceiptHistoryFilters({
         </SelectTrigger>
 
         <SelectContent>
-          <SelectItem value="all">All months</SelectItem>
+          <SelectItem value="all">{dictionary.receiptsHistory.filters.allMonths}</SelectItem>
 
           {months.map((month) => (
             <SelectItem key={month.value} value={month.value}>
-              {month.label}
+              {dictionary.common.months[month.key]}
             </SelectItem>
           ))}
         </SelectContent>
@@ -83,7 +86,7 @@ export function ReceiptHistoryFilters({
         </SelectTrigger>
 
         <SelectContent>
-          <SelectItem value="all">All years</SelectItem>
+          <SelectItem value="all">{dictionary.receiptsHistory.filters.allYears}</SelectItem>
 
           {years.map((year) => (
             <SelectItem key={year} value={year}>
