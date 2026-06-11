@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Dictionary } from "@/app/types/dictionary";
 
 type ChartData = {
   category: string;
@@ -33,6 +34,7 @@ type Props = {
   initialData: ChartData[];
   months: string[];
   settings: UserSettings;
+  dictionary: Dictionary;
 };
 
 const chartConfig = {
@@ -52,6 +54,7 @@ export function CategoryTotalsChartClient({
   initialData,
   months,
   settings,
+  dictionary
 }: Props) {
   const [data, setData] = useState(initialData);
   const [selectedMonth, setSelectedMonth] = useState("all");
@@ -78,7 +81,7 @@ export function CategoryTotalsChartClient({
           </SelectTrigger>
 
           <SelectContent>
-            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="all">{dictionary.dashboard.categoryInsights.filters.allCategories}</SelectItem>
 
             {months.map((month) => (
               <SelectItem key={month} value={month}>

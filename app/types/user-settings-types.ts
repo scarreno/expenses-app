@@ -6,4 +6,5 @@ export type UserSettings = {
   storageFormat: string;
   currencyLocale: string;
   currencyCode: string;
+  language: string;
 };

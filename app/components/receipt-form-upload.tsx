@@ -31,13 +31,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
+import { Dictionary } from "@/app/types/dictionary";
 
 type Props = {
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   loading: boolean;
+  dictionary: Dictionary;
 };
 
-export function ReceiptFormUpload({ handleSubmit, loading }: Props) {
+export function ReceiptFormUpload({ handleSubmit, loading, dictionary}: Props) {
   const [receiptType, setReceiptType] = useState("");
   const [fileName, setFileName] = useState("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -45,15 +47,15 @@ export function ReceiptFormUpload({ handleSubmit, loading }: Props) {
   return (
     <section className="mx-auto w-full max-w-md space-y-6 py-12">
       <PageHeader
-        title="Upload Receipt"
-        description="Upload a receipt and let AI extract the purchase details."
+        title={dictionary.upload.title}
+        description={dictionary.upload.description}
       />
 
       <Card>
         <CardHeader>
-          <CardTitle>Receipt information</CardTitle>
+          <CardTitle>{dictionary.upload.receiptInformation.title}</CardTitle>
           <CardDescription>
-            Select the business type and upload the receipt file.
+            {dictionary.upload.receiptInformation.description}
           </CardDescription>
         </CardHeader>
 
@@ -63,12 +65,12 @@ export function ReceiptFormUpload({ handleSubmit, loading }: Props) {
 
             <Select value={receiptType} onValueChange={setReceiptType}>
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select business type" />
+                <SelectValue placeholder={dictionary.upload.selectBusinessType} />
               </SelectTrigger>
 
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Select business type</SelectLabel>
+                  <SelectLabel>{dictionary.upload.selectBusinessType}</SelectLabel>
                   <SelectItem value="SUPERMARKET">Supermarket</SelectItem>
                   <SelectItem value="MARKET">Market</SelectItem>
                   <SelectItem value="GAS">Gas</SelectItem>
@@ -96,7 +98,7 @@ export function ReceiptFormUpload({ handleSubmit, loading }: Props) {
               onClick={() => fileInputRef.current?.click()}
             >
               <IconFileUpload className="mr-2 size-4" />
-              {fileName || "Select receipt file"}
+              {fileName || dictionary.upload.selectReceiptFile}
             </Button>
 
             <Button
@@ -107,12 +109,12 @@ export function ReceiptFormUpload({ handleSubmit, loading }: Props) {
               {loading ? (
                 <>
                   <Spinner className="mr-2 size-4" />
-                  Processing...
+                  {dictionary.upload.proessing}
                 </>
               ) : (
                 <>
                   <IconUpload className="mr-2 size-4" />
-                  Upload receipt
+                  {dictionary.upload.uploadReceipt}
                 </>
               )}
             </Button>
@@ -120,11 +122,10 @@ export function ReceiptFormUpload({ handleSubmit, loading }: Props) {
             <Alert>
               <IconInfoCircle className="h-4 w-4" />
 
-              <AlertTitle>Receipt Type Matters</AlertTitle>
+              <AlertTitle>{dictionary.upload.receiptTypeMatters.title}</AlertTitle>
 
               <AlertDescription>
-                Selecting the correct business type improves extraction
-                accuracy and category classification.
+                {dictionary.upload.receiptTypeMatters.description}
               </AlertDescription>
             </Alert>
           </form>

@@ -19,6 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Dictionary } from "@/app/types/dictionary";
+
 
 type SettingsClientProps = {
   settings: {
@@ -26,11 +28,15 @@ type SettingsClientProps = {
     dateFormat: string;
     currencyLocale: string;
     currencyCode: string;
-  };
+    language: string;
+  },
+  dictionary: Dictionary;
 };
+import { useRouter } from "next/navigation";
 
-export function SettingsClient({ settings }: SettingsClientProps) {
+export function SettingsClient({ settings, dictionary }: SettingsClientProps) {
   const [locale, setLocale] = useState(settings.locale);
+  const [language, setLanguage] = useState(settings.language);
   const [dateFormat, setDateFormat] = useState(settings.dateFormat);
   const [currencyCode, setCurrencyCode] = useState(settings.currencyCode);
   const [saving, setSaving] = useState(false);
@@ -42,6 +48,8 @@ export function SettingsClient({ settings }: SettingsClientProps) {
         ? "de-DE"
         : "en-US";
 
+
+  const router = useRouter();
   async function handleSave() {
     try {
       setSaving(true);
@@ -52,6 +60,7 @@ export function SettingsClient({ settings }: SettingsClientProps) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          language,
           locale,
           dateFormat,
           currencyLocale,
@@ -60,13 +69,15 @@ export function SettingsClient({ settings }: SettingsClientProps) {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to save settings");
+        throw new Error(dictionary.settings.notifications.saveFailed);
       }
 
-      toast.success("Settings saved");
+      toast.success(dictionary.settings.notifications.saved);
+      router.push("/settings");
+      router.refresh();
     } catch (error) {
       console.error(error);
-      toast.error("Failed to save settings");
+      toast.error(dictionary.settings.notifications.saveFailed);
     } finally {
       setSaving(false);
     }
@@ -75,18 +86,37 @@ export function SettingsClient({ settings }: SettingsClientProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Application Settings</CardTitle>
+        <CardTitle>{dictionary.settings.application.title}</CardTitle>
         <CardDescription>
-          Configure how dates, language and currency are displayed.
+          {dictionary.settings.application.description}
         </CardDescription>
       </CardHeader>
 
       <CardContent>
         <div className="grid gap-4 border-b py-4 md:grid-cols-[1fr_260px] md:items-center">
           <div className="space-y-1">
-            <label className="text-sm font-medium">Locale</label>
+            <label className="text-sm font-medium">{dictionary.settings.language.label}</label>
             <p className="text-sm text-muted-foreground">
-              Select the language and regional format used by the application.
+              {dictionary.settings.language.description}
+            </p>
+          </div>
+
+          <Select value={language} onValueChange={setLanguage}>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="en">{dictionary.settings.language.options.english}</SelectItem>
+              <SelectItem value="es">{dictionary.settings.language.options.spanish}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="grid gap-4 border-b py-4 md:grid-cols-[1fr_260px] md:items-center">
+          <div className="space-y-1">
+            <label className="text-sm font-medium">{dictionary.settings.regionalFormat.label}</label>
+            <p className="text-sm text-muted-foreground">
+              {dictionary.settings.regionalFormat.description}
             </p>
           </div>
 
@@ -95,17 +125,17 @@ export function SettingsClient({ settings }: SettingsClientProps) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="es-CL">Spanish (Chile)</SelectItem>
-              <SelectItem value="en-US">English (US)</SelectItem>
+              <SelectItem value="es-CL">{dictionary.settings.regionalFormat.options.spanishChile}</SelectItem>
+              <SelectItem value="en-US">{dictionary.settings.regionalFormat.options.englishUs}</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         <div className="grid gap-4 border-b py-4 md:grid-cols-[1fr_260px] md:items-center">
           <div className="space-y-1">
-            <label className="text-sm font-medium">Date Format</label>
+            <label className="text-sm font-medium">{dictionary.settings.dateFormat.label}</label>
             <p className="text-sm text-muted-foreground">
-              Choose how receipt dates are displayed across the app.
+              {dictionary.settings.dateFormat.description}
             </p>
           </div>
 
@@ -123,10 +153,9 @@ export function SettingsClient({ settings }: SettingsClientProps) {
 
         <div className="grid gap-4 border-b py-4 md:grid-cols-[1fr_260px] md:items-start">
           <div className="space-y-1">
-            <label className="text-sm font-medium">Currency</label>
+            <label className="text-sm font-medium">{dictionary.settings.currency.label}</label>
             <p className="text-sm text-muted-foreground">
-              Changing the currency updates symbols and formatting only.
-              Existing receipt amounts are not converted.
+              {dictionary.settings.currency.description}
             </p>
           </div>
 
@@ -135,9 +164,9 @@ export function SettingsClient({ settings }: SettingsClientProps) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="CLP">Chilean Peso (CLP)</SelectItem>
-              <SelectItem value="USD">US Dollar (USD)</SelectItem>
-              <SelectItem value="EUR">Euro (EUR)</SelectItem>
+              <SelectItem value="CLP">{dictionary.settings.currency.options.clp}</SelectItem>
+              <SelectItem value="USD">{dictionary.settings.currency.options.usd}</SelectItem>
+              <SelectItem value="EUR">{dictionary.settings.currency.options.eur}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -151,10 +180,10 @@ export function SettingsClient({ settings }: SettingsClientProps) {
             {saving ? (
               <>
                 <Spinner className="mr-2 size-4" />
-                Saving...
+                {dictionary.settings.actions.saving}
               </>
             ) : (
-              "Save Settings"
+              dictionary.settings.actions.save
             )}
           </Button>
         </div>

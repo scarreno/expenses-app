@@ -23,11 +23,16 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { Dictionary } from "@/app/types/dictionary";
 
-export function Navigation() {
+
+type NavigationProps = {
+  dictionary: Dictionary;
+};
+
+export function Navigation({ dictionary }: NavigationProps) {
   const pathname = usePathname();
   const { data: session } = useSession();
-
   if (!session?.user) {
     return null;
   }
@@ -36,12 +41,12 @@ export function Navigation() {
   const userImage = session.user.image;
 
   const navigationLinks = [
-    { href: "/", label: "Upload", icon: IconUpload },
-    { href: "/receipts", label: "Receipts", icon: IconReceipt },
-    { href: "/dashboard", label: "Dashboard", icon: IconChartBar },
-    { href: "/categories", label: "Categories", icon: IconCategory },
-    { href: "/profile", label: "Profile", icon: IconUser },
-    { href: "/settings", label: "Settings", icon: IconSettings },
+    { href: "/", label: dictionary.navigation.upload, icon: IconUpload },
+    { href: "/receipts", label: dictionary.navigation.receipts, icon: IconReceipt },
+    { href: "/dashboard", label: dictionary.navigation.dashboard, icon: IconChartBar },
+    { href: "/categories", label: dictionary.navigation.categories, icon: IconCategory },
+    { href: "/profile", label: dictionary.navigation.profile, icon: IconUser },
+    { href: "/settings", label: dictionary.navigation.settings, icon: IconSettings },
   ];
 
   const isActiveLink = (href: string) => {
@@ -65,7 +70,7 @@ export function Navigation() {
 
           <SheetContent side="left" className="w-[280px] px-4">
             <SheetHeader className="border-b pb-4 text-left">
-              <SheetTitle>Expenses MVP</SheetTitle>
+              <SheetTitle>{dictionary.common.menu}</SheetTitle>
             </SheetHeader>
 
             <nav className="mt-6 flex flex-col gap-2">
@@ -114,18 +119,18 @@ export function Navigation() {
 
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium">{userName}</p>
-                    <p className="text-xs text-muted-foreground">Signed in</p>
+                    <p className="text-xs text-muted-foreground">{dictionary.common.signedIn}</p>
                   </div>
                 </Link>
               </SheetClose>
 
-              <SignOutButton />
+              <SignOutButton dictionary={dictionary} />
             </div>
           </SheetContent>
         </Sheet>
 
         <Link href="/" className="text-sm font-semibold">
-          <strong className="text-lg font-semibold">Expenses MVP</strong>
+          <strong className="text-lg font-semibold">{dictionary.common.appName}</strong>
         </Link>
       </div>
 
@@ -177,7 +182,7 @@ export function Navigation() {
 
           <div className="h-4 w-px bg-border" />
 
-          <SignOutButton />
+          <SignOutButton dictionary={dictionary} />
         </div>
       </div>
     </div>

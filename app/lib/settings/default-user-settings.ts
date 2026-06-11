@@ -6,4 +6,5 @@ export const defaultUserSettings = {
   storageFormat: appSettings.date.storageFormat,
   currencyLocale: appSettings.currency.locale,
   currencyCode: appSettings.currency.currency,
+  language: appSettings.language
 };

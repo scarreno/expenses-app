@@ -4,22 +4,24 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Dictionary } from "@/app/types/dictionary";
 
 type Props = {
   fileUrl?: string | null;
+  dictionary: Dictionary;
 };
 
-export function ReceiptFilePreview({ fileUrl }: Props) {
+export function ReceiptFilePreview({ fileUrl, dictionary }: Props) {
   if (!fileUrl) {
     return (
       <Card className="min-w-0">
         <CardHeader>
-          <CardTitle>Receipt File</CardTitle>
+          <CardTitle>{dictionary.receipt.file.title}</CardTitle>
         </CardHeader>
 
         <CardContent>
           <div className="flex h-[320px] items-center justify-center rounded-md border bg-muted/30 text-sm text-muted-foreground">
-            Receipt file is not available.
+            {dictionary.receipt.file.notAvailable}
           </div>
         </CardContent>
       </Card>
@@ -31,7 +33,7 @@ export function ReceiptFilePreview({ fileUrl }: Props) {
   return (
     <Card className="min-w-0">
       <CardHeader>
-        <CardTitle>Receipt File</CardTitle>
+        <CardTitle>{dictionary.receipt.file.title}</CardTitle>
       </CardHeader>
 
       <CardContent>

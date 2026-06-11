@@ -19,7 +19,6 @@ export async function DELETE(
     const { id: receiptId } = await params
 
   const currentUser = await getCurrentUser();
-
   if (!currentUser) {
     return Response.json(
       { error: "Unauthorized" },

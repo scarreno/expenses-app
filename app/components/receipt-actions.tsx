@@ -16,18 +16,21 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Dictionary } from "@/app/types/dictionary";
 
 type Props = {
   addItem: () => void;
   handleSave: () => void;
   handleCancelPreview: () => void;
   saving: boolean;
+  dictionary: Dictionary;
 };
 
 export function ReceiptActions({
   addItem,
   handleSave,
   saving,
+  dictionary,
   handleCancelPreview,
 }: Props) {
   return (
@@ -38,7 +41,7 @@ export function ReceiptActions({
         onClick={addItem}
       >
         <IconPlus className="mr-2 size-4" />
-        Add item
+        {dictionary.receipt.actions.addItem}
       </Button>
 
       <Button
@@ -49,12 +52,12 @@ export function ReceiptActions({
         {saving ? (
           <>
             <Spinner className="mr-2 size-4" />
-            Saving...
+            {dictionary.receipt.actions.savingReceipt}
           </>
         ) : (
           <>
             <IconDeviceFloppy className="mr-2 size-4" />
-            Save receipt
+            {dictionary.receipt.actions.saveReceipt}
           </>
         )}
       </Button>
@@ -65,29 +68,28 @@ export function ReceiptActions({
             type="button"
             variant="outline"
           >
-            Cancel
+            {dictionary.receipt.actions.cancel}
           </Button>
         </AlertDialogTrigger>
 
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              Discard receipt preview?
+              {dictionary.receipt.dialogs.discardPreview.title}
             </AlertDialogTitle>
 
             <AlertDialogDescription>
-              This will delete the uploaded file and discard all extracted
-              data. This action cannot be undone.
+              {dictionary.receipt.dialogs.discardPreview.description}
             </AlertDialogDescription>
           </AlertDialogHeader>
 
           <AlertDialogFooter>
             <AlertDialogCancel>
-              Keep reviewing
+              {dictionary.receipt.dialogs.discardPreview.actions.keepReviewing}
             </AlertDialogCancel>
 
             <AlertDialogAction onClick={handleCancelPreview}>
-              Discard
+              {dictionary.receipt.dialogs.discardPreview.actions.discard}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

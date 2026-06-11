@@ -38,6 +38,7 @@ export async function PATCH(request: Request) {
     },
     update: {
       locale: body.locale,
+      language: body.language,
       dateFormat: body.dateFormat,
       currencyLocale: body.currencyLocale,
       currencyCode: body.currencyCode,
@@ -45,6 +46,7 @@ export async function PATCH(request: Request) {
     create: {
       userId: user.id,
       locale: body.locale,
+      language: body.language,
       dateFormat: body.dateFormat,
       currencyLocale: body.currencyLocale,
       currencyCode: body.currencyCode,

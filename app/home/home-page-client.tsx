@@ -31,10 +31,13 @@ import {
 import { UserSettings } from "@/app/types/user-settings-types";
 import { PageHeader } from "@/app/components/layout/page-header";
 import { PageHeaderActions } from "@/app/components/layout/page-header-actions";
+import { Dictionary } from "@/app/types/dictionary";
+
 
 type Props = {
     categories: CategoryOption[];   
     settings: UserSettings;
+    dictionary: Dictionary;
 };
 
 type UploadedReceiptFile = {
@@ -43,7 +46,7 @@ type UploadedReceiptFile = {
     publicFileUrl: string;
 };
 
-export  function HomePageClient({ categories, settings }: Props) {
+export  function HomePageClient({ categories, settings, dictionary }: Props) {
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState<ExtractReceiptResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -68,11 +71,11 @@ export  function HomePageClient({ categories, settings }: Props) {
       const receiptType = formData.get("receiptType");
 
       if (!(file instanceof File) || file.size === 0) {
-        throw new Error("File is required");
+        throw new Error(dictionary.receipt.validations.fileRequired);
       }
 
       if (typeof receiptType !== "string" || !receiptType) {
-        throw new Error("Receipt type is required");
+        throw new Error(dictionary.receipt.validations.receiptTypeRequired);
       }
 
       // Upload file (local or Vercel Blob depending on env)
@@ -99,17 +102,12 @@ export  function HomePageClient({ categories, settings }: Props) {
       );
 
       if (!extractResponse.ok) {
-        throw new Error("Failed to extract receipt");
+        throw new Error(dictionary.receipt.errors.extractReceipt);
       }
 
       const data: ExtractReceiptResponse = await extractResponse.json();
 
       setPreview(data);
-
-      // Si después necesitas guardar el uploadedFile
-      // para el Save Receipt:
-      //
-      // setUploadedFile(uploadedFile);
 
     } catch (error) {
       console.error(error);
@@ -122,7 +120,7 @@ export  function HomePageClient({ categories, settings }: Props) {
           );
         } catch (deleteError) {
           console.error(
-            "Failed to cleanup uploaded file",
+            dictionary.receipt.errors.cleanupUploadedFile,
             deleteError
           );
         }
@@ -131,10 +129,10 @@ export  function HomePageClient({ categories, settings }: Props) {
       setError(
         error instanceof Error
           ? error.message
-          : "Unknown error"
+          : dictionary.receipt.errors.unknown
       );
 
-      toast.error("Failed to extract receipt");
+      toast.error(dictionary.receipt.errors.extractReceipt);
     } finally {
       setLoading(false);
     }
@@ -151,8 +149,6 @@ export  function HomePageClient({ categories, settings }: Props) {
     setSaving(true);
     setError(null);
 
-    console.log(preview.receipt);
-
     try {
       const response = await fetch("/api/receipts", {
         method: "POST",
@@ -167,19 +163,19 @@ export  function HomePageClient({ categories, settings }: Props) {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to save receipt");
+        throw new Error(dictionary.receipt.notifications.saveFailed);
       }
 
       const savedReceipt = await response.json();
-      toast.success("Receipt saved successfully");
+      toast.success(dictionary.receipt.notifications.saved);
       resetPreviewState();
       console.log(savedReceipt);
       router.push("/receipts");
 
     } catch (error) {
       console.error(error);
-      setError(error instanceof Error ? error.message : "Unknown error");
-      toast.error("Failed to save receipt");
+      setError(error instanceof Error ? error.message : dictionary.receipt.errors.unknown);
+      toast.error(dictionary.receipt.notifications.saveFailed);
     } finally {
       setSaving(false);
     }
@@ -304,7 +300,7 @@ function updateItemField(
     }
   } catch (error) {
     console.error(
-      "Failed to delete uploaded file",
+      dictionary.receipt.notifications.deleteFailed,
       error
     );
   }
@@ -318,6 +314,7 @@ return (
       <ReceiptFormUpload
         handleSubmit={handleSubmit}
         loading={loading}
+        dictionary={dictionary}
       />
     )}
 
@@ -327,35 +324,34 @@ return (
       <>
         <PageHeaderActions>
           <PageHeader
-            title="Receipt Preview"
-            description="Review and adjust the extracted items before saving."
+            title={dictionary.receipt.pages.preview.title}
+            description={dictionary.receipt.pages.preview.description}
           />
 
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button type="button" variant="outline">
-                Upload another receipt
+                {dictionary.receipt.actions.uploadAnotherReceipt}
               </Button>
             </AlertDialogTrigger>
 
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>
-                  Discard receipt preview?
+                  {dictionary.receipt.dialogs.discardPreview.title}
                 </AlertDialogTitle>
                 <AlertDialogDescription>
-                  This will delete the uploaded file and discard all extracted
-                  data. This action cannot be undone.
+                  {dictionary.receipt.dialogs.discardPreview.description}
                 </AlertDialogDescription>
               </AlertDialogHeader>
 
               <AlertDialogFooter>
                 <AlertDialogCancel>
-                  Keep reviewing
+                  {dictionary.receipt.dialogs.discardPreview.actions.keepReviewing}
                 </AlertDialogCancel>
 
                 <AlertDialogAction onClick={handleCancelPreview}>
-                  Discard
+                  {dictionary.receipt.dialogs.discardPreview.actions.discard}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -364,7 +360,8 @@ return (
 
       <section className="grid min-w-0 gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
         <div className="min-w-0">
-          <ReceiptFilePreview fileUrl={preview.file.publicFileUrl} />
+          <ReceiptFilePreview fileUrl={preview.file.publicFileUrl} 
+          dictionary={dictionary} />
          </div> 
 
           <div className="min-w-0 space-y-6">
@@ -375,6 +372,7 @@ return (
               editable
               updateReceiptField={updateReceiptField}
               settings={settings}
+              dictionary={dictionary}
             />
 
               <ReceiptItemsTable
@@ -384,6 +382,7 @@ return (
                 readonly={false}
                 categories={categories}
                 settings={settings}
+                dictionary={dictionary}
               />
 
             <ReceiptActions
@@ -391,6 +390,7 @@ return (
               handleSave={handleSave}
               saving={saving}
               handleCancelPreview={handleCancelPreview}
+              dictionary={dictionary}
             />
           </div>
         </section>
