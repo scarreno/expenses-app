@@ -193,7 +193,7 @@ export default async function ReceiptsPage({
 
         {currentPage < totalPages ? (
           <Button variant="outline" asChild>
-            <Link href={getPaginationHref(currentPage + 1)}>Next</Link>
+            <Link href={getPaginationHref(currentPage + 1)}>{dictionary.receiptsHistory.pagination.next}</Link>
           </Button>
         ) : (
           <Button variant="outline" disabled>
