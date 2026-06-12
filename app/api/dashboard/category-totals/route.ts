@@ -5,7 +5,8 @@ import { getCurrentUser } from "@/app/lib/auth-user";
 import { getCategoryLabel } from "@/app/lib/category-labels";
 import { prisma } from "@/app/lib/prisma";
 import { toTitleCase } from "@/app/lib/to-title-case";
-
+import { getUserSettings } from "@/app/lib/settings/get-user-settings";
+import { getDictionary } from "@/app/lib/i18n/get-dictionary";
 
 export async function GET(request: NextRequest) {
   const user = await getCurrentUser();
@@ -44,6 +45,9 @@ export async function GET(request: NextRequest) {
     userCategories.map((category) => [category.code, category])
   );
 
+  const settings = await getUserSettings(user.id);
+  const dictionary = await getDictionary(settings.language);
+
   const data = Object.values(
     items.reduce<Record<string, { category: string; total: number }>>(
       (acc, item) => {
@@ -51,7 +55,7 @@ export async function GET(request: NextRequest) {
         const category = categoryMap.get(categoryCode);
 
         const categoryLabel = category
-          ? getCategoryLabel(category, "en")
+          ? getCategoryLabel(category, dictionary.categories.defaults)
           : toTitleCase(categoryCode);
 
         acc[categoryLabel] ??= {

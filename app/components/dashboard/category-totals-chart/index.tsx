@@ -49,7 +49,7 @@ export async function CategoryTotalsChart({ settings, userId, dictionary }: Prop
         const category = categoryMap.get(categoryCode);
 
         const categoryLabel = category
-          ? getCategoryLabel(category, "en")
+          ? getCategoryLabel(category, dictionary.categories.defaults)
           : toTitleCase(categoryCode);
 
         acc[categoryLabel] ??= {

@@ -40,7 +40,7 @@ export default async function ReceiptEditPage({
 
   const categoryOptions = categories.map((category) => ({
     code: category.code,
-    label: getCategoryLabel(category, "en"),
+    label: getCategoryLabel(category, dictionary.categories.defaults),
   }));
 
   return (
