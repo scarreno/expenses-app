@@ -1,9 +1,10 @@
 import { PageContainer } from "@/app/components/layout/page-container";
 import { PageHeader } from "@/app/components/layout/page-header";
-import { ensureUserDefaultCategories } from "@/app/lib/categories";
-import { getCategoryLabel } from "@/app/lib/category-labels";
 import { getCurrentUserOrRedirect } from "@/app/lib/auth-user";
+import { ensureUserDefaultCategories } from "@/app/lib/categories";
+import { getDictionary } from "@/app/lib/i18n/get-dictionary";
 import { prisma } from "@/app/lib/prisma";
+import { getUserSettings } from "@/app/lib/settings/get-user-settings";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +16,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { IconInfoCircle } from "@tabler/icons-react";
 
 import {
   createCategory,
@@ -23,8 +25,28 @@ import {
   updateCategory,
 } from "./actions";
 
+type CategoryViewModel = {
+  code: string;
+  displayName: string | null;
+  isDefault: boolean;
+};
+
+function getLocalizedCategoryLabel(
+  category: CategoryViewModel,
+  defaultLabels: Record<string, string>
+) {
+  if (category.isDefault) {
+    return defaultLabels[category.code] ?? category.code;
+  }
+
+  return category.displayName ?? category.code;
+}
+
 export default async function CategoriesPage() {
   const user = await getCurrentUserOrRedirect();
+
+  const settings = await getUserSettings(user.id);
+  const dictionary = await getDictionary(settings.language);
 
   await ensureUserDefaultCategories(user.id);
 
@@ -48,31 +70,35 @@ export default async function CategoriesPage() {
   return (
     <PageContainer className="max-w-4xl">
       <PageHeader
-        title="Categories"
-        description="Manage the categories used to classify your receipt items."
+        title={dictionary.categories.page.title}
+        description={dictionary.categories.page.description}
       />
 
       <Tabs defaultValue="default" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="default">
-            Default ({defaultCategories.length})
+            {dictionary.categories.tabs.default} ({defaultCategories.length})
           </TabsTrigger>
 
           <TabsTrigger value="custom">
-            Custom ({customActiveCategories.length})
+            {dictionary.categories.tabs.custom} ({customActiveCategories.length})
           </TabsTrigger>
 
           <TabsTrigger value="inactive">
-            Inactive ({customInactiveCategories.length})
+            {dictionary.categories.tabs.inactive} (
+            {customInactiveCategories.length})
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="default">
           <Card>
             <CardHeader>
-              <CardTitle>Default Categories</CardTitle>
+              <CardTitle>
+                {dictionary.categories.sections.defaultTitle}
+              </CardTitle>
+
               <CardDescription>
-                System categories used by AI classification.
+                {dictionary.categories.sections.defaultDescription}
               </CardDescription>
             </CardHeader>
 
@@ -84,10 +110,15 @@ export default async function CategoriesPage() {
                 >
                   <div className="flex items-center gap-2">
                     <p className="font-medium">
-                      {getCategoryLabel(category, "en")}
+                      {getLocalizedCategoryLabel(
+                        category,
+                        dictionary.categories.defaults
+                      )}
                     </p>
 
-                    <Badge variant="secondary">Default</Badge>
+                    <Badge variant="secondary">
+                      {dictionary.categories.labels.default}
+                    </Badge>
                   </div>
 
                   <p className="text-sm text-muted-foreground">
@@ -103,38 +134,58 @@ export default async function CategoriesPage() {
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Add Custom Category</CardTitle>
+                <CardTitle>
+                  {dictionary.categories.sections.addCustomTitle}
+                </CardTitle>
+
                 <CardDescription>
-                  Create categories for manual reassignment.
+                  {dictionary.categories.sections.addCustomDescription}
                 </CardDescription>
               </CardHeader>
 
-              <CardContent>
+              <CardContent className="space-y-4">
                 <form
                   action={createCategory}
                   className="flex flex-col gap-3 sm:flex-row"
                 >
-                  <Input name="displayName" placeholder="Category name" />
+                  <Input
+                    name="displayName"
+                    placeholder={dictionary.categories.form.categoryName}
+                  />
 
                   <Button type="submit" size="lg" className="sm:min-w-28">
-                    Add
+                    {dictionary.categories.actions.add}
                   </Button>
                 </form>
+
+                <div className="flex gap-2 rounded-lg border bg-muted/30 p-3">
+                  <IconInfoCircle
+                    size={18}
+                    className="mt-0.5 shrink-0 text-muted-foreground"
+                  />
+
+                  <p className="text-sm text-muted-foreground">
+                    {dictionary.categories.sections.customUsageNote}
+                  </p>
+                </div>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle>Custom Categories</CardTitle>
+                <CardTitle>
+                  {dictionary.categories.sections.customTitle}
+                </CardTitle>
+
                 <CardDescription>
-                  Active categories available for manual reassignment.
+                  {dictionary.categories.sections.customDescription}
                 </CardDescription>
               </CardHeader>
 
               <CardContent className="space-y-4">
                 {customActiveCategories.length === 0 && (
                   <p className="text-sm text-muted-foreground">
-                    No custom categories found.
+                    {dictionary.categories.emptyStates.noCustomCategories}
                   </p>
                 )}
 
@@ -146,10 +197,15 @@ export default async function CategoriesPage() {
                     <div>
                       <div className="flex items-center gap-2">
                         <p className="font-medium">
-                          {getCategoryLabel(category, "en")}
+                          {getLocalizedCategoryLabel(
+                            category,
+                            dictionary.categories.defaults
+                          )}
                         </p>
 
-                        <Badge variant="outline">Custom</Badge>
+                        <Badge variant="outline">
+                          {dictionary.categories.labels.custom}
+                        </Badge>
                       </div>
 
                       <p className="text-sm text-muted-foreground">
@@ -163,11 +219,14 @@ export default async function CategoriesPage() {
 
                         <Input
                           name="displayName"
-                          defaultValue={getCategoryLabel(category, "en")}
+                          defaultValue={getLocalizedCategoryLabel(
+                            category,
+                            dictionary.categories.defaults
+                          )}
                         />
 
                         <Button type="submit" variant="outline">
-                          Save
+                          {dictionary.categories.actions.save}
                         </Button>
                       </form>
 
@@ -179,7 +238,7 @@ export default async function CategoriesPage() {
                           variant="destructive"
                           className="w-full"
                         >
-                          Deactivate
+                          {dictionary.categories.actions.deactivate}
                         </Button>
                       </form>
                     </div>
@@ -193,16 +252,19 @@ export default async function CategoriesPage() {
         <TabsContent value="inactive">
           <Card>
             <CardHeader>
-              <CardTitle>Inactive Categories</CardTitle>
+              <CardTitle>
+                {dictionary.categories.sections.inactiveTitle}
+              </CardTitle>
+
               <CardDescription>
-                Hidden custom categories that can be restored.
+                {dictionary.categories.sections.inactiveDescription}
               </CardDescription>
             </CardHeader>
 
             <CardContent className="space-y-4">
               {customInactiveCategories.length === 0 && (
                 <p className="text-sm text-muted-foreground">
-                  No inactive categories.
+                  {dictionary.categories.emptyStates.noInactiveCategories}
                 </p>
               )}
 
@@ -214,10 +276,15 @@ export default async function CategoriesPage() {
                   <div>
                     <div className="flex items-center gap-2">
                       <p className="font-medium text-muted-foreground">
-                        {getCategoryLabel(category, "en")}
+                        {getLocalizedCategoryLabel(
+                          category,
+                          dictionary.categories.defaults
+                        )}
                       </p>
 
-                      <Badge variant="outline">Custom</Badge>
+                      <Badge variant="outline">
+                        {dictionary.categories.labels.custom}
+                      </Badge>
                     </div>
 
                     <p className="text-sm text-muted-foreground">
@@ -229,7 +296,7 @@ export default async function CategoriesPage() {
                     <input type="hidden" name="id" value={category.id} />
 
                     <Button type="submit" variant="outline">
-                      Reactivate
+                      {dictionary.categories.actions.reactivate}
                     </Button>
                   </form>
                 </div>
