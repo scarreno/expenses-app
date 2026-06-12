@@ -1,4 +1,5 @@
 export const navigation = {
+  home: "Home",
   upload: "Upload",
   receipts: "Receipts",
   dashboard: "Dashboard",

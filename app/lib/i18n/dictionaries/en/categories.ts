@@ -60,5 +60,6 @@ export const categories = {
     UNCATEGORIZED: "Uncategorized",
     SNACKS: "Snacks",
     GROCERIES: "Groceries",
+    FUEL: "Fuel"
   },
 };
