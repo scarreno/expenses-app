@@ -14,7 +14,7 @@ export default async function Page() {
 
   const categoryOptions = categories.map((category) => ({
     code: category.code,
-    label: getCategoryLabel(category, "en"),
+    label: getCategoryLabel(category, dictionary.categories.defaults),
   }));
 
   return (
