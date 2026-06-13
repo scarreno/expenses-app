@@ -4,7 +4,7 @@ import type { Prisma } from "@/app/generated/prisma/client";
 import { getCurrentUser } from "@/app/lib/auth/auth-user";
 import { getCategoryLabel } from "@/app/lib/categories/category-labels";
 import { prisma } from "@/app/lib/database/prisma";
-import { toTitleCase } from "@/app/lib/generic/to-title-case";
+import { toTitleCase } from "@/lib/utils/to-title-case";
 import { getUserSettings } from "@/app/lib/settings/get-user-settings";
 import { getDictionary } from "@/app/lib/i18n/get-dictionary";
 

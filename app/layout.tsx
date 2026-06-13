@@ -5,7 +5,7 @@ export const metadata = {
   title: "Expenses MVP",
   description: "Personal expenses app",
 };
-import { APP_VERSION } from "@/app/lib/generic/app-version";
+import { APP_VERSION } from "@/lib/utils/app-version";
 import { SessionProvider } from "@/app/components/auth/session-provider";
 import { Navigation } from "@/app/components/navigation";
 import { Geist } from "next/font/google";

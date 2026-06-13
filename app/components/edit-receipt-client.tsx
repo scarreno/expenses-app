@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { ReceiptFilePreview } from "@/app/components/receipt-file-preview";
 import { ReceiptItemsSummary } from "@/app/components/receipt-items-summary";
 import { ReceiptItemsTable } from "@/app/components/receipt-items-table";
-import { calculateReceiptTotal } from "@/app/lib/receipt/calculate-receipt-total";
+import { calculateReceiptTotal } from "@/app/lib/receipts/calculate-receipt-total";
 import { CategoryOption } from "@/app/types/category-option";
 import { Spinner } from "@/components/ui/spinner"
 import { UserSettings } from "@/app/types/user-settings-types";

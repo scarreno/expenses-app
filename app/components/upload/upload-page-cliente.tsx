@@ -8,7 +8,7 @@ import { ReceiptFormUpload } from "@/app/components/receipt-form-upload";
 import { ReceiptActions } from  "@/app/components/receipt-actions";
 import { ReceiptItemsSummary } from  "@/app/components/receipt-items-summary";
 import { ErrorMessage } from  "@/app/components/error-message";
-import { calculateReceiptTotal } from "@/app/lib/receipt/calculate-receipt-total";
+import { calculateReceiptTotal } from "@/app/lib/receipts/calculate-receipt-total";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";

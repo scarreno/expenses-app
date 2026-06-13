@@ -1,7 +1,7 @@
 import {
   extractReceiptData,
   cleanJsonResponse,
-} from "@/app/lib/receipt/receipt-extractor";
+} from "@/app/lib/receipts/receipt-extractor";
 
 import { extractedReceiptSchema } from "@/app/schemas/receipt-schema";
 import { getDefaultCategoriesForClassification } from "@/app/lib/categories/categories";

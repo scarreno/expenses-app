@@ -1,8 +1,8 @@
 import { DashboardCard } from "@/app/components/dashboard-card";
-import { formatMoney } from "@/app/lib/generic/format-money";
-import { prisma } from "@/app/lib/database/prisma";
+import { formatMoney } from "@/lib/utils/format-money";
 import { UserSettings } from "@/app/types/user-settings-types";
 import { Dictionary } from "@/app/types/dictionary";
+import { getReceiptSummary } from "@/app/lib/receipts/get-summary"
 
 type Props = {
   settings: UserSettings;
@@ -11,32 +11,8 @@ type Props = {
 };
 
 export async function DashboardReceiptSummary({ settings, userId, dictionary }: Props) {
-  const receipts = await prisma.receipt.findMany({
-    where: {
-      userId,
-    },
-    include: {
-      items: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-
-  const totalSpent = receipts.reduce(
-    (sum, receipt) => sum + (receipt.total ?? 0),
-    0
-  );
-
-  const totalReceipts = receipts.length;
-
-  const totalItems = receipts.reduce(
-    (sum, receipt) => sum + receipt.items.length,
-    0
-  );
-
-  const averageReceipt =
-    totalReceipts > 0 ? Math.round(totalSpent / totalReceipts) : 0;
+  const summary = await getReceiptSummary(userId)
+  const { totalSpent, totalReceipts, totalItems, averageReceipt } = summary;
 
   return (
     <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">

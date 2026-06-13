@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { toTitleCase } from "@/app/lib/generic/to-title-case";
+import { toTitleCase } from "@/lib/utils/to-title-case";
 import { Dictionary } from "@/app/types/dictionary";
 
 type Props = {

@@ -6,7 +6,8 @@ import { dashboard } from "@/app/lib/i18n/dictionaries/en/dashboard";
 import { categories } from "@/app/lib/i18n/dictionaries/en/categories";
 import { profile } from "@/app/lib/i18n/dictionaries/en/profile";
 import { settings } from "@/app/lib/i18n/dictionaries/en/settings";
-import { receipt } from "@/app/lib/i18n/dictionaries/es/receipt";
+import { receipt } from "@/app/lib/i18n/dictionaries/en/receipt";
+import { home } from "@/app/lib/i18n/dictionaries/en/home";
 
 export const en = {
   common,
@@ -17,5 +18,6 @@ export const en = {
   categories,
   profile,
   settings,
-  receipt
+  receipt,
+  home
 };

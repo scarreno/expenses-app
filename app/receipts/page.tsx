@@ -4,7 +4,7 @@ import { PageContainer } from "@/app/components/layout/page-container";
 import { PageHeader } from "@/app/components/layout/page-header";
 import { ReceiptHistoryFilters } from "@/app/components/receipts/receipt-history-filters";
 import { getCurrentUserOrRedirect } from "@/app/lib/auth/auth-user";
-import { formatMoney } from "@/app/lib/generic/format-money";
+import { formatMoney } from "@/lib/utils/format-money";
 import { prisma } from "@/app/lib/database/prisma";
 import { getUserSettings } from "@/app/lib/settings/get-user-settings";
 import type { Prisma } from "@/app/generated/prisma/client";
