@@ -1,9 +1,9 @@
 // app/api/receipts/[id]/route.ts
 
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/app/lib/prisma'
-import { getCurrentUser } from "@/app/lib/auth-user";
-import { deleteReceiptFile } from "@/app/lib/storage";
+import { prisma } from '@/app/lib/database/prisma'
+import { getCurrentUser } from "@/app/lib/auth/auth-user";
+import { deleteReceiptFile } from "@/app/lib/storage/storage";
 
 type RouteParams = {
   params: Promise<{

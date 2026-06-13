@@ -1,10 +1,10 @@
 import {
   extractReceiptData,
   cleanJsonResponse,
-} from "@/app/lib/receipt-extractor";
+} from "@/app/lib/receipts/receipt-extractor";
 
 import { extractedReceiptSchema } from "@/app/schemas/receipt-schema";
-import { getDefaultCategoriesForClassification } from "@/app/lib/categories";
+import { getDefaultCategoriesForClassification } from "@/app/lib/categories/categories";
 
 const NON_PRODUCT_DESCRIPTIONS = [
   "AHORRO",

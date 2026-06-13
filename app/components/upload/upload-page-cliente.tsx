@@ -46,7 +46,7 @@ type UploadedReceiptFile = {
     publicFileUrl: string;
 };
 
-export  function HomePageClient({ categories, settings, dictionary }: Props) {
+export  function UploadPageClient({ categories, settings, dictionary }: Props) {
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState<ExtractReceiptResponse | null>(null);
   const [error, setError] = useState<string | null>(null);

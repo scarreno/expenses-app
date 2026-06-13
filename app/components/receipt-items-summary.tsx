@@ -1,4 +1,4 @@
-import { formatMoney } from "@/app/lib/format-money";
+import { formatMoney } from "@/lib/utils/format-money";
 import { UserSettings } from "@/app/types/user-settings-types";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";

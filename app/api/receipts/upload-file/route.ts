@@ -1,6 +1,6 @@
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { NextRequest, NextResponse } from "next/server";
-import { deleteReceiptFile, uploadReceiptFile } from "@/app/lib/storage";
+import { deleteReceiptFile, uploadReceiptFile } from "@/app/lib/storage/storage";
 
 const storageDriver = process.env.STORAGE_DRIVER ?? "local";
 

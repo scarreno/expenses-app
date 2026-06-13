@@ -1,9 +1,9 @@
 import { PageContainer } from "@/app/components/layout/page-container";
 import { PageHeader } from "@/app/components/layout/page-header";
-import { getCurrentUserOrRedirect } from "@/app/lib/auth-user";
-import { ensureUserDefaultCategories } from "@/app/lib/categories";
+import { getCurrentUserOrRedirect } from "@/app/lib/auth/auth-user";
+import { ensureUserDefaultCategories } from "@/app/lib/categories/categories";
 import { getDictionary } from "@/app/lib/i18n/get-dictionary";
-import { prisma } from "@/app/lib/prisma";
+import { prisma } from "@/app/lib/database/prisma";
 import { getUserSettings } from "@/app/lib/settings/get-user-settings";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

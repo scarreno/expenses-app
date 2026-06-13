@@ -60,5 +60,6 @@ export const categories = {
     UNCATEGORIZED: "Sin categorizar",
     SNACKS: "Snacks",
     GROCERIES: "Abarrotes",
+    FUEL: "Combustible"
   },
 };

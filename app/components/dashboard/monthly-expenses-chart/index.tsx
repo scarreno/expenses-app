@@ -1,6 +1,6 @@
 import { parseISO } from "date-fns";
 
-import { prisma } from "@/app/lib/prisma";
+import { prisma } from "@/app/lib/database/prisma";
 import {
   Card,
   CardContent,

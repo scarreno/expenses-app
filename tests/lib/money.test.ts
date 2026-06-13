@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { normalizeMoney } from "@/app/lib/money";
+import { normalizeMoney } from "@/lib/utils/money";
 
 describe("normalizeMoney", () => {
   it("parses Chilean money string", () => {

@@ -10,6 +10,7 @@ import {
   IconReceipt,
   IconSettings,
   IconUpload,
+  IconHome,
   IconUser,
 } from "@tabler/icons-react";
 
@@ -41,7 +42,8 @@ export function Navigation({ dictionary }: NavigationProps) {
   const userImage = session.user.image;
 
   const navigationLinks = [
-    { href: "/", label: dictionary.navigation.upload, icon: IconUpload },
+    { href: "/", label: dictionary.navigation.home, icon: IconHome },
+    { href: "/upload", label: dictionary.navigation.upload, icon: IconUpload },
     { href: "/receipts", label: dictionary.navigation.receipts, icon: IconReceipt },
     { href: "/dashboard", label: dictionary.navigation.dashboard, icon: IconChartBar },
     { href: "/categories", label: dictionary.navigation.categories, icon: IconCategory },

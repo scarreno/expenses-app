@@ -1,4 +1,4 @@
-import { prisma } from "@/app/lib/prisma";
+import { prisma } from "@/app/lib/database/prisma";
 import { defaultUserSettings } from "./default-user-settings";
 
 export async function getUserSettings(userId: string) {

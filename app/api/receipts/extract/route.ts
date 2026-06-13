@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { processReceiptFile } from "@/app/services/process-receipt-file";
-import { getCurrentUserOrRedirect } from "@/app/lib/auth-user";
+import { getCurrentUserOrRedirect } from "@/app/lib/auth/auth-user";
 
 type ExtractReceiptRequest = {
   receiptType: string;
