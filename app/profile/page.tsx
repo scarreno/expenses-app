@@ -1,7 +1,7 @@
 // app/profile/page.tsx
 import { PageContainer } from "@/app/components/layout/page-container";
 import { PageHeader } from "@/app/components/layout/page-header";
-import { getCurrentUserOrRedirect } from "@/app/lib/auth-user";
+import { getCurrentUserOrRedirect } from "@/app/lib/auth/auth-user";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getUserSettings } from "@/app/lib/settings/get-user-settings";
 import { getDictionary } from "@/app/lib/i18n/get-dictionary";

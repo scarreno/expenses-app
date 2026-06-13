@@ -1,5 +1,5 @@
-import { auth } from "@/app/lib/auth";
-import { prisma } from '@/app/lib/prisma'
+import { auth } from "@/app/lib/auth/auth";
+import { prisma } from '@/app/lib/database/prisma'
 import { redirect } from "next/navigation";
 
 export async function getCurrentUserOrRedirect() {

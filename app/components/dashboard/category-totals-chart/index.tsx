@@ -1,7 +1,7 @@
 import { CategoryTotalsChartClient } from "./client";
 
-import { getCategoryLabel } from "@/app/lib/category-labels";
-import { prisma } from "@/app/lib/prisma";
+import { getCategoryLabel } from "@/app/lib/categories/category-labels";
+import { prisma } from "@/app/lib/database/prisma";
 import { UserSettings } from "@/app/types/user-settings-types";
 import {
   Card,
@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { toTitleCase } from "@/app/lib/to-title-case";
+import { toTitleCase } from "@/app/lib/generic/to-title-case";
 import { Dictionary } from "@/app/types/dictionary";
 
 type Props = {

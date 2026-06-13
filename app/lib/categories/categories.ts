@@ -1,4 +1,4 @@
-import { prisma } from "@/app/lib/prisma";
+import { prisma } from "@/app/lib/database/prisma";
 
 export const DEFAULT_CATEGORIES = [
   { code: "MEAT" },

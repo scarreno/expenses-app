@@ -9,7 +9,7 @@ import {
   YAxis,
 } from "recharts";
 
-import { formatMoney } from "@/app/lib/format-money";
+import { formatMoney } from "@/app/lib/generic/format-money";
 import { UserSettings } from "@/app/types/user-settings-types";
 import {
   ChartContainer,

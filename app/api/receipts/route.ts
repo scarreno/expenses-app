@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/app/lib/prisma";
+import { prisma } from "@/app/lib/database/prisma";
 import { saveReceiptSchema } from "@/app/schemas/receipt-schema";
-import { getCurrentUser } from "@/app/lib/auth-user";
+import { getCurrentUser } from "@/app/lib/auth/auth-user";
 export async function GET() {
     
   const currentUser = await getCurrentUser();

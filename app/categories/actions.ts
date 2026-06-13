@@ -1,8 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getCurrentUserOrRedirect } from "@/app/lib/auth-user";
-import { prisma } from "@/app/lib/prisma";
+import { getCurrentUserOrRedirect } from "@/app/lib/auth/auth-user";
+import { prisma } from "@/app/lib/database/prisma";
 
 function buildCategoryCode(value: string) {
   return value

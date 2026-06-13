@@ -1,4 +1,4 @@
-import { openai } from "@/app/lib/openai";
+import { openai } from "@/app/lib/generic/openai";
 import { buildReceiptPrompt } from "@/app/prompts/receipt-prompt-builder";
 import { CategoryForPrompt } from "@/app/types/category-for-prompt";
 

@@ -1,8 +1,8 @@
 import { EditReceiptClient } from "@/app/components/edit-receipt-client";
-import { getCurrentUserOrRedirect } from "@/app/lib/auth-user";
-import { getAvailableCategoriesForPreview } from "@/app/lib/categories";
-import { getCategoryLabel } from "@/app/lib/category-labels";
-import { prisma } from "@/app/lib/prisma";
+import { getCurrentUserOrRedirect } from "@/app/lib/auth/auth-user";
+import { getAvailableCategoriesForPreview } from "@/app/lib/categories/categories";
+import { getCategoryLabel } from "@/app/lib/categories/category-labels";
+import { prisma } from "@/app/lib/database/prisma";
 import { getUserSettings } from "@/app/lib/settings/get-user-settings";
 import { notFound } from "next/navigation";
 import { getDictionary } from "@/app/lib/i18n/get-dictionary";

@@ -1,6 +1,6 @@
 import { DashboardCard } from "@/app/components/dashboard-card";
-import { formatMoney } from "@/app/lib/format-money";
-import { prisma } from "@/app/lib/prisma";
+import { formatMoney } from "@/app/lib/generic/format-money";
+import { prisma } from "@/app/lib/database/prisma";
 import { UserSettings } from "@/app/types/user-settings-types";
 import { Dictionary } from "@/app/types/dictionary";
 
