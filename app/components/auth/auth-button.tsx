@@ -14,7 +14,7 @@ export function AuthButton() {
       return (
         <button
           type="button"
-          onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+          onClick={() => signIn("google", { callbackUrl: "/" })}
           style={{
             width: "100%",
             height: 44,
