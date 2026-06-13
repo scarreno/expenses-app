@@ -1,61 +1,64 @@
 import { Toaster } from "sonner";
 import "./globals.css";
 
+import Link from "next/link";
+import { Geist } from "next/font/google";
+
+import { SessionProvider } from "@/app/components/auth/session-provider";
+import { Navigation } from "@/app/components/navigation";
+import { getCurrentUserOrNull } from "@/app/lib/auth/auth-user";
+import { getDictionary } from "@/app/lib/i18n/get-dictionary";
+import { getUserSettings } from "@/app/lib/settings/get-user-settings";
+import { APP_VERSION } from "@/lib/utils/app-version";
+import { cn } from "@/lib/utils";
+
 export const metadata = {
   title: "Expenses MVP",
   description: "Personal expenses app",
 };
-import { APP_VERSION } from "@/lib/utils/app-version";
-import { SessionProvider } from "@/app/components/auth/session-provider";
-import { Navigation } from "@/app/components/navigation";
-import { Geist } from "next/font/google";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
-import { getCurrentUserOrRedirect } from "@/app/lib/auth/auth-user";
-import { getUserSettings } from "@/app/lib/settings/get-user-settings";
-import { getDictionary } from "@/app/lib/i18n/get-dictionary";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
-
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const user = await getCurrentUserOrNull();
 
-  const user = await getCurrentUserOrRedirect();
-  const settings = await getUserSettings(user.id);
-  const dictionary = getDictionary(settings.language);
+  const settings = user ? await getUserSettings(user.id) : null;
+  const dictionary = await getDictionary(settings?.language ?? "en");
 
-  
   return (
-    <html lang="es" className={cn("dark font-sans", geist.variable)}>
+    <html lang={settings?.language ?? "en"} className={cn("dark font-sans", geist.variable)}>
       <body>
-          <SessionProvider>
+        <SessionProvider>
           <header className="flex items-center gap-6 border-b border-border px-8 py-4">
             <Link href="/" className="hidden text-sm font-semibold lg:block">
-              <strong className="text-lg font-semibold">{dictionary.common.appName}</strong>
+              <strong className="text-lg font-semibold">
+                {dictionary.common.appName}
+              </strong>
             </Link>
 
             <Navigation dictionary={dictionary} />
           </header>
 
-            {children}
+          {children}
 
-            <footer
-              style={{
-                marginTop: 32,
-                padding: 24,
-                borderTop: "1px solid #333",
-                textAlign: "center",
-                color: "#777",
-                fontSize: 14,
-              }}
-            >
-              Developed by Sergio © {new Date().getFullYear()} · v{APP_VERSION}
-            </footer>
-            <Toaster richColors position="top-right" />        
+          <footer
+            style={{
+              marginTop: 32,
+              padding: 24,
+              borderTop: "1px solid #333",
+              textAlign: "center",
+              color: "#777",
+              fontSize: 14,
+            }}
+          >
+            Developed by Sergio © {new Date().getFullYear()} · v{APP_VERSION}
+          </footer>
+
+          <Toaster richColors position="top-right" />
         </SessionProvider>
       </body>
     </html>
