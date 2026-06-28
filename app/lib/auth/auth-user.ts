@@ -1,6 +1,41 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
+import { prisma } from "@/app/lib/database/prisma";
+
+async function getOrCreateCurrentUser(userId: string) {
+  const clerkUser = await currentUser();
+
+  if (!clerkUser) {
+    throw new Error("Clerk user not found");
+  }
+
+  let dbUser = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+
+  if (!dbUser) {
+    dbUser = await prisma.user.create({
+      data: {
+        id: userId,
+      },
+    });
+  }
+
+  return {
+    ...dbUser,
+    name:
+      clerkUser.firstName ??
+      clerkUser.fullName ??
+      clerkUser.username ??
+      "User",
+    email: clerkUser.primaryEmailAddress?.emailAddress ?? "",
+    image: clerkUser.imageUrl ?? null,
+  };
+}
+
 export async function getCurrentUserOrRedirect() {
   const { userId } = await auth();
 
@@ -8,14 +43,7 @@ export async function getCurrentUserOrRedirect() {
     redirect("/login");
   }
 
-  const user = await currentUser();
-
-  return {
-    id: userId,
-    email: user?.primaryEmailAddress?.emailAddress ?? "",
-    name: user?.fullName ?? user?.username ?? "User",
-    image: user?.imageUrl ?? null,
-  };
+  return getOrCreateCurrentUser(userId);
 }
 
 export async function getCurrentUser() {
@@ -25,14 +53,7 @@ export async function getCurrentUser() {
     throw new Error("User not authenticated");
   }
 
-  const user = await currentUser();
-
-  return {
-    id: userId,
-    email: user?.primaryEmailAddress?.emailAddress ?? "",
-    name: user?.fullName ?? user?.username ?? "User",
-    image: user?.imageUrl ?? null,
-  };
+  return getOrCreateCurrentUser(userId);
 }
 
 export async function getCurrentUserOrNull() {
@@ -42,12 +63,5 @@ export async function getCurrentUserOrNull() {
     return null;
   }
 
-  const user = await currentUser();
-
-  return {
-    id: userId,
-    email: user?.primaryEmailAddress?.emailAddress ?? "",
-    name: user?.fullName ?? user?.username ?? "User",
-    image: user?.imageUrl ?? null,
-  };
+  return getOrCreateCurrentUser(userId);
 }

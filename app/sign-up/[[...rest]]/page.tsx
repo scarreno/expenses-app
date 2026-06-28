@@ -1,12 +1,12 @@
-import { SignIn } from "@clerk/nextjs";
+import { SignUp } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 
-export default function LoginPage() {
+export default function SignUpPage() {
   return (
     <main className="flex min-h-[70vh] items-center justify-center">
-      <SignIn
+      <SignUp
         appearance={{
-          theme: dark
+          theme: dark          
         }}
       />
     </main>

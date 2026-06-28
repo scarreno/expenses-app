@@ -116,7 +116,7 @@ export default async function CategoriesPage() {
                       )}
                     </p>
 
-                    <Badge variant="secondary">
+                    <Badge>
                       {dictionary.categories.labels.default}
                     </Badge>
                   </div>
