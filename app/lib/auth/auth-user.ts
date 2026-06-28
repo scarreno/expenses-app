@@ -1,60 +1,53 @@
-import { auth } from "@/app/lib/auth/auth";
-import { prisma } from '@/app/lib/database/prisma'
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
 export async function getCurrentUserOrRedirect() {
-  const session = await auth();
+  const { userId } = await auth();
 
-  if (!session?.user?.email) {
+  if (!userId) {
     redirect("/login");
   }
 
-  const user = await prisma.user.findUnique({
-    where: {
-      email: session.user.email,
-    },
-  });
+  const user = await currentUser();
 
-  if (!user) {
-    redirect("/login");
-  }
-
-  return user;
+  return {
+    id: userId,
+    email: user?.primaryEmailAddress?.emailAddress ?? "",
+    name: user?.fullName ?? user?.username ?? "User",
+    image: user?.imageUrl ?? null,
+  };
 }
 
-
 export async function getCurrentUser() {
-  const session = await auth();
+  const { userId } = await auth();
 
-  if (!session?.user?.email) {
+  if (!userId) {
     throw new Error("User not authenticated");
   }
 
-  const user = await prisma.user.findUnique({
-    where: {
-      email: session.user.email,
-    },
-  });
+  const user = await currentUser();
 
-  if (!user) {
-    throw new Error("User not found");
-  }
-
-  return user;
+  return {
+    id: userId,
+    email: user?.primaryEmailAddress?.emailAddress ?? "",
+    name: user?.fullName ?? user?.username ?? "User",
+    image: user?.imageUrl ?? null,
+  };
 }
 
 export async function getCurrentUserOrNull() {
-  const session = await auth();
+  const { userId } = await auth();
 
-  if (!session?.user?.email) {
+  if (!userId) {
     return null;
   }
 
-  const user = await prisma.user.findUnique({
-    where: {
-      email: session.user.email,
-    },
-  });
+  const user = await currentUser();
 
-  return user;
+  return {
+    id: userId,
+    email: user?.primaryEmailAddress?.emailAddress ?? "",
+    name: user?.fullName ?? user?.username ?? "User",
+    image: user?.imageUrl ?? null,
+  };
 }

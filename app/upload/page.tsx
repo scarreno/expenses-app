@@ -8,6 +8,7 @@ import { getUserSettings } from "@/app/lib/settings/get-user-settings";
 export default async function UploadPage() {
   const currentUser = await getCurrentUserOrRedirect();
 
+  console.log(currentUser);
   const settings = await getUserSettings(currentUser.id);
   const dictionary = await getDictionary(settings.language);
 
