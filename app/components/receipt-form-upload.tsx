@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { Dictionary } from "@/app/types/dictionary";
+import { BUSINESS_TYPES } from "@/app/constants/business-types";
 
 type Props = {
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
@@ -71,9 +72,11 @@ export function ReceiptFormUpload({ handleSubmit, loading, dictionary}: Props) {
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>{dictionary.upload.selectBusinessType}</SelectLabel>
-                  <SelectItem value="SUPERMARKET">Supermarket</SelectItem>
-                  <SelectItem value="MARKET">Market</SelectItem>
-                  <SelectItem value="GAS">Gas</SelectItem>
+                  {BUSINESS_TYPES.map((type) => (
+                      <SelectItem key={type} value={type}>
+                        {dictionary.businessTypes[type]}
+                      </SelectItem>
+                    ))}                  
                 </SelectGroup>
               </SelectContent>
             </Select>

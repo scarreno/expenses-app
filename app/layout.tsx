@@ -31,6 +31,13 @@ export default async function RootLayout({
 
   return (
     <html lang={settings?.language ?? "en"} className={cn("dark font-sans", geist.variable)}>
+       <head>
+        <script
+          async
+          crossOrigin="anonymous"
+          src="https://tweakcn.com/live-preview.min.js"
+        />
+      </head>
       <body>
         <SessionProvider>
           <header className="flex items-center gap-6 border-b border-border px-8 py-4">
