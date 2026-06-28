@@ -4,8 +4,9 @@ export const receiptsHistory = {
     "Browse and review your previously processed receipts.",
 
   filters: {
-    allMonths: "All months",
+    allMonths: "All months",    
     allYears: "All years",
+    allBusinessTypes: "All Business types"
   },
 
   card: {

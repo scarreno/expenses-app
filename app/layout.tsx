@@ -2,9 +2,8 @@ import { Toaster } from "sonner";
 import "./globals.css";
 
 import Link from "next/link";
-import { Geist } from "next/font/google";
-
-import { SessionProvider } from "@/app/components/auth/session-provider";
+import { Inter, Source_Serif_4, JetBrains_Mono } from "next/font/google";
+import { AuthProvider } from "@/app/components/auth/auth-provider";
 import { Navigation } from "@/app/components/navigation";
 import { getCurrentUserOrNull } from "@/app/lib/auth/auth-user";
 import { getDictionary } from "@/app/lib/i18n/get-dictionary";
@@ -12,12 +11,27 @@ import { getUserSettings } from "@/app/lib/settings/get-user-settings";
 import { APP_VERSION } from "@/lib/utils/app-version";
 import { cn } from "@/lib/utils";
 
+const fontSans = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
+
+
+const fontSerif = Source_Serif_4({
+  subsets: ["latin"],
+  variable: "--font-serif",
+});
+
+const fontMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+});
+
+
 export const metadata = {
   title: "Expenses MVP",
   description: "Personal expenses app",
 };
-
-const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 export default async function RootLayout({
   children,
@@ -30,9 +44,17 @@ export default async function RootLayout({
   const dictionary = await getDictionary(settings?.language ?? "en");
 
   return (
-    <html lang={settings?.language ?? "en"} className={cn("dark font-sans", geist.variable)}>
+    <html
+        lang={settings?.language ?? "en"}
+        className={cn(
+          "dark font-sans",
+          fontSans.variable,
+          fontSerif.variable,
+          fontMono.variable
+        )}
+      >
       <body>
-        <SessionProvider>
+        <AuthProvider>
           <header className="flex items-center gap-6 border-b border-border px-8 py-4">
             <Link href="/" className="hidden text-sm font-semibold lg:block">
               <strong className="text-lg font-semibold">
@@ -59,7 +81,7 @@ export default async function RootLayout({
           </footer>
 
           <Toaster richColors position="top-right" />
-        </SessionProvider>
+        </AuthProvider>
       </body>
     </html>
   );

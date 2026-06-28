@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { useUser } from "@clerk/nextjs";
 import {
   IconCategory,
   IconChartBar,
@@ -33,13 +33,19 @@ type NavigationProps = {
 
 export function Navigation({ dictionary }: NavigationProps) {
   const pathname = usePathname();
-  const { data: session } = useSession();
-  if (!session?.user) {
+  const { user, isLoaded, isSignedIn } = useUser();
+
+  if (!isLoaded || !isSignedIn || !user) {
     return null;
   }
 
-  const userName = session.user.name ?? session.user.email ?? "User";
-  const userImage = session.user.image;
+  const userName =
+    user.fullName ??
+    user.username ??
+    user.primaryEmailAddress?.emailAddress ??
+    "User";
+
+  const userImage = user.imageUrl;
 
   const navigationLinks = [
     { href: "/", label: dictionary.navigation.home, icon: IconHome },

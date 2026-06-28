@@ -1,60 +1,67 @@
-import { auth } from "@/app/lib/auth/auth";
-import { prisma } from '@/app/lib/database/prisma'
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
-export async function getCurrentUserOrRedirect() {
-  const session = await auth();
+import { prisma } from "@/app/lib/database/prisma";
 
-  if (!session?.user?.email) {
-    redirect("/login");
+async function getOrCreateCurrentUser(userId: string) {
+  const clerkUser = await currentUser();
+
+  if (!clerkUser) {
+    throw new Error("Clerk user not found");
   }
 
-  const user = await prisma.user.findUnique({
+  let dbUser = await prisma.user.findUnique({
     where: {
-      email: session.user.email,
+      id: userId,
     },
   });
 
-  if (!user) {
+  if (!dbUser) {
+    dbUser = await prisma.user.create({
+      data: {
+        id: userId,
+      },
+    });
+  }
+
+  return {
+    ...dbUser,
+    name:
+      clerkUser.firstName ??
+      clerkUser.fullName ??
+      clerkUser.username ??
+      "User",
+    email: clerkUser.primaryEmailAddress?.emailAddress ?? "",
+    image: clerkUser.imageUrl ?? null,
+  };
+}
+
+export async function getCurrentUserOrRedirect() {
+  const { userId } = await auth();
+
+  if (!userId) {
     redirect("/login");
   }
 
-  return user;
+  return getOrCreateCurrentUser(userId);
 }
 
-
 export async function getCurrentUser() {
-  const session = await auth();
+  const { userId } = await auth();
 
-  if (!session?.user?.email) {
+  if (!userId) {
     throw new Error("User not authenticated");
   }
 
-  const user = await prisma.user.findUnique({
-    where: {
-      email: session.user.email,
-    },
-  });
-
-  if (!user) {
-    throw new Error("User not found");
-  }
-
-  return user;
+  return getOrCreateCurrentUser(userId);
 }
 
 export async function getCurrentUserOrNull() {
-  const session = await auth();
+  const { userId } = await auth();
 
-  if (!session?.user?.email) {
+  if (!userId) {
     return null;
   }
 
-  const user = await prisma.user.findUnique({
-    where: {
-      email: session.user.email,
-    },
-  });
-
-  return user;
+  return getOrCreateCurrentUser(userId);
 }

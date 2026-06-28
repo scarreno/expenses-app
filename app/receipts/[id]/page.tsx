@@ -15,6 +15,8 @@ import { getUserSettings } from "@/app/lib/settings/get-user-settings";
 import { Button } from "@/components/ui/button";
 import { formatDisplayDate } from "@/lib/utils/date";
 import { getDictionary } from "@/app/lib/i18n/get-dictionary";
+import { getAvailableCategoriesForPreview } from "@/app/lib/categories/categories";
+import { getCategoryLabel } from "@/app/lib/categories/category-labels";
 
 export default async function ReceiptDetailPage({
   params,
@@ -26,6 +28,15 @@ export default async function ReceiptDetailPage({
   const user = await getCurrentUserOrRedirect();
   const settings = await getUserSettings(user.id);
   const dictionary = await getDictionary(settings.language);
+
+
+  const categories = await getAvailableCategoriesForPreview(user.id);
+  
+  const categoryOptions = categories.map((category) => ({
+    code: category.code,
+    label: getCategoryLabel(category, dictionary.categories.defaults),
+  }));
+  
 
   const receipt = await prisma.receipt.findUnique({
     where: {
@@ -84,6 +95,7 @@ export default async function ReceiptDetailPage({
               readonly
               settings={settings}
               dictionary={dictionary}
+              categories={categoryOptions}
             />
         </div>
       </section>
