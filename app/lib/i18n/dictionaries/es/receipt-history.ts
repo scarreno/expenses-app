@@ -6,6 +6,7 @@ export const receiptsHistory = {
   filters: {
     allMonths: "Todos los meses",
     allYears: "Todos los años",
+    allBusinessTypes: "Todos los tipos de negocio"
   },
 
   card: {

@@ -8,6 +8,7 @@ import { profile } from "@/app/lib/i18n/dictionaries/en/profile";
 import { settings } from "@/app/lib/i18n/dictionaries/en/settings";
 import { receipt } from "@/app/lib/i18n/dictionaries/en/receipt";
 import { home } from "@/app/lib/i18n/dictionaries/en/home";
+import { businessTypes } from "@/app/lib/i18n/dictionaries/en/business-types";
 
 export const en = {
   common,
@@ -19,5 +20,6 @@ export const en = {
   profile,
   settings,
   receipt,
-  home
+  home,
+  businessTypes
 };

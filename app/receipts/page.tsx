@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/card";
 import { formatDisplayDate } from "@/lib/utils/date";
 import { getDictionary } from "@/app/lib/i18n/get-dictionary";
+import { businessTypes } from '../lib/i18n/dictionaries/en/business-types';
 
 const PAGE_SIZE = 8;
 
@@ -28,15 +29,17 @@ export default async function ReceiptsPage({
     page?: string;
     month?: string;
     year?: string;
+    businessType?: string;
   }>;
 }) {
-  const { page, month, year } = await searchParams;
+  const { page, month, year, businessType } = await searchParams;
 
   const currentPage = Number(page ?? "1");
   const skip = (currentPage - 1) * PAGE_SIZE;
 
   const selectedMonth = month ?? "all";
   const selectedYear = year ?? "all";
+  const selectedBusinessType = businessType ?? "all";
 
   const user = await getCurrentUserOrRedirect();
   const settings = await getUserSettings(user.id);
@@ -58,6 +61,10 @@ export default async function ReceiptsPage({
     where.purchaseDate = {
       contains: `-${selectedMonth}-`,
     };
+  }
+
+  if(selectedBusinessType !== "all"){
+    where.receiptType = selectedBusinessType;
   }
 
   const [receipts, totalReceipts, receiptsWithDates] = await Promise.all([
@@ -123,6 +130,7 @@ export default async function ReceiptsPage({
         years={years}
         selectedMonth={selectedMonth}
         selectedYear={selectedYear}
+        selectedBusinessType={selectedBusinessType}
         dictionary={dictionary}
       />
 
