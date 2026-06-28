@@ -1,23 +1,21 @@
-import NextAuth from "next-auth";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { authConfig } from "@/app/lib/auth/auth.config";
 
-const { auth } = NextAuth(authConfig);
+const isPublicRoute = createRouteMatcher([
+  "/login(.*)",
+  "/sign-up(.*)",
+  "/api/receipts/upload-file(.*)",
+]);
 
-export default auth((request) => {
-  const isLoggedIn = !!request.auth;
-  const isLoginPage = request.nextUrl.pathname === "/login";
+export default clerkMiddleware(async (auth, request) => {
+  const { userId } = await auth();
 
-  if (!isLoggedIn && !isLoginPage) {
-    return NextResponse.redirect(
-      new URL("/login", request.nextUrl.origin)
-    );
+  if (userId && request.nextUrl.pathname === "/login") {
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
-  if (isLoggedIn && isLoginPage) {
-    return NextResponse.redirect(
-      new URL("/", request.nextUrl.origin)
-    );
+  if (!isPublicRoute(request)) {
+    await auth.protect();
   }
 
   return NextResponse.next();
@@ -25,6 +23,8 @@ export default auth((request) => {
 
 export const config = {
   matcher: [
-    "/((?!api/auth|api/receipts/upload-file|_next/static|_next/image|favicon.ico).*)",
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    "/(api|trpc)(.*)",
+    "/__clerk/(.*)",
   ],
 };

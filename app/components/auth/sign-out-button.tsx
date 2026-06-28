@@ -1,8 +1,9 @@
 "use client";
 
-import { signOut } from "next-auth/react";
-import { Button } from "@/components/ui/button";
+import { SignOutButton as ClerkSignOutButton } from "@clerk/nextjs";
+
 import { Dictionary } from "@/app/types/dictionary";
+import { Button } from "@/components/ui/button";
 
 type SignOutButtonProps = {
   dictionary: Dictionary;
@@ -10,13 +11,10 @@ type SignOutButtonProps = {
 
 export function SignOutButton({ dictionary }: SignOutButtonProps) {
   return (
-    <Button
-      type="button"
-      variant="outline"
-      size="sm"
-      onClick={() => signOut({ callbackUrl: "/login" })}
-    >
-      {dictionary.common.signOut}
-    </Button>
+    <ClerkSignOutButton redirectUrl="/login">
+      <Button type="button" variant="outline" size="sm">
+        {dictionary.common.signOut}
+      </Button>
+    </ClerkSignOutButton>
   );
 }
