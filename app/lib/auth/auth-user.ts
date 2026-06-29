@@ -3,25 +3,21 @@ import { redirect } from "next/navigation";
 
 import { prisma } from "@/app/lib/database/prisma";
 
-async function getOrCreateCurrentUser(userId: string) {
+async function getCurrentUserData(userId: string) {
   const clerkUser = await currentUser();
 
   if (!clerkUser) {
     throw new Error("Clerk user not found");
   }
 
-  let dbUser = await prisma.user.findUnique({
+  const dbUser = await prisma.user.findUnique({
     where: {
       id: userId,
     },
   });
 
   if (!dbUser) {
-    dbUser = await prisma.user.create({
-      data: {
-        id: userId,
-      },
-    });
+    throw new Error("User not found in database");
   }
 
   return {
@@ -39,11 +35,13 @@ async function getOrCreateCurrentUser(userId: string) {
 export async function getCurrentUserOrRedirect() {
   const { userId } = await auth();
 
+  console.log('getCurrentUserOrRedirect', userId);
+
   if (!userId) {
     redirect("/login");
   }
 
-  return getOrCreateCurrentUser(userId);
+  return getCurrentUserData(userId);
 }
 
 export async function getCurrentUser() {
@@ -53,7 +51,7 @@ export async function getCurrentUser() {
     throw new Error("User not authenticated");
   }
 
-  return getOrCreateCurrentUser(userId);
+  return getCurrentUserData(userId);
 }
 
 export async function getCurrentUserOrNull() {
@@ -63,5 +61,9 @@ export async function getCurrentUserOrNull() {
     return null;
   }
 
-  return getOrCreateCurrentUser(userId);
+  try {
+    return await getCurrentUserData(userId);
+  } catch {
+    return null;
+  }
 }
