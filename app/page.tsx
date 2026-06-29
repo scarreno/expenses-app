@@ -23,6 +23,8 @@ import {
 } from "@/components/ui/card";
 
 export default async function HomePage() {
+
+  console.log('llega al homepge');
   const user = await getCurrentUserOrRedirect();
   const settings = await getUserSettings(user.id);
   const dictionary = await getDictionary(settings.language);
