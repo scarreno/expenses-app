@@ -1,8 +1,8 @@
-# Expenses v1.0.0
+# Expenses v2.0.1
 
-AI-powered household expense tracking application built with Next.js, Prisma, Neon PostgreSQL and OpenAI.
+AI-powered household expense tracking application built with Next.js, Prisma, PostgreSQL, and OpenAI.
 
-Expenses helps automate receipt processing by extracting purchase information from images and PDF receipts, allowing users to review, edit and categorize purchases before saving them.
+Expenses helps automate receipt processing by extracting purchase information from images and PDF receipts, allowing users to review, edit, and categorize purchases before saving them.
 
 The application also provides spending insights through dashboards and category-based analytics.
 
@@ -59,46 +59,52 @@ The goal was to build a complete end-to-end application covering:
 
 ### Authentication
 
-* Google Authentication using NextAuth
-* Protected routes
+* Authentication with [Clerk](https://clerk.com/)
+* Route protection via Next.js proxy (`proxy.ts`)
+* Onboarding flow that provisions the user in the database
 * User ownership and data isolation
 
 ### Receipt Processing
 
-* Upload receipt images and PDF files
-* AI-powered extraction using OpenAI
-* Support for multiple business types
+* Upload receipt images (JPEG, PNG, WebP) and PDF files
+* AI-powered extraction using the OpenAI Responses API (`gpt-4.1-mini`)
+* Receipt types: supermarket, market, and gas
 * Editable extraction preview before saving
-* Automatic receipt item categorization
-* Local and cloud file storage support
+* Automatic receipt item categorization using the user's active default categories
+* Local and Vercel Blob storage support
 
 ### Receipt Management
 
-* Receipt history
+* Receipt history with pagination
+* Filters by month, year, and business type
 * Receipt detail view
 * Receipt editing
-* Receipt deletion
-* Pagination support
+* Receipt deletion (including associated file cleanup)
 
 ### Categories
 
-* Default system categories
+* Default categories seeded per user on first use
 * Custom user categories
 * Category activation and deactivation
-* Manual category reassignment
+* Manual category reassignment on receipts
 
 ### Dashboard
 
 * Total spending summary
 * Monthly expenses chart
-* Spending by category
+* Spending by category (with optional month filter)
 * User-specific analytics
 
 ### User Preferences
 
+* Language selection (English and Spanish)
 * Locale configuration
-* Currency formatting
+* Currency formatting (CLP, USD, EUR)
 * Date formatting
+
+### Profile
+
+* View signed-in user information from Clerk
 
 ---
 
@@ -106,17 +112,17 @@ The goal was to build a complete end-to-end application covering:
 
 ### Frontend
 
-* Next.js 15 (App Router)
-* React
+* Next.js 16 (App Router)
+* React 19
 * TypeScript
-* Tailwind CSS
+* Tailwind CSS 4
 * shadcn/ui
 
 ### Backend
 
-* Next.js Route Handlers
-* Prisma ORM
-* Neon PostgreSQL
+* Next.js Route Handlers and Server Actions
+* Prisma ORM 7 with `@prisma/adapter-pg`
+* PostgreSQL
 
 ### AI
 
@@ -125,13 +131,16 @@ The goal was to build a complete end-to-end application covering:
 
 ### Authentication
 
-* NextAuth
-* Google OAuth
+* Clerk
 
 ### Storage
 
-* Local File Storage (Development)
-* Vercel Blob Storage (Production)
+* Local file storage (`public/uploads/`, development)
+* Vercel Blob Storage (production)
+
+### Testing
+
+* Vitest
 
 ---
 
@@ -142,7 +151,7 @@ Receipt processing flow:
 ```text
 Upload File
     ↓
-Storage
+Storage (local or Vercel Blob)
     ↓
 OpenAI Extraction
     ↓
@@ -153,6 +162,21 @@ Save Receipt
 Dashboard & Analytics
 ```
 
+Application structure:
+
+```text
+app/
+├── api/           Route handlers (receipts, settings, dashboard)
+├── components/    Feature UI components
+├── lib/           Domain logic (auth, receipts, storage, i18n, settings)
+├── services/      Receipt processing orchestration
+├── prompts/       OpenAI prompt templates by receipt type
+├── schemas/       Zod validation schemas
+└── [routes]/      App Router pages
+```
+
+Route protection is handled in `proxy.ts` using Clerk middleware. Most pages are Server Components that query Prisma directly; interactive flows (upload, charts, navigation) use Client Components.
+
 ---
 
 ## Running Locally
@@ -160,9 +184,9 @@ Dashboard & Analytics
 ### Prerequisites
 
 * Node.js 22+
-* PostgreSQL or Neon Database
-* OpenAI API Key
-* Google OAuth Credentials
+* PostgreSQL database (for example, [Neon](https://neon.tech/))
+* OpenAI API key
+* Clerk application (publishable and secret keys)
 
 ### Installation
 
@@ -170,7 +194,7 @@ Clone the repository:
 
 ```bash
 git clone <repository-url>
-cd expenses-v2
+cd expenses-app
 ```
 
 Install dependencies:
@@ -183,19 +207,32 @@ pnpm install
 
 ### Environment Variables
 
-Create a `.env` file in the project root:
+Create a `.env` file in the project root. See `.env.example` for the full list:
 
 ```env
 DATABASE_URL=
 
 OPENAI_API_KEY=
 
-AUTH_SECRET=
-
-AUTH_GOOGLE_ID=
-AUTH_GOOGLE_SECRET=
-
+STORAGE_DRIVER=local
 NEXT_PUBLIC_STORAGE_DRIVER=local
+
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/login
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/receipts
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/receipts
+```
+
+For Vercel Blob storage, also set:
+
+```env
+STORAGE_DRIVER=vercel-blob
+NEXT_PUBLIC_STORAGE_DRIVER=vercel-blob
+BLOB_READ_WRITE_TOKEN=
+BLOB_STORE_ID=
+BLOB_WEBHOOK_PUBLIC_KEY=
 ```
 
 ---
@@ -275,10 +312,27 @@ Do not use these commands in production environments.
 pnpm dev
 ```
 
+`pnpm dev` runs the test suite first (`predev` hook), then starts the Next.js dev server.
+
 Open:
 
 ```text
 http://localhost:3000
+```
+
+---
+
+### Scripts
+
+```bash
+pnpm dev              # Run tests, then start dev server
+pnpm build            # Generate Prisma client and build
+pnpm start            # Start production server
+pnpm lint             # ESLint
+pnpm test             # Vitest (single run)
+pnpm test:watch       # Vitest watch mode
+pnpm test:coverage    # Vitest with coverage
+pnpm format           # Prettier
 ```
 
 ---
@@ -288,19 +342,20 @@ http://localhost:3000
 Current version:
 
 ```text
-v1.0.0
+v2.0.1
 ```
 
 This release includes:
 
-* Google Authentication
-* Multi-user support
-* AI receipt extraction
-* Receipt editing workflows
+* Clerk authentication
+* Multi-user support with per-user data isolation
+* AI receipt extraction and review workflow
+* Receipt editing and deletion
 * Categories management
 * Dashboard analytics
-* User settings
-* Local and cloud storage support
+* User settings (language, locale, currency, date format)
+* Local and Vercel Blob storage support
+* English and Spanish UI
 * Responsive UI
 
 ---
