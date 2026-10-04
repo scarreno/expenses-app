@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/card";
 import { formatDisplayDate } from "@/lib/utils/date";
 import { getDictionary } from "@/app/lib/i18n/get-dictionary";
-import { businessTypes } from '../lib/i18n/dictionaries/en/business-types';
 
 const PAGE_SIZE = 8;
 

@@ -1,5 +1,5 @@
 export const common = {
-  appName: "Expenses MVP",
+  appName: "Guarda tu Boleta",
   menu: "Menú",
   signOut: "Cerrar sesión",
   signedIn: "Sesión iniciada",

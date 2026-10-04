@@ -29,8 +29,9 @@ const fontMono = JetBrains_Mono({
 
 
 export const metadata = {
-  title: "Expenses MVP",
-  description: "Personal expenses app",
+  title: "Guarda tu Boleta",
+  description:
+    "Capture, organize, review, and analyze household receipts with Guarda tu Boleta.",
 };
 
 export default async function RootLayout({
