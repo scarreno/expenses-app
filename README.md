@@ -1,10 +1,14 @@
-# Expenses v2.0.1
+# Guarda tu Boleta
 
-AI-powered household expense tracking application built with Next.js, Prisma, PostgreSQL, and OpenAI.
+**Guarda tu Boleta** is an AI-powered web application for capturing, organizing, reviewing, and analyzing household receipts. It is built with Next.js, Prisma, Neon PostgreSQL, and OpenAI.
 
-Expenses helps automate receipt processing by extracting purchase information from images and PDF receipts, allowing users to review, edit, and categorize purchases before saving them.
+The product automates receipt processing by extracting purchase information from images and PDF receipts, allowing users to review, edit, and categorize purchases before saving them.
 
-The application also provides spending insights through dashboards and category-based analytics.
+It also provides spending insights through dashboards and category-based analytics.
+
+**Production:** [https://guardatuboleta.app](https://guardatuboleta.app)
+
+The repository technical name remains `expenses-app`.
 
 ---
 
