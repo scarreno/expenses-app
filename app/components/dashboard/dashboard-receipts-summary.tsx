@@ -1,17 +1,16 @@
 import { DashboardCard } from "@/app/components/dashboard-card";
-import { formatMoney } from "@/lib/utils/format-money";
-import { UserSettings } from "@/app/types/user-settings-types";
+import { DashboardSummary } from "@/app/lib/dashboard/get-dashboard-metrics";
 import { Dictionary } from "@/app/types/dictionary";
-import { getReceiptSummary } from "@/app/lib/receipts/get-summary"
+import { UserSettings } from "@/app/types/user-settings-types";
+import { formatMoney } from "@/lib/utils/format-money";
 
 type Props = {
   settings: UserSettings;
-  userId: string;
   dictionary: Dictionary;
+  summary: DashboardSummary;
 };
 
-export async function DashboardReceiptSummary({ settings, userId, dictionary }: Props) {
-  const summary = await getReceiptSummary(userId)
+export function DashboardReceiptSummary({ settings, dictionary, summary }: Props) {
   const { totalSpent, totalReceipts, totalItems, averageReceipt } = summary;
 
   return (

@@ -13,19 +13,24 @@ export const dashboard = {
     averageReceipt: "Average Receipt",
   },
 
+  filters: {
+    month: "Month",
+    year: "Year",
+    category: "Category",
+    allCategories: "All categories",
+    showing: "Showing",
+    empty: "No expenses match this period.",
+    total: "Total",
+  },
+
   categoryInsights: {
     title: "Category Insights",
     description:
       "Total spending distribution by category.",
-
-    filters: {
-      allCategories: "All",
-    },
   },
 
-  monthlyExpenses: {
-    title: "Monthly Expenses",
-    description:
-      "Total spent grouped by month.",
+  dailyExpenses: {
+    title: "Expenses by Day",
+    description: "Total spent grouped by day.",
   },
 };
