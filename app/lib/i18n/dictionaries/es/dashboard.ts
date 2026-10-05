@@ -13,19 +13,24 @@ export const dashboard = {
     averageReceipt: "Promedio por Recibo",
   },
 
+  filters: {
+    month: "Mes",
+    year: "Año",
+    category: "Categoría",
+    allCategories: "Todas las categorías",
+    showing: "Mostrando",
+    empty: "No hay gastos para este período.",
+    total: "Total",
+  },
+
   categoryInsights: {
     title: "Análisis por Categoría",
     description:
       "Distribución del gasto total por categoría.",
-
-    filters: {
-      allCategories: "Todas",
-    },
   },
 
-  monthlyExpenses: {
-    title: "Gastos Mensuales",
-    description:
-      "Total gastado agrupado por mes.",
+  dailyExpenses: {
+    title: "Gastos por Día",
+    description: "Total gastado agrupado por día.",
   },
 };

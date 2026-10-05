@@ -2,34 +2,20 @@
 
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
+import { createDailyExpensesChartConfig } from "@/app/components/dashboard/daily-expenses-chart/config";
+import { DailyExpensesChartData } from "@/app/components/dashboard/daily-expenses-chart/types";
 import { Dictionary } from "@/app/types/dictionary";
 import { UserSettings } from "@/app/types/user-settings-types";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { formatMoney } from "@/lib/utils/format-money";
 
-type ChartData = {
-  category: string;
-  total: number;
-};
-
 type Props = {
-  data: ChartData[];
+  data: DailyExpensesChartData[];
   settings: UserSettings;
   dictionary: Dictionary;
 };
 
-function truncateLabel(value: string, maxLength = 14) {
-  return value.length > maxLength ? `${value.slice(0, maxLength)}...` : value;
-}
-
-export function CategoryTotalsChartClient({ data, settings, dictionary }: Props) {
-  const chartConfig = {
-    total: {
-      label: dictionary.dashboard.filters.total,
-      color: "var(--chart-2)",
-    },
-  };
-
+export function DailyExpensesChartClient({ data, settings, dictionary }: Props) {
   if (data.length === 0) {
     return (
       <div className="flex h-[240px] items-center justify-center text-sm text-muted-foreground">
@@ -39,19 +25,21 @@ export function CategoryTotalsChartClient({ data, settings, dictionary }: Props)
   }
 
   return (
-    <ChartContainer config={chartConfig} className="h-[360px] w-full">
+    <ChartContainer
+      config={createDailyExpensesChartConfig(dictionary.dashboard.filters.total)}
+      className="h-[300px] w-full"
+    >
       <BarChart data={data} margin={{ left: 24, right: 12, bottom: 24 }}>
         <CartesianGrid vertical={false} />
 
         <XAxis
-          dataKey="category"
+          dataKey="date"
           tickLine={false}
           axisLine={false}
           interval={0}
-          angle={-20}
+          angle={-35}
           textAnchor="end"
           height={70}
-          tickFormatter={(value) => truncateLabel(String(value))}
         />
 
         <YAxis
@@ -67,7 +55,7 @@ export function CategoryTotalsChartClient({ data, settings, dictionary }: Props)
           }
         />
 
-        <Bar dataKey="total" fill="var(--chart-2)" radius={[6, 6, 0, 0]} />
+        <Bar dataKey="total" fill="var(--chart-1)" radius={[6, 6, 0, 0]} />
       </BarChart>
     </ChartContainer>
   );
