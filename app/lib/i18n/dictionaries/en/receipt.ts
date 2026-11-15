@@ -100,6 +100,8 @@ export const receipt = {
   errors: {
     cleanupUploadedFile: "Failed to cleanup uploaded file",
     extractReceipt: "Failed to extract receipt",
+    enqueueReceipt: "Failed to start receipt extraction",
+    extractionFailed: "Receipt extraction failed",
     unknown: "Unknown error",
   },
 

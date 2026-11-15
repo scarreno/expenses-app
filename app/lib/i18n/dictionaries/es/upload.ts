@@ -13,6 +13,15 @@ export const upload = {
   selectReceiptFile: "Seleccionar archivo",
   uploadReceipt: "Subir recibo",
   proessing: "Processing...",
+
+  processing: {
+    title: "Extrayendo recibo",
+    description:
+      "El recibo se cargó y está en espera de procesamiento. Puedes salir de esta página y volver desde Recibos cuando esté listo para revisar.",
+    failedTitle: "La extracción falló",
+    failedDescription:
+      "No fue posible leer el recibo. Puedes descartarlo y subir otro archivo.",
+  },
   receiptTypeMatters: {
     title: "El Tipo de Recibo Importa",
     description:

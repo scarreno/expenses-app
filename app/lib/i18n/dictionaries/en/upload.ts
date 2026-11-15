@@ -14,6 +14,15 @@ export const upload = {
   uploadReceipt: "Upload receipt",
   proessing: "Processing...",
 
+  processing: {
+    title: "Extracting receipt",
+    description:
+      "The receipt was uploaded and is waiting to be processed. You can leave this page and return from Receipts when it is ready for review.",
+    failedTitle: "Extraction failed",
+    failedDescription:
+      "The receipt could not be read. You can discard it and upload another file.",
+  },
+
   receiptTypeMatters: {
     title: "Receipt Type Matters",
     description:

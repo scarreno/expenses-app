@@ -17,6 +17,7 @@ import { formatDisplayDate } from "@/lib/utils/date";
 import { getDictionary } from "@/app/lib/i18n/get-dictionary";
 import { getAvailableCategoriesForPreview } from "@/app/lib/categories/categories";
 import { getCategoryLabel } from "@/app/lib/categories/category-labels";
+import { confirmedReceiptStatusWhere } from "@/app/lib/receipts/receipt-lifecycle";
 
 export default async function ReceiptDetailPage({
   params,
@@ -38,10 +39,11 @@ export default async function ReceiptDetailPage({
   }));
   
 
-  const receipt = await prisma.receipt.findUnique({
+  const receipt = await prisma.receipt.findFirst({
     where: {
       id,
       userId: user.id,
+      ...confirmedReceiptStatusWhere(),
     },
     include: {
       items: true,

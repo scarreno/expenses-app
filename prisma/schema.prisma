@@ -28,13 +28,16 @@ model Receipt {
   total         Int?
   rawJson       Json?
   fileName      String?  
-  status       String  @default("PENDING")
+  /// PROCESSED is a confirmed save. PENDING is the legacy default and stays valid.
+  status       String  @default("EXTRACTING")
   errorMessage String?
   createdAt     DateTime      @default(now())
   filePath String?
   receiptType String?
   publicFileUrl String?
   items         ReceiptItem[]
+  processingJob ProcessingJob?
+  notifications Notification[]
 }
 
 model ReceiptItem {
@@ -54,8 +57,10 @@ model ReceiptItem {
 model User {
   id         String   @id // Clerk userId
 
-  receipts   Receipt[]
-  categories Category[]
+  receipts       Receipt[]
+  categories     Category[]
+  processingJobs ProcessingJob[]
+  notifications  Notification[]
 
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
@@ -93,4 +98,50 @@ model UserSettings {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model ProcessingJob {
+  id             String    @id @default(uuid())
+  receiptId      String    @unique
+  userId         String
+  status         String    @default("QUEUED")
+  attempts       Int       @default(0)
+  maxAttempts    Int       @default(3)
+  availableAt    DateTime  @default(now())
+  lockedAt       DateTime?
+  lockedUntil    DateTime?
+  lockedBy       String?
+  lastError      String?
+  idempotencyKey String?
+  startedAt      DateTime?
+  finishedAt     DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  receipt       Receipt        @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+  user          User           @relation(fields: [userId], references: [id])
+  notifications Notification[]
+
+  @@unique([userId, idempotencyKey])
+  @@index([status, availableAt])
+  @@index([lockedUntil])
+  @@index([userId])
+}
+
+model Notification {
+  id         String    @id @default(uuid())
+  userId     String
+  type       String
+  receiptId  String?
+  jobId      String
+  messageKey String
+  readAt     DateTime?
+  createdAt  DateTime  @default(now())
+
+  user    User          @relation(fields: [userId], references: [id])
+  receipt Receipt?      @relation(fields: [receiptId], references: [id], onDelete: SetNull)
+  job     ProcessingJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, type])
+  @@index([userId, readAt, createdAt])
 }

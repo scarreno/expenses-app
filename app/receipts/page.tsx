@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { PageContainer } from "@/app/components/layout/page-container";
 import { PageHeader } from "@/app/components/layout/page-header";
+import { PendingReceiptsSection } from "@/app/components/receipts/pending-receipts-section";
 import { ReceiptHistoryFilters } from "@/app/components/receipts/receipt-history-filters";
 import { getCurrentUserOrRedirect } from "@/app/lib/auth/auth-user";
 import { formatMoney } from "@/lib/utils/format-money";
@@ -18,6 +19,10 @@ import {
 } from "@/components/ui/card";
 import { formatDisplayDate } from "@/lib/utils/date";
 import { getDictionary } from "@/app/lib/i18n/get-dictionary";
+import {
+  REVIEW_QUEUE_STATUSES,
+  confirmedReceiptStatusWhere,
+} from "@/app/lib/receipts/receipt-lifecycle";
 
 const PAGE_SIZE = 8;
 
@@ -46,6 +51,7 @@ export default async function ReceiptsPage({
 
   const where: Prisma.ReceiptWhereInput = {
     userId: user.id,
+    ...confirmedReceiptStatusWhere(),
   };
 
   if (selectedYear !== "all" && selectedMonth !== "all") {
@@ -66,7 +72,7 @@ export default async function ReceiptsPage({
     where.receiptType = selectedBusinessType;
   }
 
-  const [receipts, totalReceipts, receiptsWithDates] = await Promise.all([
+  const [receipts, totalReceipts, receiptsWithDates, pendingReceipts] = await Promise.all([
     prisma.receipt.findMany({
       where,
       orderBy: { createdAt: "desc" },
@@ -81,12 +87,30 @@ export default async function ReceiptsPage({
     prisma.receipt.findMany({
       where: {
         userId: user.id,
+        ...confirmedReceiptStatusWhere(),
         purchaseDate: {
           not: null,
         },
       },
       select: {
         purchaseDate: true,
+      },
+    }),
+
+    prisma.receipt.findMany({
+      where: {
+        userId: user.id,
+        status: {
+          in: [...REVIEW_QUEUE_STATUSES],
+        },
+      },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        fileName: true,
+        receiptType: true,
+        status: true,
+        createdAt: true,
       },
     }),
   ]);
@@ -124,6 +148,8 @@ export default async function ReceiptsPage({
         title={dictionary.receiptsHistory.title}
         description={dictionary.receiptsHistory.description}
       />
+
+      <PendingReceiptsSection receipts={pendingReceipts} dictionary={dictionary} />
 
       <ReceiptHistoryFilters
         years={years}
