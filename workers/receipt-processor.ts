@@ -199,7 +199,7 @@ export async function discardReceiptWork(
           (
             job.status = 'PROCESSING'
             AND job."lockedUntil" IS NOT NULL
-            AND job."lockedUntil" > now()
+            AND job."lockedUntil" > (now() AT TIME ZONE 'UTC')
           ) AS "leaseActive",
           receipt.status AS "receiptStatus",
           receipt."filePath"
@@ -321,7 +321,7 @@ async function claimNextJob(
             END
           ) OR (
             status = 'PROCESSING'
-            AND "lockedUntil" < now()
+            AND "lockedUntil" < (now() AT TIME ZONE 'UTC')
             AND attempts < "maxAttempts"
           )
         )
@@ -334,7 +334,7 @@ async function claimNextJob(
         status = 'PROCESSING',
         "lockedBy" = $2,
         "lockedAt" = now(),
-        "lockedUntil" = now() + ($3::int * interval '1 millisecond'),
+        "lockedUntil" = (now() AT TIME ZONE 'UTC') + ($3::int * interval '1 millisecond'),
         attempts = job.attempts + 1,
         "startedAt" = COALESCE(job."startedAt", now()),
         "updatedAt" = now()
@@ -495,7 +495,7 @@ async function extendJobLease(options: ProcessorOptions, jobId: string) {
   await options.db.query(
     `
       UPDATE "ProcessingJob"
-      SET "lockedUntil" = now() + ($3::int * interval '1 millisecond'),
+      SET "lockedUntil" = (now() AT TIME ZONE 'UTC') + ($3::int * interval '1 millisecond'),
           "updatedAt" = now()
       WHERE id = $1
         AND "lockedBy" = $2
@@ -763,7 +763,7 @@ async function recoverInterruptedJobs(options: ProcessorOptions) {
           FROM "Receipt" AS receipt
           WHERE job."receiptId" = receipt.id
             AND job.status = 'PROCESSING'
-            AND job."lockedUntil" < now()
+            AND job."lockedUntil" < (now() AT TIME ZONE 'UTC')
             AND job.attempts >= job."maxAttempts"
             AND receipt.status = 'EXTRACTING'
             AND ($1::text IS NULL OR job."userId" = $1)
@@ -872,7 +872,7 @@ async function cleanupDiscardedFiles(options: ProcessorOptions) {
         AND NOT (
           job.status = 'PROCESSING'
           AND job."lockedUntil" IS NOT NULL
-          AND job."lockedUntil" > now()
+          AND job."lockedUntil" > (now() AT TIME ZONE 'UTC')
         )
         AND ($1::text IS NULL OR job."userId" = $1)
     `,

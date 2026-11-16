@@ -204,14 +204,15 @@ describeWithDb("receipt extraction api", { timeout: 20_000 }, () => {
   it("defers file deletion while a processing lease is active", async () => {
     const userId = await createUser();
     const created = await api.enqueueExtraction(uploadInput(userId));
-    await prisma.processingJob.update({
-      where: { id: created.jobId },
-      data: {
-        status: "PROCESSING",
-        lockedBy: "phase3-test",
-        lockedUntil: new Date(Date.now() + 60_000),
-      },
-    });
+    await prisma.$executeRaw`
+      UPDATE "ProcessingJob"
+      SET
+        status = 'PROCESSING',
+        "lockedBy" = 'phase3-test',
+        "lockedUntil" = (now() AT TIME ZONE 'UTC') + interval '1 minute',
+        "updatedAt" = now()
+      WHERE id = ${created.jobId}
+    `;
     const deleted: string[] = [];
 
     const result = await api.discardExtraction(userId, created.receiptId, {
@@ -228,6 +229,36 @@ describeWithDb("receipt extraction api", { timeout: 20_000 }, () => {
     expect(
       (await prisma.processingJob.findUnique({ where: { id: created.jobId } }))?.status,
     ).toBe("PROCESSING");
+  });
+
+  it("deletes the file when the processing lease has expired", async () => {
+    const userId = await createUser();
+    const created = await api.enqueueExtraction(uploadInput(userId));
+    await prisma.$executeRaw`
+      UPDATE "ProcessingJob"
+      SET
+        status = 'PROCESSING',
+        "lockedBy" = 'phase3-test',
+        "lockedUntil" = (now() AT TIME ZONE 'UTC') - interval '1 minute',
+        "updatedAt" = now()
+      WHERE id = ${created.jobId}
+    `;
+    const deleted: string[] = [];
+
+    const result = await api.discardExtraction(userId, created.receiptId, {
+      deleteFile: async (filePath) => {
+        deleted.push(filePath);
+      },
+    });
+
+    expect(result.fileCleanup).toBe("deleted");
+    expect(deleted).toHaveLength(1);
+    expect(
+      (await prisma.receipt.findUnique({ where: { id: created.receiptId } }))?.status,
+    ).toBe("DISCARDED");
+    expect(
+      (await prisma.processingJob.findUnique({ where: { id: created.jobId } }))?.status,
+    ).toBe("CANCELLED");
   });
 
   it("rejects an upload location outside the configured storage", async () => {
