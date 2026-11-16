@@ -101,7 +101,8 @@ export const receipt = {
 
   errors: {
     cleanupUploadedFile: "No fue posible eliminar el archivo cargado",
-    extractReceipt: "No fue posible procesar el recibo",
+    enqueueReceipt: "No fue posible iniciar la extracción del recibo",
+    extractionFailed: "La extracción del recibo falló",
     unknown: "Error desconocido",
   },
 

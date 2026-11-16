@@ -10,6 +10,7 @@ import { receipt } from "@/app/lib/i18n/dictionaries/es/receipt";
 import { home } from "@/app/lib/i18n/dictionaries/es/home";
 import type { Dictionary } from "@/app/types/dictionary";
 import { businessTypes } from "@/app/lib/i18n/dictionaries/es/business-types";
+import { notifications } from "@/app/lib/i18n/dictionaries/es/notifications";
 
 export const es: Dictionary = {
   common,
@@ -22,5 +23,6 @@ export const es: Dictionary = {
   settings,
   receipt,
   home,
-  businessTypes
+  businessTypes,
+  notifications,
 };

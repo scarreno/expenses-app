@@ -1,12 +1,13 @@
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { NextRequest, NextResponse } from "next/server";
+import { isBlobStorageDriver } from "@/app/lib/storage/driver";
 import { deleteReceiptFile, uploadReceiptFile } from "@/app/lib/storage/storage";
 
 const storageDriver = process.env.STORAGE_DRIVER ?? "local";
 
 export async function POST(request: NextRequest) {
   try {
-    if (storageDriver === "vercel-blob") {
+    if (isBlobStorageDriver(storageDriver)) {
       const body = (await request.json()) as HandleUploadBody;
 
       const jsonResponse = await handleUpload({

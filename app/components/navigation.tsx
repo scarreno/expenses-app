@@ -15,6 +15,7 @@ import {
 } from "@tabler/icons-react";
 
 import { SignOutButton } from "@/app/components/auth/sign-out-button";
+import { NotificationBell } from "@/app/components/notifications/notification-bell";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -137,9 +138,12 @@ export function Navigation({ dictionary }: NavigationProps) {
           </SheetContent>
         </Sheet>
 
-        <Link href="/" className="text-sm font-semibold">
-          <strong className="text-lg font-semibold">{dictionary.common.appName}</strong>
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link href="/" className="text-sm font-semibold">
+            <strong className="text-lg font-semibold">{dictionary.common.appName}</strong>
+          </Link>
+          <NotificationBell dictionary={dictionary} />
+        </div>
       </div>
 
       {/* Desktop Navigation */}
@@ -165,6 +169,8 @@ export function Navigation({ dictionary }: NavigationProps) {
             );
           })}
         </nav>
+
+        <NotificationBell dictionary={dictionary} />
 
         <div className="h-6 w-px bg-border" />
 

@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/app/lib/database/prisma'
 import { getCurrentUser } from "@/app/lib/auth/auth-user";
 import { deleteReceiptFile } from "@/app/lib/storage/storage";
+import { confirmedReceiptStatusWhere } from "@/app/lib/receipts/receipt-lifecycle";
 
 type RouteParams = {
   params: Promise<{
@@ -33,6 +34,7 @@ export async function DELETE(
       where: {
         id: receiptId,
         userId: currentUser.id,
+        ...confirmedReceiptStatusWhere(),
       },
     });
 
@@ -106,6 +108,7 @@ export async function PATCH(
         where: {
           id,
           userId: currentUser.id,
+          ...confirmedReceiptStatusWhere(),
         },
       });
 

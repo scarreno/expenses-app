@@ -3,6 +3,8 @@ import path from "path";
 import { v4 as uuid } from "uuid";
 import { put, del } from "@vercel/blob";
 
+import { isBlobStorageDriver } from "@/app/lib/storage/driver";
+
 export type UploadedReceiptFile = {
   filePath: string;
   generatedFileName: string;
@@ -14,7 +16,7 @@ const storageDriver = process.env.STORAGE_DRIVER ?? "local";
 export async function uploadReceiptFile(
   file: File
 ): Promise<UploadedReceiptFile> {
-  if (storageDriver === "vercel-blob") {
+  if (isBlobStorageDriver(storageDriver)) {
     return uploadToVercelBlob(file);
   }
 
@@ -22,7 +24,7 @@ export async function uploadReceiptFile(
 }
 
 export async function deleteReceiptFile(filePath: string): Promise<void> {
-  if (storageDriver === "vercel-blob") {
+  if (isBlobStorageDriver(storageDriver)) {
     await deleteFromVercelBlob(filePath);
     return;
   }

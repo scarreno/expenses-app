@@ -25,4 +25,18 @@ export const receiptsHistory = {
     previous: "Previous",
     next: "Next"
   },
+
+  pending: {
+    title: "Pending / Ready for review",
+    description:
+      "Receipts that are still being extracted, ready for your review, or failed.",
+    empty: "No receipts are waiting.",
+    file: "File",
+    review: "Review",
+    status: {
+      extracting: "Processing",
+      ready: "Ready for review",
+      failed: "Extraction failed",
+    },
+  },
 };
