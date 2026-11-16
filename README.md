@@ -390,7 +390,7 @@ QA and production uploads live in Vercel Blob. The scheduled workers set `STORAG
 
 ### Scheduled QA and production runs
 
-Two GitHub Actions workflows run `pnpm worker --once` once per day. They do not build, deploy, or migrate the web application. They are not triggered by pushes or pull requests, so they stay out of the deployment pipelines. GitHub starts scheduled workflows from the repository default branch, which is `staging`.
+Two GitHub Actions workflows run `pnpm worker --once` once per day. They do not build, deploy, or migrate the web application. They are not triggered by pushes or pull requests, so they stay out of the deployment pipelines. GitHub starts scheduled workflows from the repository default branch, which is `staging`. The QA workflow checks out that `staging` ref. The PROD workflow always checks out `main` and runs that code, including when the daily schedule starts the workflow from `staging`. A PROD run does not execute `staging` application code.
 
 | Workflow | GitHub Environment | UTC | Continental Chile, UTC−3 | Continental Chile, UTC−4 |
 | --- | --- | --- | --- | --- |
@@ -403,16 +403,16 @@ Create the environments before the first run:
 
 1. Open the repository on GitHub, then Settings → Environments.
 2. Create an environment named `QA` and another named `PROD`. Use those exact names.
-3. On `PROD`, limit deployment branches to `staging`. Leave required reviewers off. A required reviewer would pause the daily run until someone approves it.
+3. On `PROD`, limit deployment branches to `staging` and `main`. GitHub evaluates that limit against the branch that triggered the run, not the branch the job checks out. The daily schedule triggers from `staging`. A manual run triggers from `staging` or `main`. Leave required reviewers off. A required reviewer would pause the daily run until someone approves it.
 4. On `QA`, allow the branches that should be allowed to run the QA worker. The daily run uses `staging`.
 5. In each environment, add these secrets. Do not also create them as repository secrets. A repository secret with the same name is visible to every workflow when the environment secret is missing, which could point QA at the production database.
    * `DATABASE_URL` — that environment's PostgreSQL database. QA and PROD must be different databases.
    * `OPENAI_API_KEY` — key used for extraction.
    * `BLOB_READ_WRITE_TOKEN` — token for the blob store that holds that environment's receipt files.
 6. In each environment, add the variable `STORAGE_DRIVER` with the value `blob`.
-7. Merge both workflow files to `staging`. GitHub only schedules workflow files that are on the default branch. Until then, use Run workflow from the branch that contains them. The production workflow still refuses every branch other than `staging`.
+7. Merge both workflow files to `staging`. GitHub only schedules workflow files that are on the default branch. A manual PROD run uses the workflow file on the branch you select, so `main` needs this PROD workflow as well. Until the files are on `staging`, use Run workflow from the branch that contains them.
 
-Run either workflow manually from Actions → the workflow name → Run workflow. For production, select `staging`. Any other branch fails before the production environment or its secrets are used. QA can be started from another branch when that branch should be exercised against the QA database only.
+Run either workflow manually from Actions → the workflow name → Run workflow. For production, select `staging` or `main`. Any other branch fails the branch guard before the production environment or its secrets are used. The job still checks out `main`. QA can be started from another branch when that branch should be exercised against the QA database only.
 
 Open a run to read its logs. The configuration step names any missing variable and stops there. It does not print secret values. The worker step prints JSON events such as `worker.start`, `job.succeeded`, `job.retry`, `job.failed`, and `worker.exit`. A non-zero worker exit fails the run. The job limit is 30 minutes.
 
