@@ -54,10 +54,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
-<<<<<<< HEAD
           ref: main
-=======
->>>>>>> main
           persist-credentials: false
 
       - name: Require environment configuration
