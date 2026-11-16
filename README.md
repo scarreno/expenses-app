@@ -157,14 +157,18 @@ Upload File
     ↓
 Storage (local or Vercel Blob)
     ↓
-OpenAI Extraction
+POST /api/receipts/extractions (HTTP 202)
     ↓
-Review & Edit
+PostgreSQL processing job
     ↓
-Save Receipt
+Receipt worker (pnpm worker)
+    ↓
+Review & confirm
     ↓
 Dashboard & Analytics
 ```
+
+Extraction runs outside the web request. The browser polls for status, and the header bell reads the durable notifications the worker writes when a job succeeds or fails permanently.
 
 Application structure:
 
@@ -337,7 +341,59 @@ pnpm test             # Vitest (single run)
 pnpm test:watch       # Vitest watch mode
 pnpm test:coverage    # Vitest with coverage
 pnpm format           # Prettier
+pnpm worker --once    # Drain currently eligible receipt jobs, then exit
+pnpm worker --daemon  # Poll for receipt jobs until stopped
 ```
+
+---
+
+## Receipt worker
+
+The Next.js app enqueues one `ProcessingJob` per uploaded receipt. A separate Node process claims those jobs from PostgreSQL. It does not use Redis, a third-party queue, or a hosting provider's background-function API. Run it beside the web app with the same `DATABASE_URL` and the same storage configuration the upload used.
+
+### Commands
+
+`pnpm worker --once` claims every job that is eligible when the process starts, handles those jobs, and exits. A retry whose `availableAt` is still in the future is left for the next run. The process exits 0 when it can reach the database, including when an extraction fails and that failure is recorded. It exits non-zero only when the worker itself cannot run (for example, a missing `DATABASE_URL` or both mode flags).
+
+`pnpm worker --daemon` uses the same claim and processing code, then waits and polls again. Stop it with SIGINT or SIGTERM. The in-flight job finishes; the loop does not start another one after the signal.
+
+Pass exactly one of `--once` or `--daemon`.
+
+### Environment
+
+Required for every worker process:
+
+* `DATABASE_URL` — PostgreSQL database that already has the receipt and processing-job migrations.
+* `OPENAI_API_KEY` — used when a job calls the extraction model.
+* `STORAGE_DRIVER` — `local` or `vercel-blob`. This must match the storage that accepted the upload.
+
+Local storage also reads files from `public/uploads` on the machine running the worker. Blob storage also needs `BLOB_READ_WRITE_TOKEN`. The worker downloads the stored file itself, so a `local` driver only works when the worker can see those files.
+
+Optional, with defaults:
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `RECEIPT_WORKER_CONCURRENCY` | `1` | Jobs processed at the same time. |
+| `RECEIPT_WORKER_POLL_INTERVAL_MS` | `5000` | Daemon idle wait. `--once` does not poll. |
+| `RECEIPT_WORKER_LEASE_MS` | `240000` | How long a claimed job stays locked. |
+| `RECEIPT_WORKER_HEARTBEAT_MS` | `30000` | How often the lock is extended while a job runs. |
+| `RECEIPT_WORKER_ATTEMPT_TIMEOUT_MS` | `180000` | Limit for one extraction attempt. |
+
+### Local, QA, and production
+
+Local development can use `STORAGE_DRIVER=local` and a worker started in the same checkout. QA and production each need their own `DATABASE_URL`. Do not point a worker at another environment's database.
+
+If QA or production stores uploads in Vercel Blob, run the worker anywhere that has network access to PostgreSQL, OpenAI, and that blob store. Set `STORAGE_DRIVER=vercel-blob` and the blob token. The worker does not need to run on the same host as the Next.js server.
+
+A scheduler is not included. For periodic processing, invoke `pnpm worker --once` from whatever scheduler you already operate. Overlapping runs are safe: claims use `FOR UPDATE SKIP LOCKED`, so two processes do not take the same job.
+
+### Retries, leases, and concurrency
+
+Each receipt has one job. Retries update that job; they do not create another one. Transient failures (including invalid model output, rate limits, and network errors) wait 30 seconds after the first attempt and 2 minutes after the second. The third failure is permanent: the receipt becomes `EXTRACTION_FAILED` and one failure notification is stored. Some errors, such as a missing file or an authentication failure, are permanent on the first attempt.
+
+The default concurrency is 1. A claimed job holds a 4-minute lease, refreshed every 30 seconds. If the process stops during an attempt, another run can reclaim the job after the lease expires, until the attempt budget is spent. With `--once` scheduled infrequently, the next scheduled run is the real retry delay; the 30-second and 2-minute waits are only a lower bound.
+
+Successful and permanently failed jobs write a `Notification` row. The header bell reads those rows. Confirming a receipt remains a separate user action. Unconfirmed receipts stay out of spending totals.
 
 ---
 
