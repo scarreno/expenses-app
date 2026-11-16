@@ -1,6 +1,7 @@
 import path from "node:path";
 
 import { ExtractionRequestError } from "@/app/lib/receipts/extraction-errors";
+import { isBlobStorageDriver } from "@/app/lib/storage/driver";
 import { isSupportedReceiptFile } from "@/workers/extraction-policy";
 
 const BLOB_HOST_SUFFIX = ".blob.vercel-storage.com";
@@ -19,7 +20,7 @@ export function assertStoredUploadLocation(
     throw new ExtractionRequestError(400, "Unsupported receipt file");
   }
 
-  if (driver === "vercel-blob") {
+  if (isBlobStorageDriver(driver)) {
     assertBlobLocation(input);
     return;
   }

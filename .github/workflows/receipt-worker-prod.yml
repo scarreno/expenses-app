@@ -1,0 +1,93 @@
+name: Receipt worker PROD
+
+on:
+  schedule:
+    # 11:30 UTC daily, after the QA run. Continental Chile: 08:30 while UTC−3, 07:30 while UTC−4.
+    - cron: "30 11 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: receipt-worker-prod
+  cancel-in-progress: false
+
+jobs:
+  guard:
+    name: Require staging branch
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Reject other branches
+        env:
+          GIT_REF: ${{ github.ref }}
+        run: |
+          set -euo pipefail
+          if [ "$GIT_REF" != "refs/heads/staging" ]; then
+            echo "::error::The production receipt worker only runs from refs/heads/staging."
+            exit 1
+          fi
+
+  worker:
+    name: Run receipt worker
+    needs: guard
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: PROD
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Require environment configuration
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+          STORAGE_DRIVER: ${{ vars.STORAGE_DRIVER }}
+        run: |
+          set -euo pipefail
+          missing=0
+          for name in DATABASE_URL OPENAI_API_KEY BLOB_READ_WRITE_TOKEN STORAGE_DRIVER; do
+            if [ -z "${!name:-}" ]; then
+              echo "::error::Missing required configuration: ${name}"
+              missing=1
+            fi
+          done
+          if [ -n "${STORAGE_DRIVER:-}" ] && [ "$STORAGE_DRIVER" != "blob" ]; then
+            echo "::error::STORAGE_DRIVER must be blob so the runner uses Blob storage instead of public/uploads."
+            missing=1
+          fi
+          if [ "$missing" -ne 0 ]; then
+            exit 1
+          fi
+          echo "PROD configuration is present. Secret values were not printed."
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.0.8
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma Client
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: pnpm exec prisma generate
+
+      - name: Run receipt worker once
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+          STORAGE_DRIVER: ${{ vars.STORAGE_DRIVER }}
+        run: pnpm worker --once

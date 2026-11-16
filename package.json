@@ -3,7 +3,8 @@
   "version": "2.0.1",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "concurrently --kill-others --names web,worker \"pnpm dev:web\" \"pnpm worker --daemon\"",
+    "dev:web": "next dev",
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint .",
@@ -51,6 +52,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitest/coverage-v8": "^4.1.6",
+    "concurrently": "^10.0.7",
     "eslint": "^9",
     "eslint-config-next": "16.2.5",
     "eslint-config-prettier": "^10.1.8",

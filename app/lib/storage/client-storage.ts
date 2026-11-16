@@ -1,6 +1,8 @@
 
 import { upload } from "@vercel/blob/client";
 
+import { isBlobStorageDriver } from "@/app/lib/storage/driver";
+
 export type UploadedReceiptFile = {
   filePath: string;
   generatedFileName: string;
@@ -13,7 +15,7 @@ const storageDriver =
 export async function uploadReceiptFileFromClient(
   file: File
 ): Promise<UploadedReceiptFile> {
-  if (storageDriver === "vercel-blob") {
+  if (isBlobStorageDriver(storageDriver)) {
     return uploadToVercelBlob(file);
   }
 

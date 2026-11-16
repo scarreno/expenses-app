@@ -6,6 +6,7 @@ import {
   DEFAULT_POLL_INTERVAL_MS,
   DEFAULT_WORKER_CONCURRENCY,
 } from "@/workers/extraction-policy";
+import { readPositiveIntEnv } from "@/workers/worker-config";
 
 loadLocalEnv();
 
@@ -82,27 +83,13 @@ function readMode(args: string[]): "once" | "daemon" {
 function readConfig() {
   return {
     workerId: `receipt-worker-${process.pid}-${crypto.randomUUID().slice(0, 8)}`,
-    concurrency: readPositiveInt("RECEIPT_WORKER_CONCURRENCY", DEFAULT_WORKER_CONCURRENCY),
-    pollIntervalMs: readPositiveInt("RECEIPT_WORKER_POLL_INTERVAL_MS", DEFAULT_POLL_INTERVAL_MS),
-    leaseMs: readPositiveInt("RECEIPT_WORKER_LEASE_MS", DEFAULT_LEASE_MS),
-    heartbeatMs: readPositiveInt("RECEIPT_WORKER_HEARTBEAT_MS", DEFAULT_HEARTBEAT_MS),
-    attemptTimeoutMs: readPositiveInt(
+    concurrency: readPositiveIntEnv("RECEIPT_WORKER_CONCURRENCY", DEFAULT_WORKER_CONCURRENCY),
+    pollIntervalMs: readPositiveIntEnv("WORKER_POLL_INTERVAL_MS", DEFAULT_POLL_INTERVAL_MS),
+    leaseMs: readPositiveIntEnv("RECEIPT_WORKER_LEASE_MS", DEFAULT_LEASE_MS),
+    heartbeatMs: readPositiveIntEnv("RECEIPT_WORKER_HEARTBEAT_MS", DEFAULT_HEARTBEAT_MS),
+    attemptTimeoutMs: readPositiveIntEnv(
       "RECEIPT_WORKER_ATTEMPT_TIMEOUT_MS",
       DEFAULT_ATTEMPT_TIMEOUT_MS,
     ),
   };
-}
-
-function readPositiveInt(name: string, fallback: number) {
-  const raw = process.env[name];
-  if (!raw) {
-    return fallback;
-  }
-
-  const value = Number(raw);
-  if (!Number.isInteger(value) || value <= 0) {
-    throw new Error(`${name} must be a positive integer`);
-  }
-
-  return value;
 }

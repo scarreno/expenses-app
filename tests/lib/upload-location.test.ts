@@ -55,5 +55,16 @@ describe("stored upload locations", () => {
         "vercel-blob",
       ),
     ).toThrow(ExtractionRequestError);
+
+    expect(() =>
+      assertStoredUploadLocation(
+        {
+          generatedFileName: "receipt.pdf",
+          filePath: "receipts/receipt.pdf",
+          publicFileUrl: "https://store.public.blob.vercel-storage.com/receipts/receipt.pdf",
+        },
+        "blob",
+      ),
+    ).not.toThrow();
   });
 });
