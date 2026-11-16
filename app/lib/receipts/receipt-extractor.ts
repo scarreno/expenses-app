@@ -18,12 +18,7 @@ export async function extractReceiptData(
   categories: CategoryForPrompt[]
 ) {
   try {
-
-    console.log(`Creating prompt para , categorias`,);
     const prompt = buildReceiptPrompt(receiptType, categories);
-    console.log("Creating prompt - Ok");
-    console.log(`prompt: ${prompt}`);
-
     const isPdf = mimeType === "application/pdf";
 
     const response = await openai.responses.create({
@@ -52,8 +47,6 @@ export async function extractReceiptData(
       ],
     });
 
-    console.log("Open AI request executed OK!");
-    console.log(response.output_text);
     return response.output_text;
   } catch (error) {
     throw error;

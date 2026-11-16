@@ -1,9 +1,11 @@
 import { prisma } from "@/app/lib/database/prisma";
+import { confirmedReceiptStatusWhere } from "@/app/lib/receipts/receipt-lifecycle";
 
 export async function getRecentReceipts(userId: string, limit: number = 5) {
   const recentReceipts = await prisma.receipt.findMany({
     where: {
       userId,
+      ...confirmedReceiptStatusWhere(),
     },
     orderBy: {
       createdAt: "desc",

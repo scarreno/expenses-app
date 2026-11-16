@@ -1,4 +1,5 @@
 import { prisma } from "@/app/lib/database/prisma";
+import { confirmedReceiptStatusWhere } from "@/app/lib/receipts/receipt-lifecycle";
 
 import { aggregateExpensesByDay, type DailyExpense } from "./aggregate-expenses-by-day";
 import {
@@ -60,6 +61,7 @@ export async function getDashboardYearOptions(
   const receipts = await prisma.receipt.findMany({
     where: {
       userId,
+      ...confirmedReceiptStatusWhere(),
       purchaseDate: { not: null },
     },
     select: {
@@ -79,6 +81,7 @@ export async function getDashboardPeriodData(
   const prefix = getMonthPrefix(filters.year, filters.month);
   const periodWhere = {
     userId,
+    ...confirmedReceiptStatusWhere(),
     purchaseDate: {
       startsWith: prefix,
     },

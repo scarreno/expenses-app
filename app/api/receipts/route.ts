@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/app/lib/database/prisma";
 import { saveReceiptSchema } from "@/app/schemas/receipt-schema";
 import { getCurrentUser } from "@/app/lib/auth/auth-user";
+import {
+  RECEIPT_STATUS,
+  confirmedReceiptStatusWhere,
+} from "@/app/lib/receipts/receipt-lifecycle";
 export async function GET() {
     
   const currentUser = await getCurrentUser();
@@ -15,7 +19,8 @@ export async function GET() {
 
   const receipts = await prisma.receipt.findMany({
     where: {
-      userId: currentUser.id
+      userId: currentUser.id,
+      ...confirmedReceiptStatusWhere(),
     },
     include: {
       items: true,
@@ -56,7 +61,7 @@ export async function POST(request: NextRequest) {
         total: body.receipt.total,
         fileName: body.file.originalName,
         filePath: body.file.filePath,
-        status: "PROCESSED",
+        status: RECEIPT_STATUS.PROCESSED,
         rawJson: body.receipt,
         publicFileUrl: body.file.publicFileUrl,
         userId: currentUser.id,

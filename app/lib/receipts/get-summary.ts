@@ -1,8 +1,12 @@
 import { prisma } from "@/app/lib/database/prisma";
+import { confirmedReceiptStatusWhere } from "@/app/lib/receipts/receipt-lifecycle";
 
 export async function getReceiptSummary(userId: string) {
   const receipts = await prisma.receipt.findMany({
-    where: { userId },
+    where: {
+      userId,
+      ...confirmedReceiptStatusWhere(),
+    },
     include: { items: true },
   });
 

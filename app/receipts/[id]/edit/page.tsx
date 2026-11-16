@@ -6,6 +6,7 @@ import { prisma } from "@/app/lib/database/prisma";
 import { getUserSettings } from "@/app/lib/settings/get-user-settings";
 import { notFound } from "next/navigation";
 import { getDictionary } from "@/app/lib/i18n/get-dictionary";
+import { confirmedReceiptStatusWhere } from "@/app/lib/receipts/receipt-lifecycle";
 
 export default async function ReceiptEditPage({
   params,
@@ -22,6 +23,7 @@ export default async function ReceiptEditPage({
     where: {
       id,
       userId: user.id,
+      ...confirmedReceiptStatusWhere(),
     },
     include: {
       items: {
