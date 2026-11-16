@@ -15,18 +15,13 @@ concurrency:
 
 jobs:
   guard:
-<<<<<<< HEAD
     name: Check allowed trigger branch
-=======
-    name: Require staging branch
->>>>>>> main
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - name: Reject other branches
         env:
           GIT_REF: ${{ github.ref }}
-<<<<<<< HEAD
           EVENT_NAME: ${{ github.event_name }}
         run: |
           set -euo pipefail
@@ -48,14 +43,6 @@ jobs:
               exit 1
               ;;
           esac
-=======
-        run: |
-          set -euo pipefail
-          if [ "$GIT_REF" != "refs/heads/staging" ]; then
-            echo "::error::The production receipt worker only runs from refs/heads/staging."
-            exit 1
-          fi
->>>>>>> main
 
   worker:
     name: Run receipt worker
