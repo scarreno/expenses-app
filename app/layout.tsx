@@ -1,11 +1,13 @@
 import { Toaster } from "sonner";
 import "./globals.css";
 
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Inter, Source_Serif_4, JetBrains_Mono } from "next/font/google";
 import { AuthProvider } from "@/app/components/auth/auth-provider";
 import { Navigation } from "@/app/components/navigation";
 import { getCurrentUserOrNull } from "@/app/lib/auth/auth-user";
+import { APP_DESCRIPTION, APP_NAME } from "@/app/lib/brand";
 import { getDictionary } from "@/app/lib/i18n/get-dictionary";
 import { getUserSettings } from "@/app/lib/settings/get-user-settings";
 import { APP_VERSION } from "@/lib/utils/app-version";
@@ -28,10 +30,13 @@ const fontMono = JetBrains_Mono({
 });
 
 
-export const metadata = {
-  title: "Guarda tu Boleta",
-  description:
-    "Capture, organize, review, and analyze household receipts with Guarda tu Boleta.",
+export const metadata: Metadata = {
+  applicationName: APP_NAME,
+  title: {
+    default: APP_NAME,
+    template: `%s · ${APP_NAME}`,
+  },
+  description: APP_DESCRIPTION,
 };
 
 export default async function RootLayout({
