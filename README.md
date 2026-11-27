@@ -320,12 +320,12 @@ Do not use these commands in production environments.
 pnpm dev
 ```
 
-`pnpm dev` runs the test suite first (`predev` hook), then starts two independent processes: the Next.js dev server and the receipt worker (`pnpm worker --daemon`). Stopping that command stops both processes. If either process exits, the other is stopped as well. `pnpm dev:web` starts only Next.js. `pnpm build` and `pnpm start` do not start the worker, and a Next.js host such as Netlify or Vercel does not start it either.
+`pnpm dev` runs the test suite first (`predev` hook), then starts two independent processes: the Next.js dev server on port 5000 and the receipt worker (`pnpm worker --daemon`). Stopping that command stops both processes. If either process exits, the other is stopped as well. `pnpm dev:web` starts only Next.js, also on port 5000. `pnpm build` and `pnpm start` do not start the worker, and a Next.js host such as Netlify or Vercel does not start it either.
 
 Open:
 
 ```text
-http://localhost:3000
+http://localhost:5000
 ```
 
 ---
@@ -333,8 +333,8 @@ http://localhost:3000
 ### Scripts
 
 ```bash
-pnpm dev              # Run tests, then start Next.js and the receipt worker
-pnpm dev:web          # Start Next.js without the receipt worker
+pnpm dev              # Run tests, then start Next.js on port 5000 and the receipt worker
+pnpm dev:web          # Start Next.js on port 5000 without the receipt worker
 pnpm build            # Generate Prisma client and build
 pnpm start            # Start production server
 pnpm lint             # ESLint

@@ -1,5 +1,7 @@
+import { APP_NAME } from "@/app/lib/brand";
+
 export const common = {
-  appName: "Guarda tu Boleta",
+  appName: APP_NAME,
   menu: "Menú",
   signOut: "Cerrar sesión",
   signedIn: "Sesión iniciada",

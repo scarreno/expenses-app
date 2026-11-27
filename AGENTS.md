@@ -2,7 +2,7 @@
 
 ## Project context
 
-This is the Expenses app repository.
+This is the Guarda tu Boleta application repository. The technical name remains `expenses-app`.
 
 The agent must inspect the existing codebase before making changes. Do not assume outdated documentation is correct.
 
